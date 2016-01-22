@@ -174,6 +174,7 @@ public final class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         mDrawer.closeDrawer(GravityCompat.START);
+        csoundObj.stop();
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
 

@@ -140,12 +140,18 @@ public final class CSD {
         return "\ninstr Master" + master + inits + "\nendin";
     }
 
+    static String Silencer = "\ninstr Silencer"
+            + "\nSinstr = p4"
+            + "\ninb nstrnum Sinstr"
+            + "\nevent_i \"i\", -inb, 0, 0"
+            + "\nendin";
+
 
     static String score =
             "\n</CsInstruments>"
                     + "\n<CsScore>"
                     + "\nf0 z"
-                    + "\ni\"Master\" 0 3600"
+                    + "\ni\"Master\" 0 -1"
                     + "\n</CsScore>"
                     + "\n</CsoundSynthesizer>";
 
@@ -164,7 +170,7 @@ public final class CSD {
             instruments += "\ninstr " + instr + "\n" + mapInstr.get(instr) + "\nendin";
         }
         //Log.i(TAG, "in :" + instruments);
-        return header + inits + udos + instruments + Master() + score;
+        return header + inits + udos + instruments + Master() + Silencer + score;
     }
 
     static String recordPart(String instrName) {
@@ -180,6 +186,6 @@ public final class CSD {
             inits += "\nga_" + instr + "_R = 0";
             instruments += "\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, -12" : "") + "\n" + mapInstr.get(instr) + "\nendin";
         }
-        return header + "\ngihand fiopen \"storage/sdcard0/unisonMelody.txt\", 0" + inits + udos + instruments + Master() + score;
+        return header + "\ngihand fiopen \"storage/sdcard0/unisonMelody.txt\", 0" + inits + udos + instruments + Master() + Silencer + score;
     }
 }

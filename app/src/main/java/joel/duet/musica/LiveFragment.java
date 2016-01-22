@@ -90,11 +90,13 @@ public final class LiveFragment extends Fragment {
                         key = keyboard.draw(x, y);
                         //Log.i(TAG, "key=" + key);
 
-                        csoundObj.sendScore("i\"" + select_instr.getSelectedItem() + "\" 0 0.5 " + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " -12");
+                        csoundObj.sendScore("i\"" + select_instr.getSelectedItem() + "\" 0 -1 " + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " -12");
                         keyboard.show();
                         break;
 
                     case MotionEvent.ACTION_UP:
+                       csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\"");
+
                         keyboard.draw(-1, -1);
                         keyboard.show();
                         break;
