@@ -29,27 +29,34 @@ public final class KeyboardView extends View {
     private static final Integer blackKeys[] = {1, 3, 6, 8, 10};
     private static final List<Integer> listBlackKeys = Arrays.asList(blackKeys);
     private int piano[];
-    //private static final int WHITE = (-1);
-    private static final int BLACK = (-16777216);
-    //int GRAY = (-8421505);
-    //int DARKGRAY = (-12632257);
-    private static final int LIGHTGRAY = (-4210753);
+    //private static final int BLACK_TRANSPARENT = (0);
+    //private static final int GRAY_OPAQUE = (-8421505);
+    //private static final int DARKGRAY_OPAQUE = (-12632257);
+    private static final int BLACK_OPAQUE = (-16777216);
+    private static final int WHITE_OPAQUE = (-1);
+    private static final int LIGHTGRAY_OPAQUE = (-4210753);
     private static final double nbkeys = 24.0;
     private static final double nbwhite = nbkeys / 12.0 * 7.0;
     private  int whitewidth;
     private int blackwidth2;
     private  int blackheight;
 
-    private void fillKeyboardDrawing(int[] graph) {
-        //for (int i = 0; i < keyboard_width * keyboard_height; i++) graph[i] = WHITE;
-        for (int j = 0; j < keyboard_width; j++)
-            graph[(keyboard_height - 1) * keyboard_width + j] = BLACK;
-
+    private void drawWhiteStroke(int[] graph){
         int b;
         for (b = 0; b < nbwhite; b++)
             for (int i = 0; i < keyboard_height; i++)
-                graph[i * keyboard_width + b * whitewidth] = BLACK;
-        b = 0;
+                if(graph[i * keyboard_width + b * whitewidth]!=LIGHTGRAY_OPAQUE)
+                    graph[i * keyboard_width + b * whitewidth] = BLACK_OPAQUE;
+    }
+
+    private void fillKeyboardDrawing(int[] graph) {
+        //for (int i = 0; i < keyboard_width * keyboard_height; i++) graph[i] = WHITE;
+        for (int j = 0; j < keyboard_width; j++)
+            graph[(keyboard_height - 1) * keyboard_width + j] = BLACK_OPAQUE;
+
+        drawWhiteStroke(graph);
+
+        int b = 0;
         int w = 0;
         while (b < nbkeys) {
             if (!listBlackKeys.contains(b % 12)) {
@@ -57,7 +64,7 @@ public final class KeyboardView extends View {
                 if (listBlackKeys.contains((b + 1) % 12))
                     for (int i = 0; i < blackheight; i++)
                         for (int j = w * whitewidth - blackwidth2; j < w * whitewidth + blackwidth2; j++)
-                            graph[i * keyboard_width + j] = BLACK;
+                            graph[i * keyboard_width + j] = BLACK_OPAQUE;
             }
             b++;
         }
@@ -95,7 +102,7 @@ public final class KeyboardView extends View {
                 keyboard_bitmap =
                         Bitmap.createBitmap(keyboard_width, keyboard_height, Bitmap.Config.ARGB_8888);
                 fillKeyboardDrawing(piano);
-                draw(-1, -1);
+                draw(-1, -1, false);
                 show();
             }
         });
@@ -118,20 +125,28 @@ public final class KeyboardView extends View {
         return k + 12 * (nth / 7 - (nth % 7 == 0 && top ? 1 : 0)); // KEEP PARENS!!
     }
 
-    public  int draw(float x, float y) {
+    public  int draw(float x, float y, boolean pressed) {
         int k = -1;
         if(keyboard_bitmap != null)
             if (x < 0 || y < 0) keyboard_bitmap.setPixels(piano, 0,
                 keyboard_width, 0, 0, keyboard_width, keyboard_height);
             else {
                 k = key(x, y);
-                int[] mask = piano.clone();
+                int[] mask = new int[piano.length];
+                keyboard_bitmap.getPixels(mask, 0,
+                        keyboard_width, 0, 0, keyboard_width, keyboard_height);
                 int jmin = Math.max(0, (int) (x - whitewidth));
                 int jmax = Math.min(keyboard_width, (int) (x + whitewidth));
-                for (int j = jmin; j < jmax; j++)
-                    for (int i = 0; i < keyboard_height; i++)
-                        if (key(j, i) == k) mask[i * keyboard_width + j] = LIGHTGRAY;
+                for (int j = jmin ; j < jmax; j++)
+                    for (int i = 0; i < keyboard_height-1; i++)
+                        if (key(j, i) == k)
+                            if(pressed)
+                                mask[i * keyboard_width + j] = LIGHTGRAY_OPAQUE;
+                            else if(Arrays.asList(whiteKeys).contains(k%12))
+                                mask[i * keyboard_width + j] = WHITE_OPAQUE;
+                                    else mask[i * keyboard_width + j] = BLACK_OPAQUE;
 
+                drawWhiteStroke(mask);
                 keyboard_bitmap.setPixels(mask, 0,
                         keyboard_width, 0, 0, keyboard_width, keyboard_height);
             }
