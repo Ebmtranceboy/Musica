@@ -17,7 +17,6 @@ import java.util.List;
  */
 
 public final class KeyboardView extends View {
-    // TODO add polyphony
     private Bitmap keyboard_bitmap;
     private int keyboard_width;
     private  int keyboard_height;

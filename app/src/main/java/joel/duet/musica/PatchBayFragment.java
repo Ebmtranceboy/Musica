@@ -3,7 +3,7 @@ package joel.duet.musica;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+//import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +19,7 @@ import android.widget.TextView;
  */
 public final class PatchBayFragment extends Fragment {
     private static GridView grid;
-    private static final String TAG = "Patchbay";
+    //private static final String TAG = "Patchbay";
 
     @Override
     public void onAttach(Context context) {
@@ -65,7 +65,7 @@ public final class PatchBayFragment extends Fragment {
                 int i = (position - j) / n;
                 if (Matrix.get(i, j)) Matrix.unset(i, j);
                 else Matrix.set(i, j);
-                Log.i(TAG,Matrix.serialize());
+                //Log.i(TAG,Matrix.serialize());
                 grid.invalidateViews();
             }
         });

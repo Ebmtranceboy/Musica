@@ -60,6 +60,7 @@ public final class MainActivity extends AppCompatActivity
         for(String instr:pref.getStringSet("FX",CSD.mapFX.keySet())) {
             CSD.mapFX.put(instr, pref.getString(instr, ""));
         }
+
         Matrix.reset();
         Matrix.unserialize(pref.getString("Matrix",""));
 

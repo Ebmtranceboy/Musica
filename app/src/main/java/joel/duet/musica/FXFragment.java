@@ -19,7 +19,6 @@ import java.util.List;
  * Created by joel on 21/01/16 at 08:16 at 14:17.
  */
 public final class FXFragment extends FragmentPlus{
-    //TODO reset matrix after adding and removing effect
     //TODO implement import button
     //TODO implement add to lib
     static private MainActivity activity;
