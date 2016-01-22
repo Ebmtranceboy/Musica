@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="match_parent"
+   android:layout_height="match_parent"
+   android:orientation="vertical">
+  <ListView
+     android:id="@+id/listInstr"
+      android:layout_width="match_parent"
+     android:layout_height="0dp"
+     android:layout_weight="1"/>
+  <TableRow
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_weight="0">
+      <Button
+          android:id="@+id/new_instr"
+          style="?android:attr/buttonBarButtonStyle"
+          android:text="@string/new_instr_button_label"
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_weight="1"/>
+
+      <Button
+          android:id="@+id/import_instr"
+          style="?android:attr/buttonBarButtonStyle"
+          android:text="@string/import_instr_button_label"
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_weight="1"/>
+      </TableRow>
+</LinearLayout>

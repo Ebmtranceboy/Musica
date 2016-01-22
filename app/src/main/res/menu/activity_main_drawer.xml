@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_live"
+            android:icon="@drawable/ic_menu_live"
+            android:title="@string/live_label" />
+        <item
+            android:id="@+id/nav_orchestra"
+            android:icon="@drawable/ic_menu_orc"
+            android:title="@string/orchestra_label" />
+        <item
+            android:id="@+id/nav_score"
+            android:icon="@drawable/ic_menu_score"
+            android:title="@string/score_label" />
+        <item
+            android:id="@+id/nav_fx"
+            android:icon="@drawable/ic_menu_fx"
+            android:title="@string/fx_label" />
+        <item
+            android:id="@+id/nav_patchbay"
+            android:icon="@drawable/ic_menu_patchbay"
+            android:title="@string/patchbay_label" />
+        <item
+            android:id="@+id/nav_master"
+            android:icon="@drawable/ic_menu_master"
+            android:title="@string/master_label" />
+        <item
+            android:id="@+id/nav_material"
+            android:icon="@drawable/ic_menu_material"
+            android:title="@string/material_label" />
+    </group>
+
+    <item android:title="@string/options_label">
+        <menu>
+            <item
+                android:id="@+id/nav_preferences"
+                android:icon="@drawable/ic_menu_pref"
+                android:title="@string/preferences_label" />
+        </menu>
+    </item>
+
+</menu>
