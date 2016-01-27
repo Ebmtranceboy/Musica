@@ -11,7 +11,7 @@ import android.widget.ImageView;
  *
  * Created by joel on 24/01/16 at 15:15 at 15:17.
  */
-public class SimpleImageArrayAdapter extends ArrayAdapter<Integer> {
+public final class SimpleImageArrayAdapter extends ArrayAdapter<Integer> {
     private Integer[] images;
 
     public SimpleImageArrayAdapter(Context context, Integer[] images) {

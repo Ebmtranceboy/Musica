@@ -18,7 +18,7 @@ import android.widget.Toast;
  *
  * Created by joel on 22/01/16 at 23:18 at 08:57.
  */
-public class ScoreView extends View {
+public final class ScoreView extends View {
         // alternation between 16-bars (0), 8-bars(2), 4-bars(4), 2-bars(6) and 1-bars(8)
     private static final int[] order = {0, 8, 6, 8, 4, 8, 6, 8, 2, 8, 6, 8, 4, 8, 6, 8, 0};
     private static final Paint paint = new Paint();

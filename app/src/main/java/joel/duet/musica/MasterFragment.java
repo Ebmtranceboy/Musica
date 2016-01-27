@@ -21,15 +21,18 @@ import java.util.List;
 
 /**
  *
- * Created by joel on 22/01/16 at 21:39 at 21:40 at 09:53 at 10:29 at 10:31 at 12:27 at 15:25.
+ * Created by joel on 22/01/16 at 21:39 at 21:40 at 09:53 at 10:29 at 10:31 at 12:27 at 15:25 at 10:05.
  */
-public class MasterFragment extends Fragment {
+
+public final class MasterFragment extends Fragment {
     private final LinkedList<Integer> bars = new LinkedList<>();
     private static ImageButton three;
     private static final String TAG = "Master";
 
-    private ScoreView scoreview;
-    private ArrayAdapter<Integer> bars_adapter;
+    private static ScoreView scoreview;
+    private static ArrayAdapter<Integer> bars_adapter;
+    public static MainActivity activity;
+    private static CsoundObj csoundObj;
 
     private void ensureThreeStateButtonCoherence() {
 
@@ -49,8 +52,6 @@ public class MasterFragment extends Fragment {
         } else three.setVisibility(View.INVISIBLE);
     }
 
-    static public MainActivity activity;
-    static public CsoundObj csoundObj;
 
     @Override
     public void onAttach(Context context) {
@@ -177,7 +178,7 @@ public class MasterFragment extends Fragment {
             }
         });
 
-        for (int i = 1;i <= ScoreView.number_patches * 16; i++) bars.add(i);
+        for (int i = 1; i <= ScoreView.number_patches * 16; i++) bars.add(i);
         bars_adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_list_item_1,
                 bars);

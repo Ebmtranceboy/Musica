@@ -20,7 +20,7 @@ import java.util.LinkedList;
  *
  * Created by joel on 22/01/16 at 23:25 at 14:27.
  */
-public class PatternFragment extends Fragment {
+public final class PatternFragment extends Fragment {
     private PatternView patternview;
     private final LinkedList<String> instrumentIds = new LinkedList<>();
     public int instr_selected = 0 ;

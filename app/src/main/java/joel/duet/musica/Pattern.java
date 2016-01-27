@@ -8,7 +8,7 @@ import java.util.List;
  *
  * Created by joel on 22/01/16 at 22:18 at 22:19.
  */
-public class Pattern {
+public final class Pattern {
     private final LinkedList<Note> mNotes = new LinkedList<>();
     public int start;
     public int finish;
@@ -18,9 +18,7 @@ public class Pattern {
 
     public Pattern(){}
 
-    public Pattern(int s, int f, List<Note> list, String str){
-        start = s;
-        finish = f;
+    public Pattern(List<Note> list, String str){
         mNotes.addAll(list);
         instr = str;
     }

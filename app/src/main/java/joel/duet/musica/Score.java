@@ -14,7 +14,7 @@ import java.util.List;
  *
  * Created by joel on 22/01/16 at 22:16 at 22:22.
  */
-public class Score {
+public final class Score {
     //private static final String TAG = "Score";
     private static final LinkedList<Track> mTracks = new LinkedList<>();
     private static int mIdTrackSelected = 0;
@@ -231,10 +231,10 @@ public static JSONObject saveJSONTracks() throws JSONException {
                             note.pitch));
                 }
             }
-            score.add(new Pattern(pattern.start,pattern.finish,list,pattern.getInstr()));
+            score.add(new Pattern(list,pattern.getInstr()));
         }
         //Log.i(TAG, CSD.song(score));
-        return CSD.song(score);
+        return CSD.song(score,Math.min(finish - start, tick_finish - tick_start));
        /* csoundObj.stop();
         csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.song(score)));*/
 

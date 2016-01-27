@@ -7,7 +7,7 @@ import java.util.List;
  *
  * Created by joel on 22/01/16 at 22:17 at 22:21.
  */
-public class Track {
+public final class Track {
     private static int mIdPatternSelected = 0;
 
     private final LinkedList<Pattern> mPatterns = new LinkedList<>();

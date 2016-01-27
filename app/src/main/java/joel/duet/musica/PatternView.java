@@ -14,7 +14,7 @@ import android.graphics.Matrix;
  *
  * Created by joel on 22/01/16 at 23:26 at 23:28.
  */
-public class PatternView extends View {
+public final class PatternView extends View {
     private static final Paint paint = new Paint();
     private static final float scale_height = 10.0f;
     private static final float line_height = scale_height / (float) Default.max_midi_note;

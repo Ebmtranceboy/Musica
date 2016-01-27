@@ -162,10 +162,9 @@ public final class CSD {
             + "\ngkmetro metro " + Default.ticks_per_second
             + "\nendin";
 
-    static String Looper(Pattern pat, int frac) {
+    static String Looper(Pattern pat, int frac,int duration) {
         String instr = pat.getInstr();
         int n = pat.getNbOfNotes();
-        int len = pat.finish - pat.start;
         return "\n\ninstr Looper_" + frac
             + "\nipch[] fillarray " + TextUtils.join(", ", pat.getPitches())
             + "\nistp[] fillarray " + TextUtils.join(", ", pat.getWaits())
@@ -181,7 +180,7 @@ public final class CSD {
             + "\n      kstepnum += 1"
             + "\n      if(kstepnum>=" + n + ") then"
             + "\n         kstepnum = 0"
-            + "\n         kwait = " + len + " - ilen + istp[0]"
+            + "\n         kwait = " + duration + " - ilen + istp[0]"
             + "\n      else"
             + "\n         kwait = istp[kstepnum]"
             + "\n      endif"
@@ -193,11 +192,11 @@ public final class CSD {
 
     // TODO ; test frac increment
 
-    static String InstrLoops(List<Pattern> score){
+    static String InstrLoops(List<Pattern> score, int duration){
         String loops = "";
         int frac = 1;
         for(Pattern pattern:score){
-            loops += Looper(pattern,frac);
+            loops += Looper(pattern,frac,duration);
             frac ++;
         }
         return loops;
@@ -216,7 +215,7 @@ public final class CSD {
     static String ScoreMetro = "\ni\"Metro\" 0 -1";
 
     static String initScore =
-            "\n</CsInstruments>"
+            "\n\n</CsInstruments>"
                     + "\n<CsScore>"
                     + "\nf0 z"
                     + "\ni\"Master\" 0 -1";
@@ -245,7 +244,7 @@ public final class CSD {
         return header + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
     }
 
-    static String song(List<Pattern> score) { //  duration < 0 : loop mode
+    static String song(List<Pattern> score, int dur) {
         String udos = "";
         String inits = "";
         for(String udo : mapFX.keySet()){
@@ -262,7 +261,7 @@ public final class CSD {
             instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr) + "\nendin";
         }
         return header + inits + udos + instruments + Master() + Voicer
-                + Metro + InstrLoops(score) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
+                + Metro + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
     }
 
     static String recordPart(String instrName) {
