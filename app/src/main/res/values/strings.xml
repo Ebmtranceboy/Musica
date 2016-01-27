@@ -35,11 +35,22 @@
     <string name="endin">endin</string>
     <string name="instr_title">instr %1$s</string>
     <string name="effect_title">opcode %1$s, aa, aa</string>
+    <string name="pattern_title">track %1$s pattern %2$s</string>
     <string name="endop">endop</string>
     <string name="new_effect_button_label">New effect</string>
     <string name="import_effect_button_label">Import effect</string>
     <string name="delete_effect_button_label">delete</string>
     <string name="add_to_fx_lib_button_label">Add to Lib</string>
+    <string name="tool_label">Edition Tool</string>
+    <string name="new_track_label">New Track</string>
+    <string name="extend_score_label">Extend Score</string>
+    <string name="trim_score_label">Trim Score</string>
+    <string name="play_button_label">Play</string>
+    <string name="stop_button_label">Stop</string>
+    <string name="preview_button_label">Preview</string>
+    <string name="loop_button_label">Loop</string>
+    <string name="score_loop_button_label">ScoreLoop</string>
+    <string name="welcome_screen_description">Welcome Screen</string>
     <string-array name="oct_array">
         <item>1</item>
         <item>2</item>

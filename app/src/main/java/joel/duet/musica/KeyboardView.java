@@ -29,11 +29,11 @@ public final class KeyboardView extends View {
     private static final List<Integer> listBlackKeys = Arrays.asList(blackKeys);
     private int piano[];
     //private static final int BLACK_TRANSPARENT = (0);
-    //private static final int GRAY_OPAQUE = (-8421505);
-    //private static final int DARKGRAY_OPAQUE = (-12632257);
-    private static final int BLACK_OPAQUE = (-16777216);
-    private static final int WHITE_OPAQUE = (-1);
-    private static final int LIGHTGRAY_OPAQUE = (-4210753);
+    //private static final int GRAY_OPAQUE = Default.gray[128];
+    //private static final int DARKGRAY_OPAQUE = Default.grays[64];
+    private static final int BLACK_OPAQUE = Default.grays[0];
+    private static final int WHITE_OPAQUE = Default.grays[255];
+    private static final int LIGHTGRAY_OPAQUE = Default.grays[192];
     private static final double nbkeys = 24.0;
     private static final double nbwhite = nbkeys / 12.0 * 7.0;
     private  int whitewidth;

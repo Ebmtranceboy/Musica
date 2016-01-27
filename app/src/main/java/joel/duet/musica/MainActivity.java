@@ -20,6 +20,9 @@ import android.view.ViewTreeObserver;
 
 import com.csounds.CsoundObj;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 //import com.csounds.bindings.ui.CsoundButtonBinding;
 //import com.csounds.bindings.ui.CsoundSliderBinding;
 
@@ -39,7 +42,7 @@ public final class MainActivity extends AppCompatActivity
     //Button startCsound, stopCsound;
 
     public enum State {
-        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT //, SCORE, MASTER, PREFERENCES, MATERIAL
+        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, MASTER, PATTERN //, SCORE, PREFERENCES, MATERIAL
     }
 
     static State currentFragment;
@@ -62,7 +65,16 @@ public final class MainActivity extends AppCompatActivity
         }
 
         Matrix.reset();
-        Matrix.unserialize(pref.getString("Matrix",""));
+        Matrix.unserialize(pref.getString("Matrix", ""));
+
+
+        Score.resetTracks();
+        try {
+            Score.loadJSONTracks(new JSONObject(pref.getString("Tracks","")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            e.getCause();
+        }
 
         setContentView(R.layout.activity_main);
         csoundObj.setMessageLoggingEnabled(true);
@@ -120,6 +132,12 @@ public final class MainActivity extends AppCompatActivity
                                     "FX").commit();
                 toolbar.setTitle("FX");
                 currentFragment = State.FX;
+            } else if(currentFragment==State.PATTERN){
+                fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                                    new MasterFragment(),
+                                    "MASTER").commit();
+                toolbar.setTitle("Master Score");
+                currentFragment = State.MASTER;
             }
               else {
                 if(currentFragment != State.WELCOME){
@@ -137,12 +155,19 @@ public final class MainActivity extends AppCompatActivity
             //Log.i(TAG,"out :" + str);
             editor.putString(str, CSD.mapInstr.get(str));
         }
-        editor.putStringSet("FX",CSD.mapFX.keySet());
+        editor.putStringSet("FX", CSD.mapFX.keySet());
         for(String str:CSD.mapFX.keySet()) {
             //Log.i(TAG,"out :" + str);
             editor.putString(str, CSD.mapFX.get(str));
         }
         editor.putString("Matrix",Matrix.serialize());
+
+        try {
+            editor.putString("Tracks",Score.saveJSONTracks().toString(4));
+            //Log.i(TAG,Score.saveJSONTracks().toString(4));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         editor.apply();
     }
 
@@ -212,6 +237,11 @@ public final class MainActivity extends AppCompatActivity
             currentFragment = State.PATCHBAY;
 
         } else if (id == R.id.nav_master) {
+            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                    new MasterFragment(),
+                    "MASTER").commit();
+            toolbar.setTitle("Master Score");
+            currentFragment = State.MASTER;
 
         } else if (id == R.id.nav_material) {
 
@@ -283,6 +313,20 @@ public final class MainActivity extends AppCompatActivity
                                     fr,
                                     "EFFECT").commit();
                             toolbar.setTitle(effectName);
+                            break;
+
+                        case MASTER:
+                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                                    new MasterFragment(),
+                                    "MASTER").commit();
+                            toolbar.setTitle("Master Score");
+                            break;
+                        case PATTERN:
+                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                                    new PatternFragment(),
+                                    "PATTERN").commit();
+                            String format = getResources().getString(R.string.pattern_title);
+                            toolbar.setTitle(String.format(format,Score.getIdTrackSelected(),Track.getIdPatternSelected()));
                             break;
 
                         default:

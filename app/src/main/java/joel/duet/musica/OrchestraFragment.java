@@ -75,9 +75,6 @@ public final class OrchestraFragment extends FragmentPlus {
             }
         });
 
-
-
-
         return view;
     }
 

@@ -3,7 +3,10 @@ package joel.duet.musica;
 
 //import android.util.Log;
 
+import android.text.TextUtils;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -137,62 +140,147 @@ public final class CSD {
                     }
                 }
             }
-        return "\ninstr Master" + master + inits + "\nendin";
+        return "\n\ninstr Master" + master + resets + "\nendin";
     }
 
-    static String Voicer = "\ninstr Voicer"
+    static String Voicer = "\n\ninstr Voicer"
             + "\nSinstr = p4"
             + "\ninb nstrnum Sinstr"
             + "\nifrac = p5"
             + "\nevent_i \"i\", inb + ifrac/20, 0, -1, p6, p7"
             + "\nendin";
 
-    static String Silencer = "\ninstr Silencer"
+    static String Silencer = "\n\ninstr Silencer"
             + "\nSinstr = p4"
             + "\ninb nstrnum Sinstr"
             + "\nifrac = p5"
             + "\nevent_i \"i\", -(inb + ifrac/20), 0, 0"
             + "\nendin";
 
-    static String score =
+    static String Metro = "\ngkmetro init 0"
+            + "\n\ninstr Metro"
+            + "\ngkmetro metro " + Default.ticks_per_second
+            + "\nendin";
+
+    static String Looper(Pattern pat, int frac) {
+        String instr = pat.getInstr();
+        int n = pat.getNbOfNotes();
+        int len = pat.finish - pat.start;
+        return "\n\ninstr Looper_" + frac
+            + "\nipch[] fillarray " + TextUtils.join(", ", pat.getPitches())
+            + "\nistp[] fillarray " + TextUtils.join(", ", pat.getWaits())
+            + "\nilen sumarray istp"
+            + "\nidur[] fillarray " + TextUtils.join(", ", pat.getDurationsInSeconds())
+            + "\nkstepnum init 0"
+            + "\nkwait init istp[0]"
+            + "\nif(gkmetro==1) then"
+            + "\n   if(kwait==0) then"
+            + "\n      kpch = ipch[kstepnum]"
+            + "\n      kdur = idur[kstepnum]"
+            + "\n      event \"i\", \"" + instr + "\" ,0,kdur,kpch,-12"
+            + "\n      kstepnum += 1"
+            + "\n      if(kstepnum>=" + n + ") then"
+            + "\n         kstepnum = 0"
+            + "\n         kwait = " + len + " - ilen + istp[0]"
+            + "\n      else"
+            + "\n         kwait = istp[kstepnum]"
+            + "\n      endif"
+            + "\n   else"
+            + "\n      kwait -= 1"
+            + "\n   endif"
+            + "\nendif"
+            + "\nendin";}
+
+    // TODO ; test frac increment
+
+    static String InstrLoops(List<Pattern> score){
+        String loops = "";
+        int frac = 1;
+        for(Pattern pattern:score){
+            loops += Looper(pattern,frac);
+            frac ++;
+        }
+        return loops;
+    }
+
+    static String ScoreLoops(List<Pattern>score){
+        String loops = "";
+        int frac = 1;
+        for(Pattern ignored :score){
+            loops += "\ni\"Looper_" + frac + "\" 0 -1";
+            frac ++;
+        }
+        return loops;
+    }
+
+    static String ScoreMetro = "\ni\"Metro\" 0 -1";
+
+    static String initScore =
             "\n</CsInstruments>"
                     + "\n<CsScore>"
                     + "\nf0 z"
-                    + "\ni\"Master\" 0 -1"
-                    + "\n</CsScore>"
+                    + "\ni\"Master\" 0 -1";
+
+    static String endScore = "\n</CsScore>"
                     + "\n</CsoundSynthesizer>";
 
-    static String inits;
+    static String resets;
     static String csd() {
+        String inits = "";
         String udos = "";
         for(String udo : mapFX.keySet()){
-            udos += "\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo) + "\nendop";
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo) + "\nendop";
         }
 
-        inits = "";
+        resets = "";
         String instruments = "";
         for (String instr : mapInstr.keySet()) {
-            inits += "\nga_" + instr + "_L = 0";
-            inits += "\nga_" + instr + "_R = 0";
-            instruments += "\ninstr " + instr + "\n" + mapInstr.get(instr) + "\nendin";
+            inits += "\nga_" + instr + "_L init 0";
+            inits += "\nga_" + instr + "_R init 0";
+            resets += "\nga_" + instr + "_L = 0";
+            resets += "\nga_" + instr + "_R = 0";
+            instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr) + "\nendin";
         }
         //Log.i(TAG, "in :" + instruments);
-        return header + inits + udos + instruments + Master() + Voicer + Silencer + score;
+        return header + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
+    }
+
+    static String song(List<Pattern> score) { //  duration < 0 : loop mode
+        String udos = "";
+        String inits = "";
+        for(String udo : mapFX.keySet()){
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo) + "\nendop";
+        }
+
+        resets = "";
+        String instruments = "";
+        for (String instr : mapInstr.keySet()) {
+            inits += "\nga_" + instr + "_L init 0";
+            inits += "\nga_" + instr + "_R init 0";
+            resets += "\nga_" + instr + "_L = 0";
+            resets += "\nga_" + instr + "_R = 0";
+            instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr) + "\nendin";
+        }
+        return header + inits + udos + instruments + Master() + Voicer
+                + Metro + InstrLoops(score) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
     }
 
     static String recordPart(String instrName) {
         String udos="";
+        String inits = "";
         for(String udo : mapFX.keySet()){
-            udos += "\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo) + "\nendop";
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo) + "\nendop";
         }
 
-        String inits = "";
+        resets = "";
         String instruments = "";
         for (String instr : mapInstr.keySet()) {
-            inits += "\nga_" + instr + "_L = 0";
-            inits += "\nga_" + instr + "_R = 0";
-            instruments += "\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, -12" : "") + "\n" + mapInstr.get(instr) + "\nendin";
+            inits += "\nga_" + instr + "_L init 0";
+            inits += "\nga_" + instr + "_R init 0";
+            resets += "\nga_" + instr + "_L = 0";
+            resets += "\nga_" + instr + "_R = 0";
+           instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, -12" : "") + "\n" + mapInstr.get(instr) + "\nendin";
         }
-        return header + "\ngihand fiopen \"storage/sdcard0/unisonMelody.txt\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + score;
+        return header + "\ngihand fiopen \"storage/sdcard0/unisonMelody.txt\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
     }
 }
