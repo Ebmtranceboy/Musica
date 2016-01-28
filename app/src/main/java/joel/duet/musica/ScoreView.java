@@ -219,7 +219,6 @@ public final class ScoreView extends View {
                         , (t - 1) * track_height * height
                         , pattern.finish * width / 16 / 32
                         , t * track_height * height, paint);
-
             }
         }
 

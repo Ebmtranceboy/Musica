@@ -65,6 +65,7 @@ public final class LiveFragment extends Fragment {
 
         Button playButton = (Button) view.findViewById(R.id.live_play);
         Button recordButton = (Button) view.findViewById(R.id.live_record);
+        Button patternizeButton = (Button) view.findViewById(R.id.patternize);
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +83,14 @@ public final class LiveFragment extends Fragment {
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.recordPart((String) select_instr.getSelectedItem())));
             }
         });
+
+        patternizeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.csoundUtil.patternize((String)select_instr.getSelectedItem());
+            }
+        });
+
         // define keyboard
 
         keyboard = (KeyboardView) view.findViewById(R.id.Keyboard);

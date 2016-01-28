@@ -39,6 +39,8 @@ import android.content.Context;
 import android.os.Environment;
 import android.widget.SeekBar;
 
+import java.util.regex.*;
+
 public final class CsoundUtil {
     /* Log.d("CsoundObj", "FRAMES:" + ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).
                 getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER));*/
@@ -111,5 +113,43 @@ public final class CsoundUtil {
         }
         return "";
     }
+
+    public void patternize(String instr_name){
+        final int idTrackSelected = Score.getIdTrackSelected();
+        final int idPatternSelected = Track.getIdPatternSelected();
+        Score.createTrack();
+        Score.setTrackSelected(Score.getNbOfTracks());
+        Track track = Score.getTrackSelected();
+        track.createPattern();
+        Track.setPatternSelected(1);
+        Pattern pattern = Track.getPatternSelected();
+        pattern.setInstr(instr_name);
+        pattern.start = 0;
+
+        String lines[] = getExternalFileAsString("unisonMelody.txt").split("\\n");
+        final java.util.regex.Pattern istatement =
+                java.util.regex.Pattern.compile("\\s*i\\s*\\d+\\s+(\\d+.?\\d*)\\s+(\\d+.?\\d*)\\s+(\\d+.?\\d*)\\s+(-?\\d+.?\\d*)");
+
+        pattern.finish = 0;
+        for(String line:lines){
+            Matcher matcher = istatement.matcher(line);
+            while(matcher.find()){
+                int onset = (int) Math.round(Double.parseDouble(matcher.group(1))*Default.ticks_per_second);
+                int duration = (int) Math.round(Double.parseDouble(matcher.group(2))*Default.ticks_per_second);
+
+                if(onset+duration > pattern.finish) pattern.finish = onset + duration;
+
+                int pitch = (int) Math.round(Double.parseDouble(matcher.group(3))*100);
+                int key = pitch % 100;
+                int oct = (pitch - key) / 100 - 3;
+		        pattern.createNote(onset, duration, oct*12+key);
+            }
+        }
+        pattern.finish += 128; // a full note
+
+        Score.setTrackSelected(idTrackSelected);
+        Track.setPatternSelected(idPatternSelected);
+    }
+
 
 }

@@ -56,6 +56,14 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/live_record"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/record_label" />
+
+        <Button
             android:id="@+id/live_play"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
@@ -64,12 +72,14 @@
             android:text="@string/play_label" />
 
         <Button
-            android:id="@+id/live_record"
+            android:id="@+id/patternize"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/record_label" />
+            android:text="@string/patternize_label" />
+
+
     </TableRow>
 
     <joel.duet.musica.KeyboardView

@@ -29,6 +29,7 @@ public final class Score {
 
     public static void createTrack(){
         mTracks.addLast(new Track());}
+
     public static int getNbOfTracks(){return mTracks.size();}
 
     public static void deleteTracks(List<Track> list){
