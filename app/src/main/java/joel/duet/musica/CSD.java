@@ -34,14 +34,6 @@ public final class CSD {
 
     static Map<String, String> mapFX = new HashMap<>();
 
-    static {
-        mapFX.put("Delay",
-                "ainL, ainR xin\n" +
-                "adelL delay ainL, 0.2\n" +
-                "adelR delay ainR, 0.2\n" +
-                "xout adelL,adelR\n");
-    }
-
     static int getNbEffects() {
         return mapFX.keySet().size();
     }
@@ -52,28 +44,6 @@ public final class CSD {
     static int getNbInstruments() {
         return mapInstr.keySet().size();
     }
-
-    static String instrExample =
-            "irelease = p3"
-                    + "\nipch = cps2pch(p4,12)"
-                    + "\niamp = ampdbfs(p5)"
-                    + "\naenv linsegr 0, 0.01, 1, 0.01, .9, irelease, 0"
-                    + "\naout vco2 iamp, ipch"
-                    + "\naout =  aout * aenv"
-                    + "\nahp,alp,abp,abr statevar aout, 3000, 4"
-                    + "\namin = 0.0"
-                    + "\nafiltmix = linsegr:a(0, p3 * .5, 0.75, p3 * .5, 0.0, irelease, 0.0)"
-                    + "\nalpmix = min(amin, afiltmix - 0.5)"
-                    + "\nabpmix = 0.5 - abs(afiltmix - 0.5)"
-                    + "\nahpmix = min(amin, 0.5 - afiltmix)"
-                    + "\nkVolume = 1"
-                    + "\naout = kVolume * sum(alpmix * alp, abpmix * abp, ahpmix * ahp)"
-                    + "\nga_Example_L += aout"
-                    + "\nga_Example_R += aout";
-
-    static {
-        mapInstr.put("Example", instrExample);
-        }
 
     private static class Snippet {
         String name;
@@ -189,8 +159,6 @@ public final class CSD {
             + "\n   endif"
             + "\nendif"
             + "\nendin";}
-
-    // TODO ; test frac increment
 
     static String InstrLoops(List<Pattern> score, int duration){
         String loops = "";

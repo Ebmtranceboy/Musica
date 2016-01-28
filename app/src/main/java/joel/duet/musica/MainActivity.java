@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 //import android.util.Log;
 import android.view.View;
@@ -29,7 +28,7 @@ import org.json.JSONObject;
 public final class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    static final CsoundObj csoundObj = new CsoundObj(false, true);
+    static CsoundObj csoundObj = new CsoundObj(false, true);
     final CsoundUtil csoundUtil = new CsoundUtil(this);
     static SharedPreferences pref;
     static SharedPreferences.Editor editor;
@@ -64,12 +63,13 @@ public final class MainActivity extends AppCompatActivity
             CSD.mapFX.put(instr, pref.getString(instr, ""));
         }
 
-        Matrix.reset();
-        Matrix.unserialize(pref.getString("Matrix", ""));
+        Matrix.update();
+        Matrix.unserialize(pref.getString("Matrix", "FF"));
 
 
         Score.resetTracks();
         try {
+            //Log.i(TAG,"in:"+pref.getString("Tracks",""));
             Score.loadJSONTracks(new JSONObject(pref.getString("Tracks","")));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -85,8 +85,14 @@ public final class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                csoundObj.stop();
+                csoundObj = new CsoundObj(false,true);
+                csoundObj.setMessageLoggingEnabled(true);
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
+                                    new WelcomeFragment(),
+                                    "WELCOME").commit();
+                toolbar.setTitle("Musica");
+                currentFragment = State.WELCOME;
             }
         });
 
@@ -164,7 +170,7 @@ public final class MainActivity extends AppCompatActivity
 
         try {
             editor.putString("Tracks",Score.saveJSONTracks().toString(4));
-            //Log.i(TAG,Score.saveJSONTracks().toString(4));
+            //Log.i(TAG,"out:"+Score.saveJSONTracks().toString(4));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -322,11 +328,18 @@ public final class MainActivity extends AppCompatActivity
                             toolbar.setTitle("Master Score");
                             break;
                         case PATTERN:
+                            bundle = new Bundle();
+                            bundle.putInt("resolution", Track.getPatternSelected().resolution);
+                            bundle.putString("instr_name", Track.getPatternSelected().getInstr());
+                            PatternFragment patternFragment = new PatternFragment();
+                            patternFragment.setArguments(bundle);
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new PatternFragment(),
+                                    patternFragment,
                                     "PATTERN").commit();
                             String format = getResources().getString(R.string.pattern_title);
-                            toolbar.setTitle(String.format(format,Score.getIdTrackSelected(),Track.getIdPatternSelected()));
+                            toolbar.setTitle(String.format(format, Score.getIdTrackSelected(), Track.getIdPatternSelected()));
+
+                            currentFragment = MainActivity.State.PATTERN;
                             break;
 
                         default:

@@ -44,15 +44,6 @@
             android:contentDescription="@string/preview_button_label" />
 
         <ImageButton
-            android:id="@+id/loop"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_repeat_one"
-            android:contentDescription="@string/loop_button_label" />
-
-        <ImageButton
             android:id="@+id/score_loop"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="match_parent"

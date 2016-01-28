@@ -252,15 +252,6 @@ public final class PatternView extends View {
                         invalidate();
                     } else {
                         pattern.deleteNote(note);
-                        /*if (Score.is_score_loop)
-                            Score.sendPatterns(Score.allPatterns(),
-                                    pattern.start,
-                                    pattern.finish);
-
-                        else
-                            Score.sendPatterns(pattern.singleton(),
-                                    pattern.start,
-                                    pattern.finish);*/
                         invalidate();
                     }
                 }
@@ -319,18 +310,8 @@ public final class PatternView extends View {
                                 || (note.onset >= finish && note.onset + note.duration >= finish);
                         n++;
                     }
-// TODO Plan a linked notes creation
                     if (non_overlap) {
                         pattern.createNote(start, finish - start, Default.max_midi_note - insertion_line);
-                       /* if (Score.is_score_loop)
-                            Score.sendPatterns(Score.allPatterns(),
-                                    pattern.start,
-                                    pattern.finish);
-
-                        else
-                            Score.sendPatterns(pattern.singleton(),
-                                    pattern.start,
-                                    pattern.finish);*/
                     }
                     bar_begin = -1;
                     invalidate();

@@ -1,73 +1,38 @@
 package joel.duet.musica;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
-import android.util.Log;
+//import android.util.Log;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
  *
- * Created by joel on 10/01/16 at 16:13 at 16:16 at 00:29 at 22:36.
+ * Created by joel on 10/01/16 at 16:13 at 16:16 at 00:29 at 22:36 at 10:46.
  */
 
 public final class KeyboardView extends View {
-    private Bitmap keyboard_bitmap;
     private int keyboard_width;
-    private  int keyboard_height;
+    private int keyboard_height;
 
-    private static final String TAG = "KeyboardView";
+    //private static final String TAG = "KeyboardView";
 
-    private static final Paint mPainter = new Paint();
+    private static final Paint mPainterStroke = new Paint();
+    private static final Paint mPainterFill = new Paint();
     private static final Integer whiteKeys[] = {0, 2, 4, 5, 7, 9, 11};
     private static final Integer blackKeys[] = {1, 3, 6, 8, 10};
     private static final List<Integer> listBlackKeys = Arrays.asList(blackKeys);
-    private int piano[];
-    //private static final int BLACK_TRANSPARENT = (0);
-    //private static final int GRAY_OPAQUE = Default.gray[128];
-    //private static final int DARKGRAY_OPAQUE = Default.grays[64];
-    private static final int BLACK_OPAQUE = Default.grays[0];
-    private static final int WHITE_OPAQUE = Default.grays[255];
-    private static final int LIGHTGRAY_OPAQUE = Default.grays[192];
-    private static final double nbkeys = 24.0;
+    private static final int nbkeys = 24;
     private static final double nbwhite = nbkeys / 12.0 * 7.0;
-    private  int whitewidth;
+    private int whitewidth;
     private int blackwidth2;
-    private  int blackheight;
-
-    private void drawWhiteStroke(int[] graph){
-        int b;
-        for (b = 0; b < nbwhite; b++)
-            for (int i = 0; i < keyboard_height; i++)
-                if(graph[i * keyboard_width + b * whitewidth]!=LIGHTGRAY_OPAQUE)
-                    graph[i * keyboard_width + b * whitewidth] = BLACK_OPAQUE;
-    }
-
-    private void fillKeyboardDrawing(int[] graph) {
-        //for (int i = 0; i < keyboard_width * keyboard_height; i++) graph[i] = WHITE;
-        for (int j = 0; j < keyboard_width; j++)
-            graph[(keyboard_height - 1) * keyboard_width + j] = BLACK_OPAQUE;
-
-        drawWhiteStroke(graph);
-
-        int b = 0;
-        int w = 0;
-        while (b < nbkeys) {
-            if (!listBlackKeys.contains(b % 12)) {
-                w++;
-                if (listBlackKeys.contains((b + 1) % 12))
-                    for (int i = 0; i < blackheight; i++)
-                        for (int j = w * whitewidth - blackwidth2; j < w * whitewidth + blackwidth2; j++)
-                            graph[i * keyboard_width + j] = BLACK_OPAQUE;
-            }
-            b++;
-        }
-    }
+    private int blackheight;
+    private static boolean pressed[] = new boolean[nbkeys];
 
     public KeyboardView(Context context) {
         super(context);
@@ -88,26 +53,25 @@ public final class KeyboardView extends View {
         post(new Runnable() {
             @Override
             public void run() {
+                mPainterStroke.setStrokeWidth(1);
+                mPainterStroke.setStyle(Paint.Style.STROKE);
+
+                mPainterFill.setStyle(Paint.Style.FILL);
+
                 keyboard_width = getWidth();
                 keyboard_height = getHeight();
 
-                whitewidth = (int) (keyboard_width / nbwhite);
+                whitewidth = (int) ((keyboard_width-1) / nbwhite);
                 blackwidth2 = (int) (whitewidth * 0.6 * 0.5);
                 blackheight = (int) (0.6 * keyboard_height);
 
-                Log.i(TAG, "" + keyboard_width);
-                Log.i(TAG, "" + keyboard_height);
-                piano = new int[keyboard_width * keyboard_height];
-                keyboard_bitmap =
-                        Bitmap.createBitmap(keyboard_width, keyboard_height, Bitmap.Config.ARGB_8888);
-                fillKeyboardDrawing(piano);
                 draw(-1, -1, false);
                 show();
             }
         });
     }
 
-    private  int key(float x, float y) {
+    private int key(float x, float y) {
         int pos = (int) (x % whitewidth);
         boolean top = false;
         if (pos > whitewidth / 2) {
@@ -124,31 +88,13 @@ public final class KeyboardView extends View {
         return k + 12 * (nth / 7 - (nth % 7 == 0 && top ? 1 : 0)); // KEEP PARENS!!
     }
 
-    public  int draw(float x, float y, boolean pressed) {
+    public int draw(float x, float y, boolean isPressed) {
         int k = -1;
-        if(keyboard_bitmap != null)
-            if (x < 0 || y < 0) keyboard_bitmap.setPixels(piano, 0,
-                keyboard_width, 0, 0, keyboard_width, keyboard_height);
-            else {
-                k = key(x, y);
-                int[] mask = new int[piano.length];
-                keyboard_bitmap.getPixels(mask, 0,
-                        keyboard_width, 0, 0, keyboard_width, keyboard_height);
-                int jmin = Math.max(0, (int) (x - whitewidth));
-                int jmax = Math.min(keyboard_width, (int) (x + whitewidth));
-                for (int j = jmin ; j < jmax; j++)
-                    for (int i = 0; i < keyboard_height-1; i++)
-                        if (key(j, i) == k)
-                            if(pressed)
-                                mask[i * keyboard_width + j] = LIGHTGRAY_OPAQUE;
-                            else if(Arrays.asList(whiteKeys).contains(k%12))
-                                mask[i * keyboard_width + j] = WHITE_OPAQUE;
-                                    else mask[i * keyboard_width + j] = BLACK_OPAQUE;
+        if (x >= 0 && y >= 0) {
+            k = key(x, y);
+            if(k>=0 && k < nbkeys) pressed[k] = isPressed;
+        }
 
-                drawWhiteStroke(mask);
-                keyboard_bitmap.setPixels(mask, 0,
-                        keyboard_width, 0, 0, keyboard_width, keyboard_height);
-            }
         return k;
     }
 
@@ -159,7 +105,46 @@ public final class KeyboardView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
-        if(keyboard_bitmap != null) canvas.drawBitmap(keyboard_bitmap, 0, 0, mPainter);
+        int b = 0;
+        int w = 0;
+        while (b < nbkeys) {
+            if (!listBlackKeys.contains(b % 12)) {
+                if (pressed[b]) {
+                    mPainterFill.setColor(Color.LTGRAY);
+                    canvas.drawRect(w * whitewidth, 0, (w + 1) * whitewidth, keyboard_height - 1, mPainterFill);
+                    mPainterStroke.setColor(Color.LTGRAY);
+                    canvas.drawRect(w * whitewidth, 0, (w + 1) * whitewidth, keyboard_height - 1, mPainterStroke);
+                } else {
+                    mPainterFill.setColor(Color.WHITE);
+                    canvas.drawRect(w * whitewidth, 0, (w + 1) * whitewidth, keyboard_height - 1, mPainterFill);
+                    mPainterStroke.setColor(Color.BLACK);
+                    canvas.drawRect(w * whitewidth, 0, (w + 1) * whitewidth, keyboard_height - 1, mPainterStroke);
+                }
+                w++;
+            }
+            b++;
+        }
+
+        b = 0;
+        w = 0;
+        while (b < nbkeys) {
+            if (!listBlackKeys.contains(b % 12)) {
+                w++;
+                if (listBlackKeys.contains((b + 1) % 12))
+                    if (pressed[b + 1]) {
+                        mPainterFill.setColor(Color.LTGRAY);
+                        canvas.drawRect(w * whitewidth - blackwidth2, 0, w * whitewidth + blackwidth2, blackheight, mPainterFill);
+                        mPainterStroke.setColor(Color.LTGRAY);
+                        canvas.drawRect(w * whitewidth - blackwidth2, 0, w * whitewidth + blackwidth2, blackheight, mPainterStroke);
+                    } else {
+                        mPainterFill.setColor(Color.BLACK);
+                        canvas.drawRect(w * whitewidth - blackwidth2, 0, w * whitewidth + blackwidth2, blackheight, mPainterFill);
+                        mPainterStroke.setColor(Color.BLACK);
+                        canvas.drawRect(w * whitewidth - blackwidth2, 0, w * whitewidth + blackwidth2, blackheight, mPainterStroke);
+                    }
+            }
+            b++;
+        }
         canvas.restore();
     }
 }

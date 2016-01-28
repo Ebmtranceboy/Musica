@@ -20,6 +20,8 @@ import com.csounds.CsoundObj;
  */
 public final class LiveFragment extends Fragment {
 
+    // TODO : implement ktrl sliders
+
     static private MainActivity activity;
     static private CsoundObj csoundObj;
     KeyboardView keyboard;

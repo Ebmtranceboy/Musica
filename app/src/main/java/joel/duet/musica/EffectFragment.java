@@ -50,8 +50,9 @@ public final class EffectFragment extends Fragment {
                 MainActivity.sensible_code = new Runnable() {
                     @Override
                     public void run() {
+                        Matrix.spy();
                         CSD.mapFX.remove(effectName);
-                        Matrix.reset();
+                        Matrix.update();
 
                         fragmentManager.beginTransaction().replace(R.id.mainFrame,
                             new FXFragment(),

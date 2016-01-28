@@ -18,8 +18,14 @@ public final class Score {
     //private static final String TAG = "Score";
     private static final LinkedList<Track> mTracks = new LinkedList<>();
     private static int mIdTrackSelected = 0;
+    public static int resolution;
+    public static int bar_start;
 
     public static boolean is_score_loop = false;
+
+    public static int getResolution() {
+        return Default.resolutions[Score.resolution];
+    }
 
     public static void createTrack(){
         mTracks.addLast(new Track());}
@@ -63,7 +69,8 @@ public final class Score {
     public static float getSeconds(){
         return getDuration()/(float)Default.ticks_per_second;
     }
-public static JSONObject saveJSONTracks() throws JSONException {
+
+    public static JSONObject saveJSONTracks() throws JSONException {
         final int idTrackSelected = getIdTrackSelected();
         final int idPatternSelected = Track.getIdPatternSelected();
 
@@ -117,7 +124,8 @@ public static JSONObject saveJSONTracks() throws JSONException {
         jsonObject.put("Score_posY",ScoreView.mPosY);
         jsonObject.put("Score_scaleFactorX",ScoreView.mScaleFactorX);
         jsonObject.put("Score_scaleFactorY",ScoreView.mScaleFactorY);
-        jsonObject.put("Score_resolution",ScoreView.resolution);
+        jsonObject.put("Score_resolution",Score.resolution);
+        jsonObject.put("Score_bar_start",Score.bar_start);
         jsonObject.put("idTrackSelected",idTrackSelected);
         jsonObject.put("idPatternSelected",idPatternSelected);
         jsonObject.put("tracks", tracks);
@@ -172,11 +180,13 @@ public static JSONObject saveJSONTracks() throws JSONException {
         ScoreView.mPosY = (float)feed.getDouble("Score_posY");
         ScoreView.mScaleFactorX = (float)feed.getDouble("Score_scaleFactorX");
         ScoreView.mScaleFactorY = (float)feed.getDouble("Score_scaleFactorY");
-        ScoreView.resolution = feed.getInt("Score_resolution");
+        Score.resolution = feed.getInt("Score_resolution");
+        Score.bar_start = feed.getInt("Score_bar_start");
 
         setTrackSelected(idTrackSelected);
         Track.setPatternSelected(idPatternSelected);
     }
+
     public static void resetTracks(){
         mTracks.clear();
         Score.setTrackSelected(0);
@@ -235,16 +245,5 @@ public static JSONObject saveJSONTracks() throws JSONException {
         }
         //Log.i(TAG, CSD.song(score));
         return CSD.song(score,Math.min(finish - start, tick_finish - tick_start));
-       /* csoundObj.stop();
-        csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.song(score)));*/
-
-
-        /*
-        if(score.size()>0)
-            Engine.send_pattern(
-                Math.min(finish - start, tick_finish - tick_start)
-                ,score.toArray(new Pattern.SoundingNote[score.size()]));
-        else Engine.stopped(true);
-        */
     }
 }

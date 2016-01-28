@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -33,13 +34,20 @@ public final class InputTextDialogFragment extends DialogFragment implements
 		View view = inflater.inflate(R.layout.input_text_dialog, container);
 		mEditText = (EditText) view.findViewById(R.id.edit_name_box);
 		getDialog().setTitle("Name it");
-
 		// Show soft keyboard automatically
 		mEditText.requestFocus();
 		mEditText.setOnEditorActionListener(this);
 
         state = getArguments().getString("state");
-
+		view.findViewById(R.id.done_button).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // When button is clicked, call up to owning activity.
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            	FragmentPlus caller = (FragmentPlus)fragmentManager.findFragmentByTag(state);
+			    caller.onFinishEditDialog(mEditText.getText().toString());
+			    getDialog().dismiss();
+            }
+        });
         return view;
 	}
 
@@ -48,8 +56,8 @@ public final class InputTextDialogFragment extends DialogFragment implements
 		if (EditorInfo.IME_ACTION_DONE == actionId) {
 			// Return input text to activity
 			FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            FragmentPlus orchestra = (FragmentPlus)fragmentManager.findFragmentByTag(state);
-			orchestra.onFinishEditDialog(mEditText.getText().toString());
+            FragmentPlus caller = (FragmentPlus)fragmentManager.findFragmentByTag(state);
+			caller.onFinishEditDialog(mEditText.getText().toString());
 			this.dismiss();
 			return true;
 		}

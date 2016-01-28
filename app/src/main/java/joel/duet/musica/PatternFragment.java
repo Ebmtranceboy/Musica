@@ -3,6 +3,7 @@ package joel.duet.musica;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ import java.util.LinkedList;
 public final class PatternFragment extends Fragment {
     private PatternView patternview;
     private final LinkedList<String> instrumentIds = new LinkedList<>();
-    public int instr_selected = 0 ;
+    //private static final String TAG = "PatternFragment";
 
     static public MainActivity activity;
     static public CsoundObj csoundObj;
@@ -48,7 +49,6 @@ public final class PatternFragment extends Fragment {
         });
 
         for(String instr:CSD.mapInstr.keySet()) instrumentIds.add(instr);
-        //for(int i=1;i<= CSD.getNbInstruments();i++) instrumentIds.add(i);
         final ArrayAdapter<String> instruments_adapter =
                 new ArrayAdapter<>(getContext(),
                         android.R.layout.simple_spinner_item,
@@ -60,17 +60,6 @@ public final class PatternFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         patternview.pattern.setInstr(CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()])[i]);
-                        instr_selected = i;
-                        /*Instrument.updateNative(i + 1);
-                        if (Score.is_score_loop)
-                            Score.sendPatterns(Score.allPatterns(),
-                                    patternview.pattern.start,
-                                    patternview.pattern.finish);
-                        else
-                            Score.sendPatterns(patternview.pattern.singleton(),
-                                    patternview.pattern.start,
-                                    patternview.pattern.finish);
-                                    */
                     }
 
                     @Override
@@ -81,22 +70,6 @@ public final class PatternFragment extends Fragment {
         view.findViewById(R.id.preview).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               /* Engine.looped(false);
-                Engine.stopped(false);*/
-                String csd = Score.sendPatterns(patternview.pattern.singleton(),
-                        patternview.pattern.start,
-                        patternview.pattern.finish);
-                Score.is_score_loop = false;
-                csoundObj.stop();
-                csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
-            }
-        });
-
-        view.findViewById(R.id.loop).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*Engine.looped(true);
-                Engine.stopped(false);*/
                 String csd = Score.sendPatterns(patternview.pattern.singleton(),
                         patternview.pattern.start,
                         patternview.pattern.finish);
@@ -109,8 +82,6 @@ public final class PatternFragment extends Fragment {
         view.findViewById(R.id.score_loop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Engine.looped(true);
-                Engine.stopped(false);*/
                 String csd = Score.sendPatterns(Score.allPatterns(),
                         patternview.pattern.start,
                         patternview.pattern.finish);
@@ -123,8 +94,6 @@ public final class PatternFragment extends Fragment {
         view.findViewById(R.id.stop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Engine.looped(false);
-                Engine.stopped(true);*/
                 csoundObj.stop();
             }
         });
@@ -139,12 +108,20 @@ public final class PatternFragment extends Fragment {
 
         PatternView.edit_mode = ((Switch)view.findViewById(R.id.mode)).isChecked();
 
-        ((Spinner)view.findViewById(R.id.instrument)).setSelection(instr_selected);
+        int instr_selected = 0;
+        String names[] = CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()]);
+        String name = getArguments().getString("instr_name");
+        while(instr_selected<CSD.getNbInstruments() && !names[instr_selected].equals(name))
+            instr_selected ++;
+        instrument_spinner.setSelection(instr_selected);
+        instruments_adapter.notifyDataSetChanged();
 
         final Spinner resolution_spinner = (Spinner) view.findViewById(R.id.resolution);
-        resolution_spinner.setSelection(ScoreView.resolution);
         SimpleImageArrayAdapter adapter = new SimpleImageArrayAdapter(getContext(),Default.resolution_icons);
         resolution_spinner.setAdapter(adapter);
+
+        resolution_spinner.setSelection(getArguments().getInt("resolution"));
+        adapter.notifyDataSetChanged();
 
         resolution_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -158,7 +135,6 @@ public final class PatternFragment extends Fragment {
 
             }
         });
-
 
         return view;
     }

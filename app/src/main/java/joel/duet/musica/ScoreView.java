@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.view.MotionEvent;
@@ -33,7 +34,6 @@ public final class ScoreView extends View {
     private static int bar_end;
     private static int insertion_track;
 
-    public static int resolution = 0;
     public static int number_patches = 1;
     public static int tracks_displayed = Default.min_tracks_displayed;
     public static float track_height =
@@ -62,9 +62,6 @@ public final class ScoreView extends View {
         context = ctx;
     }
 
-    public static int getResolution() {
-        return Default.resolutions[resolution];
-    }
 
     private static void drawBackground(Canvas canvas) {
         ScoreView.paint.setStyle(Paint.Style.FILL);
@@ -228,9 +225,9 @@ public final class ScoreView extends View {
 
         if (bar_begin >= 0) {
             setFillAlpha(64);
-            canvas.drawRect(bar_begin * width / 16 * getResolution() / 32
+            canvas.drawRect(bar_begin * width / 16 * Score.getResolution() / 32
                     , (insertion_track - 1) * track_height * height
-                    , (bar_end + 1) * width / 16 * getResolution() / 32
+                    , (bar_end + 1) * width / 16 * Score.getResolution() / 32
                     , insertion_track * track_height * height, paint);
         }
         Focus.restore();
@@ -243,7 +240,7 @@ public final class ScoreView extends View {
         int p, i, c = 0;
         for (p = 0; p < number_patches; p++) {
             for (i = 0; i < 16; i++) {
-                x = (p * width + i * width / 16 + width / 32) * getResolution() / 32;
+                x = (p * width + i * width / 16 + width / 32) * Score.getResolution() / 32;
                 d = Math.abs(x - x0);
                 if (d < dist) {
                     dist = d;
@@ -322,8 +319,14 @@ public final class ScoreView extends View {
                     if (existing_pattern) {
                         Focus.save();
                         FragmentManager fragmentManager = MasterFragment.activity.getSupportFragmentManager();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("resolution", Track.getPatternSelected().resolution);
+                        bundle.putString("instr_name",Track.getPatternSelected().getInstr());
+                        PatternFragment fragment = new PatternFragment();
+                        fragment.setArguments(bundle);
                         fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new PatternFragment(),
+                                fragment,
                                 "PATTERN").commit();
                         String format = getResources().getString(R.string.pattern_title);
                         MainActivity.toolbar.setTitle(String.format(format, Score.getIdTrackSelected(), Track.getIdPatternSelected()));
@@ -332,7 +335,7 @@ public final class ScoreView extends View {
 
                     } else {
                         if (tool != Tool.NONE && Track.getIdPatternSelected() > 0) {
-                            final int start = closestX(coords[0]) * getResolution();
+                            final int start = closestX(coords[0]) * Score.getResolution();
                             final int finish = start + Focus.pattern.finish - Focus.pattern.start;
                             if (nonOverlapping(track, start, finish)) {
                                 if(tool == Tool.MOVE && track == Focus.track){
@@ -408,8 +411,8 @@ public final class ScoreView extends View {
                 if (0 <= bar_begin && bar_begin < bar_end + 1) {
                     Score.setTrackSelected(insertion_track);
                     final Track track = Score.getTrackSelected();
-                    final int start = bar_begin * getResolution();
-                    final int finish = (bar_end + 1) * getResolution();
+                    final int start = bar_begin * Score.getResolution();
+                    final int finish = (bar_end + 1) * Score.getResolution();
 
                     if (nonOverlapping(track, start, finish)) {
                         if (CSD.getNbInstruments() > 0) {
@@ -461,7 +464,7 @@ public final class ScoreView extends View {
         Shader current;
 
         for (int i = 0; i < 16; i++) {
-            x0 = (p * width + i * width / 16) * getResolution() / 32;
+            x0 = (p * width + i * width / 16) * Score.getResolution() / 32;
             y0 = (t - 1) * track_height * height;
             x1 = x0;
             y1 = t * track_height * height;
@@ -479,7 +482,7 @@ public final class ScoreView extends View {
                 paint.setShader(null);
                 setStrokeWhite();
                 canvas.drawText("" + (16 * p + i + 1)
-                        , (p * width + i * width / 16 + width / 32) * getResolution() / 32, coords[1]
+                        , (p * width + i * width / 16 + width / 32) * Score.getResolution() / 32, coords[1]
                         , paint);
             }
         }

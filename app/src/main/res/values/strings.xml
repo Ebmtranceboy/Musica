@@ -51,6 +51,7 @@
     <string name="loop_button_label">Loop</string>
     <string name="score_loop_button_label">ScoreLoop</string>
     <string name="welcome_screen_description">Welcome Screen</string>
+    <string name="done_button_label">Done</string>
     <string-array name="oct_array">
         <item>1</item>
         <item>2</item>

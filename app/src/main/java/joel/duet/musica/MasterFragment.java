@@ -65,7 +65,6 @@ public final class MasterFragment extends Fragment {
         final View view = inflater.inflate(R.layout.master_fragment, container, false);
 
         three = (ImageButton) view.findViewById(R.id.copy);
-        scoreview = new ScoreView(getContext());
 
         view.findViewById(R.id.mode).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +144,7 @@ public final class MasterFragment extends Fragment {
                 Track.setPatternSelected(1);
                 if (Score.getNbOfTracks() == 0) Track.setPatternSelected(0);
 
-                ScoreView.number_patches = 1 + (int) (Score.getSeconds() / (ScoreView.getResolution() / 2));
+                ScoreView.number_patches = 1 + (int) (Score.getSeconds() / (Score.getResolution() / 2));
                 bars.clear();
                 for (int i = 1; i <= ScoreView.number_patches * 16; i++) bars.add(i);
                 bars_adapter.notifyDataSetChanged();
@@ -161,14 +160,14 @@ public final class MasterFragment extends Fragment {
         });
 
         final Spinner resolution_spinner = (Spinner) view.findViewById(R.id.resolution);
-        resolution_spinner.setSelection(ScoreView.resolution);
         SimpleImageArrayAdapter adapter = new SimpleImageArrayAdapter(getContext(), Default.resolution_icons);
         resolution_spinner.setAdapter(adapter);
+        resolution_spinner.setSelection(Score.resolution);
 
         resolution_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                ScoreView.resolution = i;
+                Score.resolution = i;
                 scoreview.invalidate();
             }
 
@@ -184,39 +183,48 @@ public final class MasterFragment extends Fragment {
                 bars);
         final Spinner bars_spinner = (Spinner) view.findViewById(R.id.bars_spinner);
         bars_spinner.setAdapter(bars_adapter);
+        bars_spinner.setSelection(Score.bar_start);
 
-        view.findViewById(R.id.play).
+        bars_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Score.bar_start = i;
+            }
 
-                setOnClickListener(new View.OnClickListener() {
-                                       @Override
-                                       public void onClick(View view) {
-                                           String csd = Score.sendPatterns(Score.allPatterns(),
-                                                   bars_spinner.getSelectedItemPosition() * ScoreView.getResolution());
-                                           Log.i(TAG, csd);
-                                           csoundObj.stop();
-                                           csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
-                                       }
-                                   }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
-                );
+            }
+        });
 
-        view.findViewById(R.id.stop).
+        view.findViewById(R.id.play).setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View view) {
+                                                                String csd = Score.sendPatterns(Score.allPatterns(),
+                                                                        bars_spinner.getSelectedItemPosition() * Score.getResolution());
+                                                                Log.i(TAG, csd);
+                                                                csoundObj.stop();
+                                                                csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
+                                                            }
+                                                        }
+        );
 
-                setOnClickListener(new View.OnClickListener() {
-                                       @Override
-                                       public void onClick(View view) {
-                                           csoundObj.stop();
-                                       }
-                                   }
+        view.findViewById(R.id.stop).setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View view) {
+                                                                csoundObj.stop();
+                                                            }
+                                                        }
+        );
 
-                );
+        scoreview = new ScoreView(getContext());
 
         FrameLayout scoreArea =
                 (FrameLayout) view.findViewById(R.id.score_view);
         scoreArea.addView(scoreview);
 
         // onResume:
-        ScoreView.number_patches = 1 + (int) (Score.getSeconds() / (ScoreView.getResolution() / 2));
+        ScoreView.number_patches = 1 + (int) (Score.getSeconds() / (Score.getResolution() / 2));
 
         ScoreView.edit_mode = ((Switch) view.findViewById(R.id.mode)).isChecked();
 
