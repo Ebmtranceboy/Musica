@@ -124,12 +124,12 @@ public final class CsoundUtil {
         Track.setPatternSelected(1);
         Pattern pattern = Track.getPatternSelected();
         pattern.setInstr(instr_name);
-        pattern.start = 0;
 
         String lines[] = getExternalFileAsString("unisonMelody.txt").split("\\n");
         final java.util.regex.Pattern istatement =
                 java.util.regex.Pattern.compile("\\s*i\\s*\\d+\\s+(\\d+.?\\d*)\\s+(\\d+.?\\d*)\\s+(\\d+.?\\d*)\\s+(-?\\d+.?\\d*)");
 
+        pattern.start = -1;
         pattern.finish = 0;
         for(String line:lines){
             Matcher matcher = istatement.matcher(line);
@@ -137,15 +137,16 @@ public final class CsoundUtil {
                 int onset = (int) Math.round(Double.parseDouble(matcher.group(1))*Default.ticks_per_second);
                 int duration = (int) Math.round(Double.parseDouble(matcher.group(2))*Default.ticks_per_second);
 
+                if(pattern.start<0) pattern.start = onset;
                 if(onset+duration > pattern.finish) pattern.finish = onset + duration;
 
                 int pitch = (int) Math.round(Double.parseDouble(matcher.group(3))*100);
                 int key = pitch % 100;
                 int oct = (pitch - key) / 100 - 3;
-		        pattern.createNote(onset, duration, oct*12+key);
+		        pattern.createNote(onset-pattern.start, duration, oct*12+key);
             }
         }
-        pattern.finish += 128; // a full note
+        pattern.finish += 1;//28; // a full note
 
         Score.setTrackSelected(idTrackSelected);
         Track.setPatternSelected(idPatternSelected);
