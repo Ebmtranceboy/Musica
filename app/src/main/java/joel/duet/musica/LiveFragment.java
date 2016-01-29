@@ -87,7 +87,8 @@ public final class LiveFragment extends Fragment {
         patternizeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activity.csoundUtil.patternize((String)select_instr.getSelectedItem());
+                //activity.csoundUtil.patternize((String)select_instr.getSelectedItem());
+                activity.csoundUtil.quantPatternize(((String)select_instr.getSelectedItem()),60.0f);
             }
         });
 
@@ -124,7 +125,6 @@ public final class LiveFragment extends Fragment {
 
                                 }
                             }
-
                         }
                         keyboard.show();
                         break;
@@ -150,7 +150,6 @@ public final class LiveFragment extends Fragment {
                 return true;
             }
         });
-
 
         return view;
     }

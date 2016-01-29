@@ -32,13 +32,33 @@
             android:title="@string/material_label" />
     </group>
 
-    <item android:title="@string/options_label">
-        <menu>
-            <item
-                android:id="@+id/nav_preferences"
-                android:icon="@drawable/ic_menu_pref"
-                android:title="@string/preferences_label" />
-        </menu>
-    </item>
+    <group android:checkableBehavior="single">
+        <item android:title="@string/options_label">
+            <menu>
+                <item
+                    android:id="@+id/new_project"
+                    android:icon="@drawable/ic_new_project"
+                    android:title="@string/new_project_label" />
+                <item
+                    android:id="@+id/open_project"
+                    android:icon="@drawable/ic_open_project"
+                    android:title="@string/open_project_label" />
+                <item
+                    android:id="@+id/save_project"
+                    android:icon="@drawable/ic_save_project"
+                    android:title="@string/save_project_label" />
+            </menu>
+        </item>
+    </group>
+    <group android:checkableBehavior="single">
+        <item android:title="@string/general_options_label">
+            <menu>
+                <item
+                    android:id="@+id/nav_preferences"
+                    android:icon="@drawable/ic_menu_pref"
+                    android:title="@string/preferences_label" />
+            </menu>
+        </item>
+    </group>
 
 </menu>

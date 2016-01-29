@@ -14,7 +14,7 @@
     <string name="patchbay_label">Patchbay</string>
     <string name="orchestra_label">Orchestra</string>
     <string name="preferences_label">Preferences</string>
-    <string name="options_label">Options</string>
+    <string name="options_label">Project</string>
     <string name="fx_label">FX</string>
     <string name="score_label">Score</string>
     <string name="master_label">Master</string>
@@ -53,6 +53,10 @@
     <string name="welcome_screen_description">Welcome Screen</string>
     <string name="done_button_label">Done</string>
     <string name="patternize_label">Patternize</string>
+    <string name="open_project_label">Open</string>
+    <string name="new_project_label">New</string>
+    <string name="save_project_label">Save</string>
+    <string name="general_options_label">General</string>
     <string-array name="oct_array">
         <item>1</item>
         <item>2</item>
