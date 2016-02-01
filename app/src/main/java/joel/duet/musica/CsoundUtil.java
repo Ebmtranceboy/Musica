@@ -215,7 +215,7 @@ public final class CsoundUtil {
             pattern.finish += quant;
         }
 
-        pattern.finish += 1;//28; // a full note
+        pattern.finish +=128;
 
         Score.setTrackSelected(idTrackSelected);
         Track.setPatternSelected(idPatternSelected);

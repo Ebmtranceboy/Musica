@@ -144,7 +144,6 @@ public final class CSD {
             + "\nkwait init istp[0]"
             + "\nif(gkmetro==1) then"
             + "\n   if(kwait==0) then"
-            + "\n      while (kwait==0) do"
             + "\n         kpch = ipch[kstepnum]"
             + "\n         kdur = idur[kstepnum]"
             + "\n         event \"i\", \"" + instr + "\" ,0,kdur,kpch,-12"
@@ -154,8 +153,8 @@ public final class CSD {
             + "\n            kwait = " + duration + " - ilen + istp[0]"
             + "\n         else"
             + "\n            kwait = istp[kstepnum]"
+            + "\n            kwait -= 1"
             + "\n         endif"
-            + "\n      od"
             + "\n   else"
             + "\n      kwait -= 1"
             + "\n   endif"
@@ -166,7 +165,7 @@ public final class CSD {
         String loops = "";
         int frac = 1;
         for(Pattern pattern:score){
-            loops += Looper(pattern,frac,duration);
+            if(!pattern.isEmpty()) loops += Looper(pattern,frac,duration);
             frac ++;
         }
         return loops;
@@ -175,8 +174,8 @@ public final class CSD {
     static String ScoreLoops(List<Pattern>score){
         String loops = "";
         int frac = 1;
-        for(Pattern ignored :score){
-            loops += "\ni\"Looper_" + frac + "\" 0 -1";
+        for(Pattern pattern :score){
+            if(!pattern.isEmpty()) loops += "\ni\"Looper_" + frac + "\" 0 -1";
             frac ++;
         }
         return loops;

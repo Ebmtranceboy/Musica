@@ -9,18 +9,23 @@ import android.graphics.Shader;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.graphics.Matrix;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * Created by joel on 22/01/16 at 23:18 at 08:57.
  */
 public final class ScoreView extends View {
-        // alternation between 16-bars (0), 8-bars(2), 4-bars(4), 2-bars(6) and 1-bars(8)
+    private static final String TAG = "ScoreView";
+    // alternation between 16-bars (0), 8-bars(2), 4-bars(4), 2-bars(6) and 1-bars(8)
     private static final int[] order = {0, 8, 6, 8, 4, 8, 6, 8, 2, 8, 6, 8, 4, 8, 6, 8, 0};
     private static final Paint paint = new Paint();
 
@@ -62,7 +67,6 @@ public final class ScoreView extends View {
         context = ctx;
     }
 
-
     private static void drawBackground(Canvas canvas) {
         ScoreView.paint.setStyle(Paint.Style.FILL);
         ScoreView.paint.setColor(Color.parseColor("#7F7F7F"));
@@ -87,6 +91,11 @@ public final class ScoreView extends View {
     private static void setFillAlpha(int alpha) {
         ScoreView.paint.setStyle(Paint.Style.FILL);
         ScoreView.paint.setARGB(alpha, 255, 255, 255);
+    }
+
+    private static void setStrokeRuler() {
+        ScoreView.paint.setStyle(Paint.Style.STROKE);
+        ScoreView.paint.setColor(Color.parseColor("#FF7F00"));
     }
 
     private static void drawReset(Canvas canvas) {
@@ -158,7 +167,7 @@ public final class ScoreView extends View {
             if(pM<note.pitch) pM = note.pitch;
         }
 
-        final float kx = (x1-x0)/(1.1f*(dM-om));
+        final float kx = (x1-x0)/(1f*(pattern.finish-pattern.start));
         final float ky = (y1-y0)/(1.1f*(pM-pm+2));
 
         for(n=1; n<=pattern.getNbOfNotes(); n++) {
@@ -203,8 +212,12 @@ public final class ScoreView extends View {
             for (int p = 1; p <= track.getNbOfPatterns(); p++) {
                 Track.setPatternSelected(p);
                 final Pattern pattern = Track.getPatternSelected();
-                if (edit_mode && track == Focus.track && pattern == Focus.pattern) setBlueAlpha(112);
-                else setStrokeBlack();
+                final boolean showFocus = edit_mode
+                        && track == Focus.track
+                        && pattern == Focus.pattern
+                        && tool != Tool.JOIN
+                        && tool != Tool.SPLIT;
+                if (showFocus) setBlueAlpha(112); else setStrokeBlack();
                 canvas.drawRect(pattern.start * width / 16 / 32
                         , (t - 1) * track_height * height
                         , pattern.finish * width / 16 / 32
@@ -213,8 +226,7 @@ public final class ScoreView extends View {
                         , (t - 1) * track_height * height
                         , pattern.finish * width / 16 / 32
                         , t * track_height * height, pattern,canvas);
-                if (edit_mode && track == Focus.track && pattern == Focus.pattern) setBlueAlpha(12);
-                else setFillAlpha(192);
+                if (showFocus) setBlueAlpha(12); else setFillAlpha(192);
                 canvas.drawRect(pattern.start * width / 16 / 32
                         , (t - 1) * track_height * height
                         , pattern.finish * width / 16 / 32
@@ -229,6 +241,10 @@ public final class ScoreView extends View {
                     , (bar_end + 1) * width / 16 * Score.getResolution() / 32
                     , insertion_track * track_height * height, paint);
         }
+
+        setStrokeRuler();
+        canvas.drawLine(Score.bar_start* width / 16 * Score.getResolution() / 32,0,Score.bar_start* width / 16 * Score.getResolution() / 32,height,paint);
+
         Focus.restore();
         canvas.restore();
     }
@@ -281,7 +297,9 @@ public final class ScoreView extends View {
     public enum Tool{
         NONE,
         COPY,
-        MOVE
+        MOVE,
+        JOIN,
+        SPLIT
     }
 
     @Override
@@ -316,24 +334,75 @@ public final class ScoreView extends View {
                     }
 
                     if (existing_pattern) {
-                        Focus.save();
-                        FragmentManager fragmentManager = MasterFragment.activity.getSupportFragmentManager();
+                        if(tool == Tool.JOIN){
+                            final Pattern toJoin = Track.getPatternSelected();
+                            boolean existing_before = false;
+                            int b = 1;
+                            while (b <= track.getNbOfPatterns() && !existing_before) {
+                                Track.setPatternSelected(b);
+                                final Pattern pattern = Track.getPatternSelected();
+                                existing_before = pattern.finish == toJoin.start;
+                                b++;
+                            }
+                            if(existing_before){
+                                final Pattern extended = Track.getPatternSelected();
+                                for(int n=0; n<toJoin.getNbOfNotes();n++){
+                                    final Pattern.Note note = toJoin.getNote(n);
+                                    extended.createNote(note.onset+extended.finish-extended.start,note.duration,note.pitch);
+                                }
+                                extended.finish = toJoin.finish;
+                                track.deletePattern(toJoin);
+                                Focus.reset();
+                            }
 
-                        Bundle bundle = new Bundle();
-                        bundle.putInt("resolution", Track.getPatternSelected().resolution);
-                        bundle.putString("instr_name",Track.getPatternSelected().getInstr());
-                        PatternFragment fragment = new PatternFragment();
-                        fragment.setArguments(bundle);
-                        fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                fragment,
-                                "PATTERN").commit();
-                        String format = getResources().getString(R.string.pattern_title);
-                        MainActivity.toolbar.setTitle(String.format(format, Score.getIdTrackSelected(), Track.getIdPatternSelected()));
-                        MainActivity.currentFragment = MainActivity.State.PATTERN;
+                        } else if(tool == Tool.SPLIT){
+                            final Pattern toSplit = Track.getPatternSelected();
+                            int newPatternStart = Score.bar_start * Score.getResolution() - toSplit.start;
+                            track.createPattern();
+                            Track.setPatternSelected(track.getNbOfPatterns());
+                            final Pattern copy = Track.getPatternSelected();
+                            boolean destroyCopy = false;
+                            final List<Pattern.Note> excess = new ArrayList<>();
+                            int n = 0;
+                            while(n<toSplit.getNbOfNotes() && !destroyCopy){
+                                final Pattern.Note note = toSplit.getNote(n);
+                                if(note.onset < newPatternStart){
+                                    if(note.onset+note.duration > newPatternStart) destroyCopy = true;
+                                } else{
+                                    copy.createNote(note.onset - newPatternStart,note.duration,note.pitch);
+                                    excess.add(note);
+                                }
+                                n++;
+                            }
+                            if(destroyCopy) track.deletePattern(copy);
+                            else{
+                                toSplit.deleteNotes(excess);
+                                copy.start = newPatternStart + toSplit.start;
+                                copy.finish = toSplit.finish;
+                                copy.setInstr(toSplit.getInstr());
+                                toSplit.finish = copy.start;
+                            }
 
+                            Focus.reset();
 
+                        } else {
+                            Focus.save();
+                            FragmentManager fragmentManager = MasterFragment.activity.getSupportFragmentManager();
+
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("resolution", Track.getPatternSelected().resolution);
+                            bundle.putString("instr_name", Track.getPatternSelected().getInstr());
+                            PatternFragment fragment = new PatternFragment();
+                            fragment.setArguments(bundle);
+                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                                    fragment,
+                                    "PATTERN").commit();
+                            String format = getResources().getString(R.string.pattern_title);
+                            MainActivity.toolbar.setTitle(String.format(format, Score.getIdTrackSelected(), Track.getIdPatternSelected()));
+                            MainActivity.currentFragment = MainActivity.State.PATTERN;
+                        }
                     } else {
-                        if (tool != Tool.NONE && Track.getIdPatternSelected() > 0) {
+                        if ((tool == Tool.MOVE || tool == Tool.COPY) && Track.getIdPatternSelected() > 0) {
                             final int start = closestX(coords[0]) * Score.getResolution();
                             final int finish = start + Focus.pattern.finish - Focus.pattern.start;
                             if (nonOverlapping(track, start, finish)) {
@@ -364,8 +433,10 @@ public final class ScoreView extends View {
                                 }
                             }
                         } else {
-                            bar_begin = closestX(coords[0]);
-                            bar_end = bar_begin;
+                            if(tool == Tool.NONE) {
+                                bar_begin = closestX(coords[0]);
+                                bar_end = bar_begin;
+                            }
                         }
                     }
                     Focus.restore();

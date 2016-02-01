@@ -3,16 +3,14 @@ package joel.duet.musica;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.Switch;
 
 import com.csounds.CsoundObj;
 
@@ -26,32 +24,13 @@ import java.util.List;
 
 public final class MasterFragment extends Fragment {
     private final LinkedList<Integer> bars = new LinkedList<>();
-    private static ImageButton three;
-    private static final String TAG = "Master";
+    private static Spinner edition_spinner;
+    //private static final String TAG = "Master";
 
     private static ScoreView scoreview;
     private static ArrayAdapter<Integer> bars_adapter;
     public static MainActivity activity;
     private static CsoundObj csoundObj;
-
-    private void ensureThreeStateButtonCoherence() {
-
-        if (ScoreView.edit_mode) {
-            three.setVisibility(View.VISIBLE);
-            switch (ScoreView.tool) {
-                case NONE:
-                    three.setImageResource(R.drawable.ic_crane);
-                    break;
-                case COPY:
-                    three.setImageResource(R.drawable.ic_copy);
-                    break;
-                case MOVE:
-                    three.setImageResource(R.drawable.ic_move);
-                    break;
-            }
-        } else three.setVisibility(View.INVISIBLE);
-    }
-
 
     @Override
     public void onAttach(Context context) {
@@ -64,33 +43,48 @@ public final class MasterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
         final View view = inflater.inflate(R.layout.master_fragment, container, false);
 
-        three = (ImageButton) view.findViewById(R.id.copy);
 
         view.findViewById(R.id.mode).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ScoreView.edit_mode = !ScoreView.edit_mode;
                 ScoreView.tool = ScoreView.Tool.NONE;
-                ensureThreeStateButtonCoherence();
+                edition_spinner.setSelection(0);
+                if(ScoreView.edit_mode) edition_spinner.setVisibility(View.VISIBLE);
+                else edition_spinner.setVisibility(View.INVISIBLE);
                 scoreview.invalidate();
             }
         });
 
-        view.findViewById(R.id.copy).setOnClickListener(new View.OnClickListener() {
+        edition_spinner = (Spinner) view.findViewById(R.id.edition);
+        SimpleImageArrayAdapter edition_adapter = new SimpleImageArrayAdapter(getContext(), Default.edition_icons);
+        edition_spinner.setAdapter(edition_adapter);
+
+        edition_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                switch (ScoreView.tool) {
-                    case NONE:
-                        ScoreView.tool = ScoreView.Tool.COPY;
-                        break;
-                    case COPY:
-                        ScoreView.tool = ScoreView.Tool.MOVE;
-                        break;
-                    case MOVE:
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 0:
                         ScoreView.tool = ScoreView.Tool.NONE;
                         break;
+                    case 1:
+                        ScoreView.tool = ScoreView.Tool.COPY;
+                        break;
+                    case 2:
+                        ScoreView.tool = ScoreView.Tool.MOVE;
+                        break;
+                    case 3:
+                        ScoreView.tool = ScoreView.Tool.JOIN;
+                        break;
+                    case 4:
+                        ScoreView.tool = ScoreView.Tool.SPLIT;
+                        break;
                 }
-                ensureThreeStateButtonCoherence();
+                scoreview.invalidate();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
 
@@ -164,9 +158,20 @@ public final class MasterFragment extends Fragment {
         resolution_spinner.setAdapter(adapter);
         resolution_spinner.setSelection(Score.resolution);
 
+        final Spinner bars_spinner = (Spinner) view.findViewById(R.id.bars_spinner);
+
         resolution_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(Score.resolution<i) Score.bar_start *= Score.getResolution() / Default.resolutions[i];
+                else Score.bar_start /= Default.resolutions[i] / Score.getResolution();
+
+                while(ScoreView.number_patches * 16 <  Score.bar_start) ScoreView.number_patches++;
+                bars.clear();
+                for (int p = 1; p <= ScoreView.number_patches * 16; p++) bars.add(p);
+                bars_adapter.notifyDataSetChanged();
+
+                bars_spinner.setSelection(Score.bar_start);
                 Score.resolution = i;
                 scoreview.invalidate();
             }
@@ -181,14 +186,14 @@ public final class MasterFragment extends Fragment {
         bars_adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_list_item_1,
                 bars);
-        final Spinner bars_spinner = (Spinner) view.findViewById(R.id.bars_spinner);
         bars_spinner.setAdapter(bars_adapter);
         bars_spinner.setSelection(Score.bar_start);
 
-        bars_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+        bars_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Score.bar_start = i;
+                scoreview.invalidate();
             }
 
             @Override
@@ -202,7 +207,7 @@ public final class MasterFragment extends Fragment {
                                                             public void onClick(View view) {
                                                                 String csd = Score.sendPatterns(Score.allPatterns(),
                                                                         bars_spinner.getSelectedItemPosition() * Score.getResolution());
-                                                                Log.i(TAG, csd);
+                                                                //Log.i(TAG, csd);
                                                                 csoundObj.stop();
                                                                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
                                                             }
@@ -223,15 +228,9 @@ public final class MasterFragment extends Fragment {
                 (FrameLayout) view.findViewById(R.id.score_view);
         scoreArea.addView(scoreview);
 
-        // onResume:
         ScoreView.number_patches = 1 + (int) (Score.getSeconds() / (Score.getResolution() / 2));
-
-        ScoreView.edit_mode = ((Switch) view.findViewById(R.id.mode)).isChecked();
-
-        ScoreView.tool = ScoreView.Tool.NONE;
-
-        ensureThreeStateButtonCoherence();
-
+        ScoreView.edit_mode = false;
+        edition_spinner.setVisibility(View.INVISIBLE);
         return view;
     }
 

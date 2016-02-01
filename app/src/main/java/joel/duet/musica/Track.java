@@ -1,5 +1,7 @@
 package joel.duet.musica;
 
+//import android.util.Log;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,6 +10,7 @@ import java.util.List;
  * Created by joel on 22/01/16 at 22:17 at 22:21.
  */
 public final class Track {
+    //private static final String TAG = "Track";
     private static int mIdPatternSelected = 0;
 
     private final LinkedList<Pattern> mPatterns = new LinkedList<>();
@@ -16,7 +19,8 @@ public final class Track {
 
     public void createPattern(){
         mPatterns.addLast(new Pattern());
-        mPatterns.getLast().setInstr("<undefined>");}
+        mPatterns.getLast().setInstr("<undefined>");
+    }
 
     public void deletePattern(Pattern p){
         mPatterns.remove(p);

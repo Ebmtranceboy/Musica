@@ -21,13 +21,11 @@
             android:textOn="Edit"
             android:textOff="Visit" />
 
-        <ImageButton
-            android:id="@+id/copy"
-            style="?android:attr/buttonStyleSmall"
+        <Spinner
+            android:id="@+id/edition"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/tool_label" />
+            android:layout_weight="1" />
 
         <ImageButton
             android:id="@+id/new_track"

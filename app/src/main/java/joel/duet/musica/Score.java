@@ -201,7 +201,38 @@ public final class Score {
         return patterns;
     }
 
-    public static String sendPatterns(List<Pattern> patterns, int... params){
+    public static List<Pattern> fix(List<Pattern> list){
+        final List<Pattern> patterns = new ArrayList<>();
+        Pattern fixed;
+        int lastOnset;
+
+
+        for(Pattern pattern:list){
+            int n=0;
+            fixed = new Pattern();
+
+            while(n<pattern.getNbOfNotes()){
+                Pattern.Note note = pattern.getNote(n);
+                fixed.createNote(note.onset, note.duration, note.pitch);
+                lastOnset = note.onset;
+                n++;
+                while(n<pattern.getNbOfNotes() && pattern.getNote(n).onset > lastOnset){
+                    note = pattern.getNote(n);
+                    fixed.createNote(note.onset,note.duration,note.pitch);
+                    lastOnset = note.onset;
+                    n++;
+                }
+                fixed.setInstr(pattern.getInstr());
+                fixed.start = pattern.start;
+                fixed.finish = pattern.finish;
+                patterns.add(fixed);
+                fixed = new Pattern();
+            }
+        }
+        return patterns;
+    }
+
+    public static String sendPatterns(List<Pattern> unFixedPatterns, int... params){
         int tick_start, tick_finish;
         switch(params.length) {
             case 2:
@@ -222,29 +253,35 @@ public final class Score {
 
         final List<Pattern> score = new LinkedList<>();
         List<Pattern.Note> list = new ArrayList<>();
+        List<Pattern> patterns = fix(unFixedPatterns);
 
         for(Pattern pattern : patterns) {
             delay_start = pattern.start-tick_start;
-            if(pattern.start < start) start=pattern.start;
-            if(pattern.finish > finish) finish=pattern.finish;
+            if(pattern.start < start) start = pattern.start;
+            if(pattern.finish > finish) finish = pattern.finish;
 
             list.clear();
             int lastOnset = 0;
+            boolean firstOnset = false;
             Pattern.Note note = null;
             for(int n = 1 ;n<=pattern.getNbOfNotes();n++) {
-                if(n>1) lastOnset = delay_start + note.onset;
+                if(firstOnset) lastOnset = delay_start + note.onset;
                 note = pattern.getNote(n-1);
                 if (note.onset + pattern.start >= tick_start
                         && note.onset + pattern.start <= tick_finish) {
+                    if(!firstOnset){
+                        lastOnset = 0;
+                        firstOnset = true;
+                    }
                     list.add(new Pattern.Note(
                             delay_start + note.onset - lastOnset,
                             note.duration,
                             note.pitch));
                 }
             }
+            //for(Pattern.Note not:list)  Log.i(TAG,""+not.onset+" "+not.pitch);
             score.add(new Pattern(list,pattern.getInstr()));
         }
-        //Log.i(TAG, CSD.song(score));
-        return CSD.song(score,Math.min(finish - start, tick_finish - tick_start));
+        return CSD.song(score,Math.min(finish, tick_finish) - tick_start);
     }
 }

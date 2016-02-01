@@ -43,7 +43,6 @@ public final class PatternView extends View {
         super(ctx);
         //paint.setAntiAlias(true);
         mScaleDetector = new ScaleGestureDetector(ctx, new ScaleListener());
-        number_ticks = pattern.finish - pattern.start;
     }
 
     private static void drawBackground(Canvas canvas) {
@@ -131,6 +130,7 @@ public final class PatternView extends View {
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        number_ticks = pattern.finish - pattern.start;
 
         width = getWidth();
         width_per_tick = width / (float)number_ticks;
@@ -155,7 +155,7 @@ public final class PatternView extends View {
                     coords[0],
                     (m - 0.4f) * line_height * height,
                     paint);
-            for (int i = 1; i <= number_ticks / getResolution(); i++) {
+            for (int i = 1; i <= Math.round((double)number_ticks / getResolution()); i++) {
                 drawBar(i, canvas, m);
             }
         }
