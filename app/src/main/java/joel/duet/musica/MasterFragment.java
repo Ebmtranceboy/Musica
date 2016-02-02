@@ -3,7 +3,7 @@ package joel.duet.musica;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-//import android.util.Log;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +24,7 @@ import java.util.List;
 public final class MasterFragment extends Fragment {
     private final LinkedList<Integer> bars = new LinkedList<>();
     private static Spinner edition_spinner;
-    //private static final String TAG = "Master";
+    private static final String TAG = "Master";
 
     private static ScoreView scoreview;
     private static ArrayAdapter<Integer> bars_adapter;
@@ -206,7 +206,7 @@ public final class MasterFragment extends Fragment {
                                                             public void onClick(View view) {
                                                                 String csd = Score.sendPatterns(Score.allPatterns(),
                                                                         bars_spinner.getSelectedItemPosition() * Score.getResolution());
-                                                                //Log.i(TAG, csd);
+                                                                Log.i(TAG, csd);
                                                                 csoundObj.stop();
                                                                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
                                                             }

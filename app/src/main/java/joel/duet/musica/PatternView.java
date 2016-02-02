@@ -22,7 +22,8 @@ public final class PatternView extends View {
     private static final float[] coords = new float[2];
     private static final Matrix mMatrix = new Matrix();
     private static final Matrix mInverse = new Matrix();
-    //private static final Matrix mTemp = new Matrix();
+
+    private static Matrix mTemp;
 
     private static int bar_begin = -1;
     private static int bar_end;
@@ -81,6 +82,11 @@ public final class PatternView extends View {
         PatternView.paint.setARGB(alpha, 255, 255, 255);
     }
 
+    private static void setFillGrey() {
+        PatternView.paint.setStyle(Paint.Style.FILL);
+        PatternView.paint.setColor(Color.parseColor("#DFDFDF"));
+    }
+
     private static void drawReset(Canvas canvas) {
         drawBackground(canvas);
         setStrokeWhite();
@@ -89,11 +95,12 @@ public final class PatternView extends View {
     private int getResolution() {
         return Default.resolutions[pattern.resolution];
     }
-    /*
+
     private static boolean bounded(){
         return 0<=coords[0] && coords[0]<=width && 0<=coords[1] && coords[1]<=height*scale_height;
     }
     private boolean isBounded(){
+        mTemp = new Matrix(mMatrix);
         mTemp.setTranslate(pattern.mPosX, pattern.mPosY);
         mTemp.postScale(pattern.mScaleFactorX, pattern.mScaleFactorY
                 , super.getWidth() * 0.5f, super.getHeight() * 0.5f);
@@ -111,15 +118,12 @@ public final class PatternView extends View {
         coords[0] = width;coords[1] = 0;
         mInverse.mapPoints(coords);
         return bounded();
-    }*/
+    }
 
     private class ScaleListener extends
             ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            //final float sx = pattern.mScaleFactorX;
-            //final float sy = pattern.mScaleFactorY;
-
             if (Math.abs(detector.getCurrentSpanX()) < Math.abs(detector.getCurrentSpanY()))
                 pattern.mScaleFactorY *= detector.getScaleFactor();
             else if (Math.abs(detector.getCurrentSpanY()) < Math.abs(detector.getCurrentSpanX()))
@@ -133,10 +137,31 @@ public final class PatternView extends View {
             pattern.mScaleFactorX = Math.max(0.1f, Math.min(pattern.mScaleFactorX, 5.0f));
             pattern.mScaleFactorY = Math.max(0.1f, Math.min(pattern.mScaleFactorY, 5.0f));
 
-            /*if(!isBounded()){
+
+/*
+            float sx = pattern.mScaleFactorX;
+            float sy = pattern.mScaleFactorY;
+
+            if (Math.abs(detector.getCurrentSpanX()) < Math.abs(detector.getCurrentSpanY()))
+                sy *= detector.getScaleFactor();
+            else if (Math.abs(detector.getCurrentSpanY()) < Math.abs(detector.getCurrentSpanX()))
+                sx *= detector.getScaleFactor();
+            else {
+                sy *= detector.getScaleFactor();
+                sx *= detector.getScaleFactor();
+            }
+
+            // Don't let the object get too small or too large.
+            sx = Math.max(0.1f, Math.min(sx, 5.0f));
+            sy = Math.max(0.1f, Math.min(sy, 5.0f));
+
+
+            if(!isBounded()){
                 pattern.mScaleFactorX = sx;
                 pattern.mScaleFactorY = sy;
-            }*/
+            }
+            */
+
             invalidate();
             return true;
         }
@@ -183,7 +208,8 @@ public final class PatternView extends View {
                     , (Default.max_midi_note - note.pitch - 1) * height * line_height
                     , (note.onset + note.duration) * width_per_tick
                     , (Default.max_midi_note - note.pitch) * height * line_height, paint);
-            setFillAlpha(192);
+            //setFillAlpha(192);
+            setFillGrey();
             canvas.drawRect(note.onset * width_per_tick
                     , (Default.max_midi_note - note.pitch - 1) * height * line_height
                     , (note.onset + note.duration) * width_per_tick

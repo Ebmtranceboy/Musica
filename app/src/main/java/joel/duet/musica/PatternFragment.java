@@ -3,7 +3,7 @@ package joel.duet.musica;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-//import android.util.Log;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +23,7 @@ import java.util.LinkedList;
 public final class PatternFragment extends Fragment {
     private PatternView patternview;
     private final LinkedList<String> instrumentIds = new LinkedList<>();
-    //private static final String TAG = "PatternFragment";
+    private static final String TAG = "PatternFragment";
 
     static public MainActivity activity;
     static public CsoundObj csoundObj;
@@ -73,6 +73,7 @@ public final class PatternFragment extends Fragment {
                 String csd = Score.sendPatterns(patternview.pattern.singleton(),
                         patternview.pattern.start,
                         patternview.pattern.finish);
+                Log.i(TAG,csd);
                 Score.is_score_loop = false;
                 csoundObj.stop();
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));

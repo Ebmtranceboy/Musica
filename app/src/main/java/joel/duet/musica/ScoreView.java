@@ -401,20 +401,28 @@ public final class ScoreView extends View {
                             Focus.reset();
 
                         } else {
-                            Focus.save();
-                            FragmentManager fragmentManager = MasterFragment.activity.getSupportFragmentManager();
+                            if(Track.getPatternSelected() != Focus.pattern){
+                                if(tool == Tool.NONE) {
+                                    Score.setTrackSelected(insertion_track);
+                                    Focus.save();
+                                }
 
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("resolution", Track.getPatternSelected().resolution);
-                            bundle.putString("instr_name", Track.getPatternSelected().getInstr());
-                            PatternFragment fragment = new PatternFragment();
-                            fragment.setArguments(bundle);
-                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    fragment,
-                                    "PATTERN").commit();
-                            String format = getResources().getString(R.string.pattern_title);
-                            MainActivity.toolbar.setTitle(String.format(format, Score.getIdTrackSelected(), Track.getIdPatternSelected()));
-                            MainActivity.currentFragment = MainActivity.State.PATTERN;
+                            } else {
+                                Focus.save();
+                                FragmentManager fragmentManager = MasterFragment.activity.getSupportFragmentManager();
+
+                                Bundle bundle = new Bundle();
+                                bundle.putInt("resolution", Track.getPatternSelected().resolution);
+                                bundle.putString("instr_name", Track.getPatternSelected().getInstr());
+                                PatternFragment fragment = new PatternFragment();
+                                fragment.setArguments(bundle);
+                                fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                                        fragment,
+                                        "PATTERN").commit();
+                                String format = getResources().getString(R.string.pattern_title);
+                                MainActivity.toolbar.setTitle(String.format(format, Score.getIdTrackSelected(), Track.getIdPatternSelected()));
+                                MainActivity.currentFragment = MainActivity.State.PATTERN;
+                            }
                         }
                     } else {
                         if ((tool == Tool.MOVE || tool == Tool.COPY) && Track.getIdPatternSelected() > 0) {
@@ -506,11 +514,12 @@ public final class ScoreView extends View {
                             final Pattern pattern = Track.getPatternSelected();
                             pattern.start = start;
                             pattern.finish = finish;
+                            pattern.setInstr(CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()])[0]);
+                            pattern.mPosY = -2500f; //somewhat around A440
                         } else {
                             final Toast toast = Toast.makeText(context,
                                     "Please, create an instrument first", Toast.LENGTH_LONG);
                             toast.show();
-
                         }
                     }
                     bar_begin = -1;

@@ -150,7 +150,7 @@ public final class CSD {
             + "\n         kstepnum += 1"
             + "\n         if(kstepnum>=" + n + ") then"
             + "\n            kstepnum = 0"
-            + "\n            kwait = " + duration + " - ilen + istp[0]"
+            + "\n            kwait = " + duration + " - ilen - 1 + istp[0]"
             + "\n         else"
             + "\n            kwait = istp[kstepnum]"
             + "\n            kwait -= 1"

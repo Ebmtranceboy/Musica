@@ -19,7 +19,6 @@ public final class Track {
 
     public void createPattern(){
         mPatterns.addLast(new Pattern());
-        mPatterns.getLast().setInstr("<undefined>");
     }
 
     public void deletePattern(Pattern p){
