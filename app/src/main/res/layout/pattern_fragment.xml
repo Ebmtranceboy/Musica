@@ -28,6 +28,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
+        <ImageButton
+            android:id="@+id/recenter"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/recenter_button_label"
+            android:src="@drawable/ic_recenter" />
+
         <Spinner
             android:id="@+id/resolution"
             android:layout_width="match_parent"
@@ -40,17 +49,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_play"
-            android:contentDescription="@string/preview_button_label" />
+            android:contentDescription="@string/preview_button_label"
+            android:src="@drawable/ic_read_partition" />
 
         <ImageButton
-            android:id="@+id/score_loop"
+            android:id="@+id/in_context"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_renew"
-            android:contentDescription="@string/score_loop_button_label" />
+            android:contentDescription="@string/play_in_context_button_label"
+            android:src="@drawable/ic_play_in_context" />
 
         <ImageButton
             android:id="@+id/stop"
@@ -58,14 +67,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_stop"
-            android:contentDescription="@string/stop_button_label" />
+            android:contentDescription="@string/stop_button_label"
+            android:src="@drawable/ic_stop" />
 
     </LinearLayout>
 
     <joel.duet.musica.PatternView
+        android:id="@+id/pattern_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/pattern_view"/>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

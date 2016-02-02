@@ -74,19 +74,17 @@ public final class PatternFragment extends Fragment {
                         patternview.pattern.start,
                         patternview.pattern.finish);
                 Log.i(TAG,csd);
-                Score.is_score_loop = false;
                 csoundObj.stop();
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
             }
         });
 
-        view.findViewById(R.id.score_loop).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.in_context).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String csd = Score.sendPatterns(Score.allPatterns(),
                         patternview.pattern.start,
                         patternview.pattern.finish);
-                Score.is_score_loop = true;
                 csoundObj.stop();
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
             }

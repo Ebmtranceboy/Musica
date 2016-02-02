@@ -21,7 +21,7 @@ public final class Score {
     public static int resolution;
     public static int bar_start;
 
-    public static boolean is_score_loop = false;
+    //public static boolean is_score_loop = false;
 
     public static int getResolution() {
         return Default.resolutions[Score.resolution];

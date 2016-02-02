@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+//import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -16,14 +17,13 @@ import android.graphics.Matrix;
  * Created by joel on 22/01/16 at 23:26 at 23:28.
  */
 public final class PatternView extends View {
+    //private static final String TAG = "PatternView";
     private static final Paint paint = new Paint();
     private static final float scale_height = 10.0f;
     private static final float line_height = scale_height / (float) Default.max_midi_note;
     private static final float[] coords = new float[2];
     private static final Matrix mMatrix = new Matrix();
     private static final Matrix mInverse = new Matrix();
-
-    private static Matrix mTemp;
 
     private static int bar_begin = -1;
     private static int bar_end;
@@ -96,30 +96,6 @@ public final class PatternView extends View {
         return Default.resolutions[pattern.resolution];
     }
 
-    private static boolean bounded(){
-        return 0<=coords[0] && coords[0]<=width && 0<=coords[1] && coords[1]<=height*scale_height;
-    }
-    private boolean isBounded(){
-        mTemp = new Matrix(mMatrix);
-        mTemp.setTranslate(pattern.mPosX, pattern.mPosY);
-        mTemp.postScale(pattern.mScaleFactorX, pattern.mScaleFactorY
-                , super.getWidth() * 0.5f, super.getHeight() * 0.5f);
-        mTemp.invert(mInverse);
-
-        coords[0] = 0;coords[1] = 0;
-        mInverse.mapPoints(coords);
-        if (!bounded()) return false;
-        coords[0] = 0;coords[1] = height * scale_height;
-        mInverse.mapPoints(coords);
-        if (!bounded()) return false;
-        coords[0] = width;coords[1] = height * scale_height;
-        mInverse.mapPoints(coords);
-        if (!bounded()) return false;
-        coords[0] = width;coords[1] = 0;
-        mInverse.mapPoints(coords);
-        return bounded();
-    }
-
     private class ScaleListener extends
             ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
@@ -136,31 +112,6 @@ public final class PatternView extends View {
             // Don't let the object get too small or too large.
             pattern.mScaleFactorX = Math.max(0.1f, Math.min(pattern.mScaleFactorX, 5.0f));
             pattern.mScaleFactorY = Math.max(0.1f, Math.min(pattern.mScaleFactorY, 5.0f));
-
-
-/*
-            float sx = pattern.mScaleFactorX;
-            float sy = pattern.mScaleFactorY;
-
-            if (Math.abs(detector.getCurrentSpanX()) < Math.abs(detector.getCurrentSpanY()))
-                sy *= detector.getScaleFactor();
-            else if (Math.abs(detector.getCurrentSpanY()) < Math.abs(detector.getCurrentSpanX()))
-                sx *= detector.getScaleFactor();
-            else {
-                sy *= detector.getScaleFactor();
-                sx *= detector.getScaleFactor();
-            }
-
-            // Don't let the object get too small or too large.
-            sx = Math.max(0.1f, Math.min(sx, 5.0f));
-            sy = Math.max(0.1f, Math.min(sy, 5.0f));
-
-
-            if(!isBounded()){
-                pattern.mScaleFactorX = sx;
-                pattern.mScaleFactorY = sy;
-            }
-            */
 
             invalidate();
             return true;
@@ -208,7 +159,6 @@ public final class PatternView extends View {
                     , (Default.max_midi_note - note.pitch - 1) * height * line_height
                     , (note.onset + note.duration) * width_per_tick
                     , (Default.max_midi_note - note.pitch) * height * line_height, paint);
-            //setFillAlpha(192);
             setFillGrey();
             canvas.drawRect(note.onset * width_per_tick
                     , (Default.max_midi_note - note.pitch - 1) * height * line_height
