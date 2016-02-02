@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.Spinner;
 
 import com.csounds.CsoundObj;
@@ -222,11 +221,7 @@ public final class MasterFragment extends Fragment {
                                                         }
         );
 
-        scoreview = new ScoreView(getContext());
-
-        FrameLayout scoreArea =
-                (FrameLayout) view.findViewById(R.id.score_view);
-        scoreArea.addView(scoreview);
+        scoreview = (ScoreView) view.findViewById(R.id.score_view);
 
         ScoreView.number_patches = 1 + (int) (Score.getSeconds() / (Score.getResolution() / 2));
         ScoreView.edit_mode = false;

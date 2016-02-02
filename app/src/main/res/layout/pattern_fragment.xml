@@ -63,9 +63,9 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/pattern_view"
+    <joel.duet.musica.PatternView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:id="@+id/pattern_view"/>
 
 </LinearLayout>

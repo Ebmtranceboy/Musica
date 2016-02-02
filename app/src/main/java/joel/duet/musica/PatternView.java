@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -32,15 +33,29 @@ public final class PatternView extends View {
     private static float width_per_tick;
     private static int height;
     private static int number_ticks;
-    private final ScaleGestureDetector mScaleDetector;
+    private ScaleGestureDetector mScaleDetector;
 
     public static boolean edit_mode;
 
     // Absolutely NON static
     public final Pattern pattern = Track.getPatternSelected();
 
-    public PatternView(Context ctx) {
-        super(ctx);
+    public PatternView(Context context) {
+		super(context);
+		init(context);
+	}
+
+	public PatternView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init(context);
+	}
+
+	public PatternView(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+		init(context);
+	}
+
+    public void init(Context ctx) {
         //paint.setAntiAlias(true);
         mScaleDetector = new ScaleGestureDetector(ctx, new ScaleListener());
     }

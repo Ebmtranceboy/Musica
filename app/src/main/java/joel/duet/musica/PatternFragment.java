@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 
@@ -49,6 +48,7 @@ public final class PatternFragment extends Fragment {
         });
 
         for(String instr:CSD.mapInstr.keySet()) instrumentIds.add(instr);
+
         final ArrayAdapter<String> instruments_adapter =
                 new ArrayAdapter<>(getContext(),
                         android.R.layout.simple_spinner_item,
@@ -98,13 +98,7 @@ public final class PatternFragment extends Fragment {
             }
         });
 
-        // on Resume:
-
-        patternview = new PatternView(getContext());
-
-        final FrameLayout patternArea=
-                (FrameLayout)view.findViewById(R.id.pattern_view);
-        patternArea.addView(patternview);
+        patternview = (PatternView) view.findViewById(R.id.pattern_view);
 
         PatternView.edit_mode = ((Switch)view.findViewById(R.id.mode)).isChecked();
 
@@ -114,14 +108,12 @@ public final class PatternFragment extends Fragment {
         while(instr_selected<CSD.getNbInstruments() && !names[instr_selected].equals(name))
             instr_selected ++;
         instrument_spinner.setSelection(instr_selected);
-        instruments_adapter.notifyDataSetChanged();
 
         final Spinner resolution_spinner = (Spinner) view.findViewById(R.id.resolution);
         SimpleImageArrayAdapter adapter = new SimpleImageArrayAdapter(getContext(),Default.resolution_icons);
         resolution_spinner.setAdapter(adapter);
 
         resolution_spinner.setSelection(getArguments().getInt("resolution"));
-        adapter.notifyDataSetChanged();
 
         resolution_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

@@ -9,7 +9,8 @@ import android.graphics.Shader;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
+import android.util.AttributeSet;
+//import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -24,7 +25,7 @@ import java.util.List;
  * Created by joel on 22/01/16 at 23:18 at 08:57.
  */
 public final class ScoreView extends View {
-    private static final String TAG = "ScoreView";
+    //private static final String TAG = "ScoreView";
     // alternation between 16-bars (0), 8-bars(2), 4-bars(4), 2-bars(6) and 1-bars(8)
     private static final int[] order = {0, 8, 6, 8, 4, 8, 6, 8, 2, 8, 6, 8, 4, 8, 6, 8, 0};
     private static final Paint paint = new Paint();
@@ -56,11 +57,25 @@ public final class ScoreView extends View {
     private static int width;
     private static int height;
 
-    private final Context context;
-    private final ScaleGestureDetector mScaleDetector;
+    private Context context;
+    private ScaleGestureDetector mScaleDetector;
 
-    public ScoreView(Context ctx) {
-        super(ctx);
+    public ScoreView(Context context) {
+		super(context);
+		init(context);
+	}
+
+	public ScoreView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init(context);
+	}
+
+	public ScoreView(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+		init(context);
+	}
+
+	public void init(Context ctx) {
         paint.setAntiAlias(true);
 
         mScaleDetector = new ScaleGestureDetector(ctx, new ScaleListener());
