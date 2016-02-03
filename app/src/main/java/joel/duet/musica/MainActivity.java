@@ -5,7 +5,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
-//import android.util.Log;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +22,8 @@ import com.csounds.CsoundObj;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
 //import com.csounds.bindings.ui.CsoundButtonBinding;
 //import com.csounds.bindings.ui.CsoundSliderBinding;
 
@@ -36,7 +38,7 @@ public final class MainActivity extends AppCompatActivity
     ActionBarDrawerToggle drawerToggle;
     static Toolbar toolbar;
     public static Runnable sensible_code;
-    //private static final String TAG = "Musica";
+    private static final String TAG = "Musica";
 
     //Button startCsound, stopCsound;
 
@@ -69,7 +71,7 @@ public final class MainActivity extends AppCompatActivity
 
         Score.resetTracks();
         try {
-            //Log.i(TAG,"in:"+pref.getString("Tracks",""));
+            Log.i(TAG,"in:"+pref.getString("Tracks",""));
             Score.loadJSONTracks(new JSONObject(pref.getString("Tracks","")));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -169,7 +171,12 @@ public final class MainActivity extends AppCompatActivity
         editor.putString("Matrix",Matrix.serialize());
 
         try {
-            editor.putString("Tracks",Score.saveJSONTracks().toString(4));
+            editor.putString("Tracks",Score.saveJSONTracks().toString());
+            try {
+                csoundUtil.saveStringAsExternalFile(Score.saveJSONTracks().toString(),"musica.tracks");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             //Log.i(TAG,"out:"+Score.saveJSONTracks().toString(4));
         } catch (JSONException e) {
             e.printStackTrace();

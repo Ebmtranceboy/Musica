@@ -363,7 +363,7 @@ public final class ScoreView extends View {
                                 final Pattern extended = Track.getPatternSelected();
                                 for(int n=0; n<toJoin.getNbOfNotes();n++){
                                     final Pattern.Note note = toJoin.getNote(n);
-                                    extended.createNote(note.onset+extended.finish-extended.start,note.duration,note.pitch);
+                                    extended.createNote(note.onset+extended.finish-extended.start,note.duration,note.pitch,note.loudness);
                                 }
                                 extended.finish = toJoin.finish;
                                 track.deletePattern(toJoin);
@@ -384,7 +384,7 @@ public final class ScoreView extends View {
                                 if(note.onset < newPatternStart){
                                     if(note.onset+note.duration > newPatternStart) destroyCopy = true;
                                 } else{
-                                    copy.createNote(note.onset - newPatternStart,note.duration,note.pitch);
+                                    copy.createNote(note.onset - newPatternStart,note.duration,note.pitch,note.loudness);
                                     excess.add(note);
                                 }
                                 n++;
@@ -447,7 +447,7 @@ public final class ScoreView extends View {
                                     pattern.resolution = Focus.pattern.resolution;
                                     for (int n = 1; n <= Focus.pattern.getNbOfNotes(); n++) {
                                         final Pattern.Note note = Focus.pattern.getNote(n - 1);
-                                        pattern.createNote(note.onset, note.duration, note.pitch);
+                                        pattern.createNote(note.onset, note.duration, note.pitch,note.loudness);
                                     }
                                     if(tool == Tool.MOVE){
                                         Focus.track.deletePattern(Focus.pattern);
@@ -515,16 +515,16 @@ public final class ScoreView extends View {
                             pattern.start = start;
                             pattern.finish = finish;
                             pattern.setInstr(CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()])[0]);
-                            pattern.mPosY = -2500f; //somewhat around A440
+                            pattern.mPosY = Default.initial_pattern_height;
                         } else {
                             final Toast toast = Toast.makeText(context,
                                     "Please, create an instrument first", Toast.LENGTH_LONG);
                             toast.show();
                         }
                     }
-                    bar_begin = -1;
-                    invalidate();
                 }
+                bar_begin = -1;
+                invalidate();
                 mActivePointerId = MotionEvent.INVALID_POINTER_ID;
                 break;
             }

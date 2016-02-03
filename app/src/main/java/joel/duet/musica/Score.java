@@ -106,6 +106,7 @@ public final class Score {
                     note_obj.put("onset",note.onset);
                     note_obj.put("duration",note.duration);
                     note_obj.put("pitch",note.pitch);
+                    note_obj.put("loudness",note.loudness);
                     notes.put(note_obj);
                 }
                 pattern_obj.put("notes",notes);
@@ -166,7 +167,8 @@ public final class Score {
                     pattern.createNote(
                             note_obj.getInt("onset")
                             ,note_obj.getInt("duration")
-                            ,note_obj.getInt("pitch"));
+                            ,note_obj.getInt("pitch")
+                            ,note_obj.getInt("loudness"));
                 }
                 view_obj = pattern_obj.getJSONObject("view");
                 pattern.mPosX = (float)view_obj.getDouble("posX");
@@ -213,12 +215,12 @@ public final class Score {
 
             while(n<pattern.getNbOfNotes()){
                 Pattern.Note note = pattern.getNote(n);
-                fixed.createNote(note.onset, note.duration, note.pitch);
+                fixed.createNote(note.onset, note.duration, note.pitch, note.loudness);
                 lastOnset = note.onset;
                 n++;
                 while(n<pattern.getNbOfNotes() && pattern.getNote(n).onset > lastOnset){
                     note = pattern.getNote(n);
-                    fixed.createNote(note.onset,note.duration,note.pitch);
+                    fixed.createNote(note.onset,note.duration,note.pitch,note.loudness);
                     lastOnset = note.onset;
                     n++;
                 }
@@ -276,7 +278,8 @@ public final class Score {
                     list.add(new Pattern.Note(
                             delay_start + note.onset - lastOnset,
                             note.duration,
-                            note.pitch));
+                            note.pitch,
+                            note.loudness));
                 }
             }
             //for(Pattern.Note not:list)  Log.i(TAG,""+not.onset+" "+not.pitch);

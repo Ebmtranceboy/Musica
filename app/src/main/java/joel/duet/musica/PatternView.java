@@ -82,9 +82,10 @@ public final class PatternView extends View {
         PatternView.paint.setARGB(alpha, 255, 255, 255);
     }
 
-    private static void setFillGrey() {
+    private static void setFillGrey(int loudness) {
         PatternView.paint.setStyle(Paint.Style.FILL);
-        PatternView.paint.setColor(Color.parseColor("#DFDFDF"));
+        int grey = 178 + (loudness-1)*11;
+        PatternView.paint.setARGB(255, grey, grey, grey);
     }
 
     private static void drawReset(Canvas canvas) {
@@ -154,12 +155,12 @@ public final class PatternView extends View {
         for (int n = 1; n <= pattern.getNbOfNotes(); n++) {
             Pattern.setNoteSelected(n);
             final Pattern.Note note = Pattern.getNoteSelected();
-            setStrokeBlack();
+            setFillGrey(note.loudness);
             canvas.drawRect(note.onset * width_per_tick
                     , (Default.max_midi_note - note.pitch - 1) * height * line_height
                     , (note.onset + note.duration) * width_per_tick
                     , (Default.max_midi_note - note.pitch) * height * line_height, paint);
-            setFillGrey();
+            setStrokeBlack();
             canvas.drawRect(note.onset * width_per_tick
                     , (Default.max_midi_note - note.pitch - 1) * height * line_height
                     , (note.onset + note.duration) * width_per_tick
@@ -302,12 +303,12 @@ public final class PatternView extends View {
                         n++;
                     }
                     if (non_overlap) {
-                        pattern.createNote(start, finish - start, Default.max_midi_note - insertion_line);
+                        pattern.createNote(start, finish - start, Default.max_midi_note - insertion_line, Default.default_loudness);
                     }
-                    bar_begin = -1;
-                    invalidate();
                 }
+                bar_begin = -1;
                 mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+                invalidate();
                 break;
             }
 

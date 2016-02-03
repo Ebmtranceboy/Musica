@@ -60,7 +60,7 @@ public final class LiveFragment extends Fragment {
 
         // populate instr spinner
         final Spinner select_instr = (Spinner) view.findViewById(R.id.select_instr);
-        ArrayAdapter<CharSequence> instr_adapter = new ArrayAdapter<>(activity.getBaseContext(), android.R.layout.simple_spinner_item, CSD.mapInstr.keySet().toArray(new CharSequence[CSD.mapInstr.keySet().size()]));
+        ArrayAdapter<CharSequence> instr_adapter = new ArrayAdapter<>(activity.getBaseContext(), android.R.layout.simple_spinner_item, CSD.mapInstr.keySet().toArray(new CharSequence[CSD.getNbInstruments()]));
         select_instr.setAdapter(instr_adapter);
 
         Button playButton = (Button) view.findViewById(R.id.live_play);
@@ -121,7 +121,7 @@ public final class LiveFragment extends Fragment {
                                     key = keyboard.draw(touchX[id], touchY[id], true);
                                     //Log.i(TAG, "key=" + key);
 
-                                    csoundObj.sendScore("i\"Voicer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id+1) + " " + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " -12");
+                                    csoundObj.sendScore("i\"Voicer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id+1) + " " + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " " + CSD.pressure2dB(event.getPressure()));
 
                                 }
                             }

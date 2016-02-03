@@ -32,19 +32,18 @@ public final class Pattern {
     public float mPosX, mPosY;
     public int resolution;
 
-    // TODO Accent management
-
     public static class Note {
         public final int onset;
         public final int duration;
         public final int pitch;
-        Note(int o,int d, int p){onset=o;duration=d;pitch=p;}
+        public final int loudness;
+        Note(int o,int d, int p, int l){onset=o;duration=d;pitch=p;loudness=l;}
     }
 
-    public void createNote(int o,int d, int p){
+    public void createNote(int o,int d, int p, int l){
         int i = 0;
         while(i < mNotes.size() && mNotes.get(i).onset < o) i++;
-        mNotes.add(i,new Note(o,d,p));
+        mNotes.add(i,new Note(o,d,p,l));
     }
 
     public Note getNote(int n) {
@@ -85,6 +84,15 @@ public final class Pattern {
         for(Note note:mNotes){
             double dur = (double)note.duration/Default.ticks_per_second;
             list.add("" + dur);
+        }
+        return list;
+    }
+
+    public List<String> getPressureIndB(){
+        List<String> list = new ArrayList<>();
+        for(Note note:mNotes){
+            double db = (double)(3*(note.loudness-1)-22);
+            list.add("" + db);
         }
         return list;
     }

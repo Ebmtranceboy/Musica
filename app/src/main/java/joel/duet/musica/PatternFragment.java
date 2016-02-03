@@ -67,13 +67,41 @@ public final class PatternFragment extends Fragment {
                     }
                 });
 
+        view.findViewById(R.id.recenter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                patternview.pattern.mPosX = 0;
+                patternview.pattern.mPosY = Default.initial_pattern_height;
+                patternview.invalidate();
+            }
+        });
+
+        final Spinner resolution_spinner = (Spinner) view.findViewById(R.id.resolution);
+        SimpleImageArrayAdapter adapter = new SimpleImageArrayAdapter(getContext(),Default.resolution_icons);
+        resolution_spinner.setAdapter(adapter);
+
+        resolution_spinner.setSelection(getArguments().getInt("resolution"));
+
+        resolution_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                patternview.pattern.resolution = i;
+                patternview.invalidate();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         view.findViewById(R.id.preview).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String csd = Score.sendPatterns(patternview.pattern.singleton(),
                         patternview.pattern.start,
                         patternview.pattern.finish);
-                Log.i(TAG,csd);
+                Log.i(TAG, csd);
                 csoundObj.stop();
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
             }
@@ -107,25 +135,6 @@ public final class PatternFragment extends Fragment {
         while(instr_selected<CSD.getNbInstruments() && !names[instr_selected].equals(name))
             instr_selected ++;
         instrument_spinner.setSelection(instr_selected);
-
-        final Spinner resolution_spinner = (Spinner) view.findViewById(R.id.resolution);
-        SimpleImageArrayAdapter adapter = new SimpleImageArrayAdapter(getContext(),Default.resolution_icons);
-        resolution_spinner.setAdapter(adapter);
-
-        resolution_spinner.setSelection(getArguments().getInt("resolution"));
-
-        resolution_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                patternview.pattern.resolution = i;
-                patternview.invalidate();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
 
         return view;
     }

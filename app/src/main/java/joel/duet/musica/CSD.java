@@ -5,7 +5,7 @@ package joel.duet.musica;
 
 import android.text.TextUtils;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,14 +32,14 @@ public final class CSD {
                     + "\nnchnls = " + nchnls
                     + "\n0dbfs = " + zeroDbFs;
 
-    static Map<String, String> mapFX = new HashMap<>();
+    static Map<String, String> mapFX = new LinkedHashMap<>(); //new new HashMap<>();
 
     static int getNbEffects() {
         return mapFX.keySet().size();
     }
 
 
-    static Map<String, String> mapInstr = new HashMap<>();
+    static Map<String, String> mapInstr = new LinkedHashMap<>();//new HashMap<>();
 
     static int getNbInstruments() {
         return mapInstr.keySet().size();
@@ -140,13 +140,15 @@ public final class CSD {
             + "\nistp[] fillarray " + TextUtils.join(", ", pat.getWaits())
             + "\nilen sumarray istp"
             + "\nidur[] fillarray " + TextUtils.join(", ", pat.getDurationsInSeconds())
+            + "\nivel[] fillarray " + TextUtils.join(", ", pat.getPressureIndB())
             + "\nkstepnum init 0"
             + "\nkwait init istp[0]"
             + "\nif(gkmetro==1) then"
             + "\n   if(kwait==0) then"
             + "\n         kpch = ipch[kstepnum]"
             + "\n         kdur = idur[kstepnum]"
-            + "\n         event \"i\", \"" + instr + "\" ,0,kdur,kpch,-12"
+            + "\n         kvel = ivel[kstepnum]"
+            + "\n         event \"i\", \"" + instr + "\" ,0,kdur,kpch,kvel"
             + "\n         kstepnum += 1"
             + "\n         if(kstepnum>=" + n + ") then"
             + "\n            kstepnum = 0"
@@ -247,8 +249,15 @@ public final class CSD {
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-           instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, -12" : "") + "\n" + mapInstr.get(instr) + "\nendin";
+           instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5" : "") + "\n" + mapInstr.get(instr) + "\nendin";
         }
         return header + "\ngihand fiopen \"storage/sdcard0/unisonMelody.txt\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
+    }
+
+    public static int pressure2dB(float pressure){
+        return Math.round(3*(pressure-32)/32-22);
+    }
+    public static int dB2Loudness(float dB){
+        return Math.round((dB+22)/3+1);
     }
 }

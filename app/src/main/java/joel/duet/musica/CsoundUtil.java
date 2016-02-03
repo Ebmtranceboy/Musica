@@ -26,9 +26,11 @@
 package joel.duet.musica;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -94,6 +96,22 @@ public final class CsoundUtil {
         return f;
     }
 
+    public void saveStringAsExternalFile(String str, String filename) throws IOException {
+        final File root = Environment.getExternalStorageDirectory();
+        try {
+            if (root.canWrite()) {
+                final FileWriter filewriter =
+                        new FileWriter(
+                                new File(root, filename));
+                final BufferedWriter out = new BufferedWriter(filewriter);
+                out.write(str);
+                out.close();
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Could not write file " + e.getMessage());
+        }
+    }
+
     protected String getExternalFileAsString(String filename) {
         final File root = Environment.getExternalStorageDirectory();
         try {
@@ -147,7 +165,9 @@ public final class CsoundUtil {
                 int pitch = (int) Math.round(Double.parseDouble(matcher.group(3)) * 100);
                 int key = pitch % 100;
                 int oct = (pitch - key) / 100 - 3;
-                pattern.createNote(onset - pattern.start, duration, oct * 12 + key);
+
+                int loudness = CSD.pressure2dB(Float.parseFloat(matcher.group(4)));
+                pattern.createNote(onset - pattern.start, duration, oct * 12 + key,loudness);
             }
         }
         pattern.finish += 1;//28; // a full note
@@ -189,9 +209,8 @@ public final class CsoundUtil {
         int score_size = score_lines.size();
         double[] differences = new double[score_size];
         double[] lengths = new double[score_size];
-        int[] durations = new int[score_size];
-        int[] onsets = new int[score_size];
         int[] pitches = new int[score_size];
+        int[] loudnesses = new int[score_size];
 
         for (int i = 0; i < score_size; i++) {
             String[] items = score_lines.get(i).split(" +");
@@ -201,6 +220,7 @@ public final class CsoundUtil {
             int key = pitch % 100;
             int oct = (pitch - key) / 100 - 3;
             pitches[i] = oct * 12 + key;
+            loudnesses[i] = CSD.dB2Loudness(Float.parseFloat(items[5]));
         }
 
         for (int i = 0; i < score_size - 1; i++)
@@ -210,7 +230,7 @@ public final class CsoundUtil {
         pattern.start = 0;
         pattern.finish = 0;
         for (int i = 0; i < score_size; i++) {
-            pattern.createNote(pattern.finish, (int)Math.round(lengths[i]*Default.ticks_per_second), pitches[i]);
+            pattern.createNote(pattern.finish, (int)Math.round(lengths[i]*Default.ticks_per_second), pitches[i],loudnesses[i]);
             int quant = Math.round(quantize(differences[i] * 96. * tempo / 60.) / 3);
             pattern.finish += quant;
         }
