@@ -5,12 +5,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.ToggleButton;
 
 import com.csounds.CsoundObj;
 
@@ -46,6 +50,15 @@ public final class PatternFragment extends Fragment {
                 PatternView.edit_mode = !PatternView.edit_mode;
             }
         });
+
+        final ToggleButton loudnessButton = (ToggleButton) view.findViewById(R.id.loudness);
+                loudnessButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        PatternView.loudness_mode = isChecked;
+                        if (isChecked) loudnessButton.setBackgroundResource(R.drawable.ic_loudness_on);
+                        else loudnessButton.setBackgroundResource(R.drawable.ic_loudness_off);
+                    }
+                });
 
         for(String instr:CSD.mapInstr.keySet()) instrumentIds.add(instr);
 
@@ -126,6 +139,7 @@ public final class PatternFragment extends Fragment {
         });
 
         patternview = (PatternView) view.findViewById(R.id.pattern_view);
+        PatternView.note_loudness = (ImageView) view.findViewById(R.id.note_loudness);
 
         PatternView.edit_mode = ((Switch)view.findViewById(R.id.mode)).isChecked();
 

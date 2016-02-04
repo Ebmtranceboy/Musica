@@ -36,7 +36,7 @@ public final class Pattern {
         public final int onset;
         public final int duration;
         public final int pitch;
-        public final int loudness;
+        public int loudness;
         Note(int o,int d, int p, int l){onset=o;duration=d;pitch=p;loudness=l;}
     }
 

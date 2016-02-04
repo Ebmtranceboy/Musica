@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.graphics.Matrix;
+import android.widget.ImageView;
 
 /**
  *
@@ -37,6 +38,8 @@ public final class PatternView extends View {
     private ScaleGestureDetector mScaleDetector;
 
     public static boolean edit_mode;
+    public static boolean loudness_mode;
+    public static ImageView note_loudness;
 
     // Absolutely NON static
     public final Pattern pattern = Track.getPatternSelected();
@@ -212,6 +215,7 @@ public final class PatternView extends View {
     public boolean onTouchEvent(@NonNull MotionEvent ev) {
         // Let the ScaleGestureDetector inspect all events.
         mScaleDetector.onTouchEvent(ev);
+        note_loudness.setVisibility(INVISIBLE);
 
         final int action = ev.getAction();
         switch (action & MotionEvent.ACTION_MASK) {
@@ -238,13 +242,35 @@ public final class PatternView extends View {
                         n++;
                     }
 
-                    if (!existing_note) {
-                        bar_begin = closestX(coords[0]);
-                        bar_end = bar_begin;
-                        invalidate();
+                    if (!existing_note ) {
+                        if(!loudness_mode) {
+                            bar_begin = closestX(coords[0]);
+                            bar_end = bar_begin;
+                        }
                     } else {
-                        pattern.deleteNote(note);
-                        invalidate();
+                        if(loudness_mode){
+                            note.loudness = note.loudness % 8 + 1;
+                            note_loudness.setImageResource(Default.loudness_icons[8-note.loudness]);
+                            note_loudness.setVisibility(VISIBLE);
+                        } else pattern.deleteNote(note);
+                    }
+                    invalidate();
+                } else if(loudness_mode){
+                    insertion_line = closestY(coords[1]);
+                    boolean existing_note = false;
+                    int n = 1;
+                    while (n <= pattern.getNbOfNotes() && !existing_note) {
+                        Pattern.setNoteSelected(n);
+                        note = Pattern.getNoteSelected();
+                        existing_note =
+                                note.pitch == Default.max_midi_note - insertion_line
+                                        && note.onset * width / number_ticks <= coords[0]
+                                        && coords[0] <= (note.onset + note.duration) * width_per_tick;
+                        n++;
+                    }
+                    if(existing_note) {
+                        note_loudness.setImageResource(Default.loudness_icons[8-note.loudness]);
+                        note_loudness.setVisibility(VISIBLE);
                     }
                 }
 

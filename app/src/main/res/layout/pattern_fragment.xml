@@ -22,6 +22,15 @@
             android:textOff="Visit"
             android:textOn="Edit" />
 
+        <ToggleButton
+            android:id="@+id/loudness"
+            android:background="@drawable/ic_loudness_off"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOn=""
+            android:textOff=""
+            android:layout_weight="1"/>
+
         <Spinner
             android:id="@+id/instrument"
             android:layout_width="match_parent"
@@ -72,9 +81,18 @@
 
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <joel.duet.musica.PatternView
         android:id="@+id/pattern_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/note_loudness"
+            android:contentDescription="@string/loudness_label"/>
+    </RelativeLayout>
 
 </LinearLayout>

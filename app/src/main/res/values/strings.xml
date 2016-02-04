@@ -58,6 +58,7 @@
     <string name="save_project_label">Save</string>
     <string name="general_options_label">General</string>
     <string name="recenter_button_label">Recenter</string>
+    <string name="loudness_label">Loudness</string>
     <string-array name="oct_array">
         <item>1</item>
         <item>2</item>
