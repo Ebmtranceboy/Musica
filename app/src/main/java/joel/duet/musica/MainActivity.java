@@ -18,6 +18,9 @@ import android.view.ViewTreeObserver;
 
 import com.csounds.CsoundObj;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 //import com.csounds.bindings.ui.CsoundButtonBinding;
 //import com.csounds.bindings.ui.CsoundSliderBinding;
 
@@ -46,7 +49,7 @@ public final class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PreferenceManager.getInstance(csoundUtil).initialize(this);
+        PreferenceManager.getInstance().initialize(this);
 
         setContentView(R.layout.activity_main);
         csoundObj.setMessageLoggingEnabled(true);
@@ -127,7 +130,7 @@ public final class MainActivity extends AppCompatActivity
             }
         }
 
-        PreferenceManager.getInstance(csoundUtil).savePreferences();
+        PreferenceManager.getInstance().savePreferences();
     }
 
     @Override
@@ -203,10 +206,45 @@ public final class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_material) {
 
         } else if (id == R.id.new_project) {
+            sensible_code = new Runnable() {
+                @Override
+                public void run() {
+                    PreferenceManager.resetProject();
+                    fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                            new WelcomeFragment(),
+                            "WELCOME").commit();
+                        toolbar.setTitle("Musica");
+                        currentFragment = State.WELCOME;
+                }
+            };
+
+            final ConfirmationFragment confirmation = new ConfirmationFragment();
+            confirmation.show(fragmentManager, "New project Fragment");
 
         } else if (id == R.id.open_project) {
+            sensible_code = new Runnable() {
+                @Override
+                public void run() {
+                    PreferenceManager.resetProject();
+                    try {
+                        JSONObject project = new JSONObject(csoundUtil.getExternalFileAsString("myProject.mus"));
+                        PreferenceManager.loadProject(project);
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
+                    }
+                    fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                            new WelcomeFragment(),
+                            "WELCOME").commit();
+                        toolbar.setTitle("Musica");
+                        currentFragment = State.WELCOME;
+                }
+            };
 
-        } else if (id == R.id.save_project) {
+            final ConfirmationFragment confirmation = new ConfirmationFragment();
+            confirmation.show(fragmentManager, "Open project Fragment");
+
+        } else if (id == R.id.save_project) {//GZIPOutputStream
+            csoundUtil.saveStringAsExternalFile(PreferenceManager.project().toString(), "myProject.mus");
 
         } else if (id == R.id.nav_preferences) {
 

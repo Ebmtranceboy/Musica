@@ -23,7 +23,6 @@ public final class PreferenceManager {
     private static final String MATRIX_KEY = "Matrix";
     private static final String TRACKS_KEY = "Tracks";
     private static final String PROJECT_KEY = "Project";
-    private static CsoundUtil csoundUtil;
 
     @SuppressLint("CommitPrefEdits")
     public void initialize(Context context) {
@@ -35,8 +34,7 @@ public final class PreferenceManager {
         }
     }
 
-    public static PreferenceManager getInstance(CsoundUtil util) {
-        csoundUtil = util;
+    public static PreferenceManager getInstance() {
         if (self == null) {
             self = new PreferenceManager();
         }
@@ -46,7 +44,7 @@ public final class PreferenceManager {
     private PreferenceManager() {
     }
 
-    public void savePreferences() {//GZIPOutputStream
+    public static JSONObject project(){
         JSONObject json = new JSONObject();
 
         try {
@@ -57,23 +55,25 @@ public final class PreferenceManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return json;
+    }
 
-        try {
-            csoundUtil.saveStringAsExternalFile(saveJSONTracks().toString(), "musica.tracks");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+    public void savePreferences() {
+        JSONObject json = project();
         editor.putString(PROJECT_KEY,json.toString());
         editor.commit();
     }
 
-    private void loadPreferences(){
-
+    public static void resetProject(){
         CSD.mapInstr.clear();
         CSD.mapFX.clear();
         Score.resetTracks();
         joel.duet.musica.Matrix.update();
+    }
+
+    private void loadPreferences(){
+
+        resetProject();
         JSONObject project;
 
         String feed = preferences.getString(PROJECT_KEY, null);
@@ -87,16 +87,15 @@ public final class PreferenceManager {
 
         } else{
             try {
-                project = new JSONObject("{\"Orchestra\":[],\"FX\":[],\"idTrackSelected\":0,\"idPatternSelected\":0,\"tracks\":[],\"Matrix\":\"FF\"}");
+                project = new JSONObject(Default.empty_project);
                 loadProject(project);
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
         }
-
    }
 
-    private void loadProject(JSONObject project) throws JSONException{
+    public static void loadProject(JSONObject project) throws JSONException{
         loadJSONOrchestra(project.getJSONArray(ORCHESTRA_KEY));
         loadJSONFX(project.getJSONArray(FX_KEY));
         loadJSONTracks(project.getJSONObject(TRACKS_KEY));
