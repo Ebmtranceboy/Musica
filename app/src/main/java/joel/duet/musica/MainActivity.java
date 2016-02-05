@@ -1,11 +1,10 @@
 package joel.duet.musica;
 
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,7 +19,6 @@ import android.view.ViewTreeObserver;
 import com.csounds.CsoundObj;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -32,13 +30,13 @@ public final class MainActivity extends AppCompatActivity
 
     static CsoundObj csoundObj = new CsoundObj(false, true);
     final CsoundUtil csoundUtil = new CsoundUtil(this);
-    static SharedPreferences pref;
-    static SharedPreferences.Editor editor;
+    //static SharedPreferences pref;
+    //static SharedPreferences.Editor editor;
     private DrawerLayout mDrawer;
     ActionBarDrawerToggle drawerToggle;
     static Toolbar toolbar;
     public static Runnable sensible_code;
-    private static final String TAG = "Musica";
+    //private static final String TAG = "Musica";
 
     //Button startCsound, stopCsound;
 
@@ -52,31 +50,7 @@ public final class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int MODE_PRIVATE = 0;
-        pref = getApplicationContext().getSharedPreferences("MUSICA_PREFS",
-                MODE_PRIVATE);
-        editor = pref.edit();
-
-        for(String instr:pref.getStringSet("Orchestra",CSD.mapInstr.keySet())) {
-            CSD.mapInstr.put(instr, pref.getString(instr, ""));
-        }
-
-        for(String instr:pref.getStringSet("FX",CSD.mapFX.keySet())) {
-            CSD.mapFX.put(instr, pref.getString(instr, ""));
-        }
-
-        Matrix.update();
-        Matrix.unserialize(pref.getString("Matrix", "FF"));
-
-
-        Score.resetTracks();
-        try {
-            Log.i(TAG,"in:"+pref.getString("Tracks",""));
-            Score.loadJSONTracks(new JSONObject(pref.getString("Tracks","")));
-        } catch (JSONException e) {
-            e.printStackTrace();
-            e.getCause();
-        }
+        PreferenceManager.getInstance().initialize(this);
 
         setContentView(R.layout.activity_main);
         csoundObj.setMessageLoggingEnabled(true);
@@ -88,11 +62,11 @@ public final class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 csoundObj.stop();
-                csoundObj = new CsoundObj(false,true);
+                csoundObj = new CsoundObj(false, true);
                 csoundObj.setMessageLoggingEnabled(true);
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
-                                    new WelcomeFragment(),
-                                    "WELCOME").commit();
+                        new WelcomeFragment(),
+                        "WELCOME").commit();
                 toolbar.setTitle("Musica");
                 currentFragment = State.WELCOME;
             }
@@ -118,70 +92,60 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
 
-          if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
             final FragmentManager fragmentManager = getSupportFragmentManager();
-            if(currentFragment==State.INSTRUMENT){
-                InstrumentFragment fragment = (InstrumentFragment)fragmentManager.findFragmentByTag("INSTRUMENT");
-                CSD.mapInstr.put(fragment.getInstrName(),fragment.getInstrCode());
+            if (currentFragment == State.INSTRUMENT) {
+                InstrumentFragment fragment = (InstrumentFragment) fragmentManager.findFragmentByTag("INSTRUMENT");
+                CSD.mapInstr.put(fragment.getInstrName(), fragment.getInstrCode());
 
                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new OrchestraFragment(),
-                                    "ORCHESTRA").commit();
+                        new OrchestraFragment(),
+                        "ORCHESTRA").commit();
                 toolbar.setTitle("Orchestra");
                 currentFragment = State.ORCHESTRA;
-            } else if(currentFragment==State.EFFECT){
-                EffectFragment fragment = (EffectFragment)fragmentManager.findFragmentByTag("EFFECT");
+            } else if (currentFragment == State.EFFECT) {
+                EffectFragment fragment = (EffectFragment) fragmentManager.findFragmentByTag("EFFECT");
                 CSD.mapFX.put(fragment.getEffectName(), fragment.getEffectCode());
 
                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new FXFragment(),
-                                    "FX").commit();
+                        new FXFragment(),
+                        "FX").commit();
                 toolbar.setTitle("FX");
                 currentFragment = State.FX;
-            } else if(currentFragment==State.PATTERN){
+            } else if (currentFragment == State.PATTERN) {
                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new MasterFragment(),
-                                    "MASTER").commit();
+                        new MasterFragment(),
+                        "MASTER").commit();
                 toolbar.setTitle("Master Score");
                 currentFragment = State.MASTER;
-            }
-              else {
-                if(currentFragment != State.WELCOME){
+            } else {
+                if (currentFragment != State.WELCOME) {
                     fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new WelcomeFragment(),
-                                    "WELCOME").commit();
-                toolbar.setTitle("Musica");
-                currentFragment = State.WELCOME;
+                            new WelcomeFragment(),
+                            "WELCOME").commit();
+                    toolbar.setTitle("Musica");
+                    currentFragment = State.WELCOME;
                 } else super.onBackPressed();
             }
         }
 
-        editor.putStringSet("Orchestra",CSD.mapInstr.keySet());
-        for(String str:CSD.mapInstr.keySet()) {
-            //Log.i(TAG,"out :" + str);
-            editor.putString(str, CSD.mapInstr.get(str));
-        }
-        editor.putStringSet("FX", CSD.mapFX.keySet());
-        for(String str:CSD.mapFX.keySet()) {
-            //Log.i(TAG,"out :" + str);
-            editor.putString(str, CSD.mapFX.get(str));
-        }
-        editor.putString("Matrix",Matrix.serialize());
-
+        PreferenceManager.getInstance().setOrchestra(CSD.mapInstr.keySet());
+        PreferenceManager.getInstance().setFX(CSD.mapFX.keySet());
+        PreferenceManager.getInstance().setMatrix(Matrix.serialize());
         try {
-            editor.putString("Tracks",Score.saveJSONTracks().toString());
+            PreferenceManager.getInstance().setTracks(Score.saveJSONTracks().toString());
             try {
-                csoundUtil.saveStringAsExternalFile(Score.saveJSONTracks().toString(),"musica.tracks");
+                csoundUtil.saveStringAsExternalFile(Score.saveJSONTracks().toString(), "musica.tracks");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //Log.i(TAG,"out:"+Score.saveJSONTracks().toString(4));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        editor.apply();
+
+
     }
 
     @Override
@@ -295,7 +259,7 @@ public final class MainActivity extends AppCompatActivity
                             InstrumentFragment fragment = (InstrumentFragment) fragmentManager.findFragmentByTag("INSTRUMENT");
                             Bundle bundle = new Bundle();
                             String instrName = fragment.getInstrName();
-                            bundle.putString("instrName",instrName);
+                            bundle.putString("instrName", instrName);
                             fragment = new InstrumentFragment();
                             fragment.setArguments(bundle);
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
@@ -319,7 +283,7 @@ public final class MainActivity extends AppCompatActivity
                             EffectFragment fr = (EffectFragment) fragmentManager.findFragmentByTag("EFFECT");
                             bundle = new Bundle();
                             String effectName = fr.getEffectName();
-                            bundle.putString("effectName",effectName);
+                            bundle.putString("effectName", effectName);
                             fr = new EffectFragment();
                             fr.setArguments(bundle);
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
