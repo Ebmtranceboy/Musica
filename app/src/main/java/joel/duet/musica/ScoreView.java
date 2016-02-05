@@ -409,7 +409,7 @@ public final class ScoreView extends View {
 
                             } else {
                                 Focus.save();
-                                FragmentManager fragmentManager = MasterFragment.activity.getSupportFragmentManager();
+                                FragmentManager fragmentManager = ScoreFragment.activity.getSupportFragmentManager();
 
                                 Bundle bundle = new Bundle();
                                 bundle.putInt("resolution", Track.getPatternSelected().resolution);

@@ -21,10 +21,10 @@ import java.util.List;
  * Created by joel on 22/01/16 at 21:39 at 21:40 at 09:53 at 10:29 at 10:31 at 12:27 at 15:25 at 10:05.
  */
 
-public final class MasterFragment extends Fragment {
+public final class ScoreFragment extends Fragment {
     private final LinkedList<Integer> bars = new LinkedList<>();
     private static Spinner edition_spinner;
-    private static final String TAG = "Master";
+    private static final String TAG = "ScoreFragment";
 
     private static ScoreView scoreview;
     private static ArrayAdapter<Integer> bars_adapter;
@@ -40,7 +40,7 @@ public final class MasterFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
-        final View view = inflater.inflate(R.layout.master_fragment, container, false);
+        final View view = inflater.inflate(R.layout.score_fragment, container, false);
 
 
         view.findViewById(R.id.mode).setOnClickListener(new View.OnClickListener() {

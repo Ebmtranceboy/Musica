@@ -96,7 +96,7 @@ public final class CsoundUtil {
         return f;
     }
 
-    public void saveStringAsExternalFile(String str, String filename) throws IOException {
+    public void saveStringAsExternalFile(String str, String filename) {
         final File root = Environment.getExternalStorageDirectory();
         try {
             if (root.canWrite()) {
@@ -241,4 +241,5 @@ public final class CsoundUtil {
         Track.setPatternSelected(idPatternSelected);
 
     }
+
 }

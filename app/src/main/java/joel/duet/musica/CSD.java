@@ -257,7 +257,6 @@ public final class CSD {
     public static int pressure2dB(float pressure){
         return Math.round(3*(pressure-32)/32-22);
     }
-    public static int dB2Loudness(float dB){
-        return Math.round((dB+22)/3+1);
-    }
+    public static int dB2Loudness(float dB){        return Math.round((dB+22)/3+1);}
+    public static int loudness2dB(int loudness){        return (loudness-1)*3-22; }
 }

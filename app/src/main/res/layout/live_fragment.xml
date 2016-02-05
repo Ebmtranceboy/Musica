@@ -35,6 +35,15 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2" />
+        <ToggleButton
+            android:id="@+id/loudness"
+            android:background="@drawable/ic_loudness_off"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textOn=""
+            android:textOff=""
+            android:layout_weight="1"/>
+
     </TableRow>
 
     <SeekBar

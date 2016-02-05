@@ -18,10 +18,6 @@ import android.view.ViewTreeObserver;
 
 import com.csounds.CsoundObj;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-
 //import com.csounds.bindings.ui.CsoundButtonBinding;
 //import com.csounds.bindings.ui.CsoundSliderBinding;
 
@@ -41,7 +37,7 @@ public final class MainActivity extends AppCompatActivity
     //Button startCsound, stopCsound;
 
     public enum State {
-        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, MASTER, PATTERN //, SCORE, PREFERENCES, MATERIAL
+        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, SCORE, PATTERN //, MASTER, PREFERENCES, MATERIAL
     }
 
     static State currentFragment;
@@ -50,7 +46,7 @@ public final class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PreferenceManager.getInstance().initialize(this);
+        PreferenceManager.getInstance(csoundUtil).initialize(this);
 
         setContentView(R.layout.activity_main);
         csoundObj.setMessageLoggingEnabled(true);
@@ -116,10 +112,10 @@ public final class MainActivity extends AppCompatActivity
                 currentFragment = State.FX;
             } else if (currentFragment == State.PATTERN) {
                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                        new MasterFragment(),
-                        "MASTER").commit();
-                toolbar.setTitle("Master Score");
-                currentFragment = State.MASTER;
+                        new ScoreFragment(),
+                        "SCORE").commit();
+                toolbar.setTitle("Score");
+                currentFragment = State.SCORE;
             } else {
                 if (currentFragment != State.WELCOME) {
                     fragmentManager.beginTransaction().replace(R.id.mainFrame,
@@ -131,21 +127,7 @@ public final class MainActivity extends AppCompatActivity
             }
         }
 
-        PreferenceManager.getInstance().setOrchestra(CSD.mapInstr.keySet());
-        PreferenceManager.getInstance().setFX(CSD.mapFX.keySet());
-        PreferenceManager.getInstance().setMatrix(Matrix.serialize());
-        try {
-            PreferenceManager.getInstance().setTracks(Score.saveJSONTracks().toString());
-            try {
-                csoundUtil.saveStringAsExternalFile(Score.saveJSONTracks().toString(), "musica.tracks");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
+        PreferenceManager.getInstance(csoundUtil).savePreferences();
     }
 
     @Override
@@ -181,30 +163,12 @@ public final class MainActivity extends AppCompatActivity
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if (id == R.id.nav_live) {
-            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new LiveFragment(),
-                    "LIVE").commit();
-            toolbar.setTitle("Live");
-            currentFragment = State.LIVE;
-
-        } else if (id == R.id.nav_orchestra) {
+        if (id == R.id.nav_orchestra) {
             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                     new OrchestraFragment(),
                     "ORCHESTRA").commit();
             toolbar.setTitle("Orchestra");
             currentFragment = State.ORCHESTRA;
-
-        } else if (id == R.id.nav_score) {
-
-        } else if (id == R.id.nav_preferences) {
-
-        } else if (id == R.id.nav_fx) {
-            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new FXFragment(),
-                    "FX").commit();
-            toolbar.setTitle("FX");
-            currentFragment = State.FX;
 
         } else if (id == R.id.nav_patchbay) {
             fragmentManager.beginTransaction().replace(R.id.mainFrame,
@@ -213,14 +177,38 @@ public final class MainActivity extends AppCompatActivity
             toolbar.setTitle("Patch Bay");
             currentFragment = State.PATCHBAY;
 
-        } else if (id == R.id.nav_master) {
+        } else if (id == R.id.nav_live) {
             fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new MasterFragment(),
-                    "MASTER").commit();
-            toolbar.setTitle("Master Score");
-            currentFragment = State.MASTER;
+                    new LiveFragment(),
+                    "LIVE").commit();
+            toolbar.setTitle("Live");
+            currentFragment = State.LIVE;
+
+        } else if (id == R.id.nav_fx) {
+            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                    new FXFragment(),
+                    "FX").commit();
+            toolbar.setTitle("FX");
+            currentFragment = State.FX;
+
+        } else if (id == R.id.nav_score) {
+            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                    new ScoreFragment(),
+                    "SCORE").commit();
+            toolbar.setTitle("Score");
+            currentFragment = State.SCORE;
+
+        } else if (id == R.id.nav_master) {
 
         } else if (id == R.id.nav_material) {
+
+        } else if (id == R.id.new_project) {
+
+        } else if (id == R.id.open_project) {
+
+        } else if (id == R.id.save_project) {
+
+        } else if (id == R.id.nav_preferences) {
 
         }
 
@@ -292,11 +280,11 @@ public final class MainActivity extends AppCompatActivity
                             toolbar.setTitle(effectName);
                             break;
 
-                        case MASTER:
+                        case SCORE:
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new MasterFragment(),
-                                    "MASTER").commit();
-                            toolbar.setTitle("Master Score");
+                                    new ScoreFragment(),
+                                    "SCORE").commit();
+                            toolbar.setTitle("Score");
                             break;
                         case PATTERN:
                             bundle = new Bundle();

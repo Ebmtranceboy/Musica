@@ -10,7 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
+import android.widget.ToggleButton;
 
 import com.csounds.CsoundObj;
 
@@ -28,6 +30,7 @@ public final class LiveFragment extends Fragment {
     int touchIds[] = new int[10];
     float touchX[] = new float[10];
     float touchY[] = new float[10];
+    static private boolean loudness_mode;
 
     @Override
     public void onAttach(Context context) {
@@ -62,6 +65,16 @@ public final class LiveFragment extends Fragment {
         final Spinner select_instr = (Spinner) view.findViewById(R.id.select_instr);
         ArrayAdapter<CharSequence> instr_adapter = new ArrayAdapter<>(activity.getBaseContext(), android.R.layout.simple_spinner_item, CSD.mapInstr.keySet().toArray(new CharSequence[CSD.getNbInstruments()]));
         select_instr.setAdapter(instr_adapter);
+
+        final ToggleButton loudnessButton = (ToggleButton) view.findViewById(R.id.loudness);
+                loudnessButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        loudness_mode = isChecked;
+                        if (isChecked)
+                            loudnessButton.setBackgroundResource(R.drawable.ic_loudness_on);
+                        else loudnessButton.setBackgroundResource(R.drawable.ic_loudness_off);
+                    }
+                });
 
         Button playButton = (Button) view.findViewById(R.id.live_play);
         Button recordButton = (Button) view.findViewById(R.id.live_record);
@@ -121,7 +134,12 @@ public final class LiveFragment extends Fragment {
                                     key = keyboard.draw(touchX[id], touchY[id], true);
                                     //Log.i(TAG, "key=" + key);
 
-                                    csoundObj.sendScore("i\"Voicer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id+1) + " " + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " " + CSD.pressure2dB(event.getPressure()));
+                                    csoundObj.sendScore("i\"Voicer\" 0 0 \""
+                                            + select_instr.getSelectedItem() + "\" " + (id + 1) + " "
+                                            + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " "
+                                            + (loudness_mode ?
+                                                CSD.pressure2dB(event.getPressure()) :
+                                                CSD.loudness2dB(Default.default_loudness)));
 
                                 }
                             }
@@ -139,7 +157,7 @@ public final class LiveFragment extends Fragment {
                         if (id != -1) {
                             touchIds[id] = -1;
 
-                            csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id+1));
+                            csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id + 1));
 
                             keyboard.draw(touchX[id], touchY[id], false);
                             keyboard.show();
@@ -150,6 +168,8 @@ public final class LiveFragment extends Fragment {
                 return true;
             }
         });
+
+        loudness_mode = false;
 
         return view;
     }
