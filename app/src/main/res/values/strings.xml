@@ -59,6 +59,10 @@
     <string name="general_options_label">General</string>
     <string name="recenter_button_label">Recenter</string>
     <string name="loudness_label">Loudness</string>
+    <string name="dialog_open">Open:</string>
+    <string name="dialog_save">Save As:</string>
+    <string name="dialog_folder">Folder Select:</string>
+    <string name="new_folder_label">New Folder</string>
     <string-array name="oct_array">
         <item>1</item>
         <item>2</item>

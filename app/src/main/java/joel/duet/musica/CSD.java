@@ -251,7 +251,7 @@ public final class CSD {
             resets += "\nga_" + instr + "_R = 0";
            instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5" : "") + "\n" + mapInstr.get(instr) + "\nendin";
         }
-        return header + "\ngihand fiopen \"storage/sdcard0/unisonMelody.txt\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
+        return header + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
     }
 
     public static int pressure2dB(float pressure){

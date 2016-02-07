@@ -85,7 +85,7 @@ public final class LiveFragment extends Fragment {
             public void onClick(View view) {
                 csoundObj.stop();
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.csd()));
-                csoundObj.sendScore(activity.csoundUtil.getExternalFileAsString("unisonMelody.txt").replaceAll("i +\\w+ +", "i\"" + select_instr.getSelectedItem() + "\" "));
+                csoundObj.sendScore(activity.csoundUtil.getExternalFileAsString(Default.score_events_absoluteFilePath).replaceAll("i +\\w+ +", "i\"" + select_instr.getSelectedItem() + "\" "));
             }
         });
 

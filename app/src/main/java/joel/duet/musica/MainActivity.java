@@ -2,9 +2,11 @@ package joel.duet.musica;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 //import android.util.Log;
+import android.support.v7.view.ContextThemeWrapper;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +22,8 @@ import com.csounds.CsoundObj;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
 
 //import com.csounds.bindings.ui.CsoundButtonBinding;
 //import com.csounds.bindings.ui.CsoundSliderBinding;
@@ -155,6 +159,24 @@ public final class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    File csd;
+
+    private void OnFileChosen(File file) {
+        csd = file;
+        PreferenceManager.resetProject();
+        try {
+            JSONObject project = new JSONObject(csoundUtil.getExternalFileAsString(csd.getAbsolutePath()));
+            PreferenceManager.loadProject(project);
+        } catch (JSONException e1) {
+            e1.printStackTrace();
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
+                new WelcomeFragment(),
+                "WELCOME").commit();
+        toolbar.setTitle("Musica");
+        currentFragment = State.WELCOME;
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -213,8 +235,8 @@ public final class MainActivity extends AppCompatActivity
                     fragmentManager.beginTransaction().replace(R.id.mainFrame,
                             new WelcomeFragment(),
                             "WELCOME").commit();
-                        toolbar.setTitle("Musica");
-                        currentFragment = State.WELCOME;
+                    toolbar.setTitle("Musica");
+                    currentFragment = State.WELCOME;
                 }
             };
 
@@ -225,28 +247,54 @@ public final class MainActivity extends AppCompatActivity
             sensible_code = new Runnable() {
                 @Override
                 public void run() {
-                    PreferenceManager.resetProject();
-                    try {
-                        JSONObject project = new JSONObject(csoundUtil.getExternalFileAsString("myProject.mus"));
-                        PreferenceManager.loadProject(project);
-                    } catch (JSONException e1) {
-                        e1.printStackTrace();
+                    SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
+                            new ContextThemeWrapper(MainActivity.this, R.style.csoundAlertDialogStyle),
+                            "FileOpen..",
+                            new SimpleFileDialog.SimpleFileDialogListener() {
+                                @Override
+                                public void onChosenDir(String chosenDir) {
+                                    MainActivity.this.OnFileChosen(new File(chosenDir));
+                                }
+                            }
+                    );
+                    if (csd != null) {
+                        fileOpenDialog.default_file_name = csd.getAbsolutePath();
+                    } else {
+                        fileOpenDialog.default_file_name = Environment.getExternalStorageDirectory().getAbsolutePath();
                     }
-                    fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                            new WelcomeFragment(),
-                            "WELCOME").commit();
-                        toolbar.setTitle("Musica");
-                        currentFragment = State.WELCOME;
-                }
+                    fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
+               }
             };
 
             final ConfirmationFragment confirmation = new ConfirmationFragment();
             confirmation.show(fragmentManager, "Open project Fragment");
 
         } else if (id == R.id.save_project) {//GZIPOutputStream
-            csoundUtil.saveStringAsExternalFile(PreferenceManager.project().toString(), "myProject.mus");
+            SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
+                    new ContextThemeWrapper(MainActivity.this, R.style.csoundAlertDialogStyle),
+                    "FileSave..",
+                    new SimpleFileDialog.SimpleFileDialogListener() {
+                        @Override
+                        public void onChosenDir(String chosenDir) {
+                            int index = chosenDir.indexOf("//");
+                            if (index >= 0) {
+                                chosenDir = chosenDir.substring(index + 1);
+                            }
+                            File newFile = new File(chosenDir);
+                            csoundUtil.saveStringAsExternalFile(PreferenceManager.project().toString(), newFile.getAbsolutePath());
+                        }
+                    }
+            );
+            if (csd != null) {
+                fileOpenDialog.default_file_name = csd.getParent();
+            } else {
+                fileOpenDialog.default_file_name = Environment.getExternalStorageDirectory().getAbsolutePath();
+            }
+            fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
 
-        } else if (id == R.id.nav_preferences) {
+        } else if (id == R.id.nav_preferences)
+
+        {
 
         }
 

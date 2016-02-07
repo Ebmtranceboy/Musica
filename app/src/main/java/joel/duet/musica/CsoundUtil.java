@@ -96,13 +96,13 @@ public final class CsoundUtil {
         return f;
     }
 
-    public void saveStringAsExternalFile(String str, String filename) {
+    public void saveStringAsExternalFile(String str, String absoluteFilePath) {
         final File root = Environment.getExternalStorageDirectory();
         try {
             if (root.canWrite()) {
                 final FileWriter filewriter =
                         new FileWriter(
-                                new File(root, filename));
+                                new File(absoluteFilePath));
                 final BufferedWriter out = new BufferedWriter(filewriter);
                 out.write(str);
                 out.close();
@@ -112,13 +112,13 @@ public final class CsoundUtil {
         }
     }
 
-    protected String getExternalFileAsString(String filename) {
+    protected String getExternalFileAsString(String absoluteFilePath) {
         final File root = Environment.getExternalStorageDirectory();
         try {
             if (root.canRead()) {
                 FileReader filereader =
                         new FileReader(
-                                new File(root, filename));
+                                new File(absoluteFilePath));
                 final BufferedReader in = new BufferedReader(filereader);
                 final StringBuilder buffer = new StringBuilder("");
                 String line;
@@ -147,7 +147,7 @@ public final class CsoundUtil {
 
         //Log.i(TAG, unisonConvert(60.0));
 
-        String lines[] = getExternalFileAsString("unisonMelody.txt").split("\\n");
+        String lines[] = getExternalFileAsString(Default.score_events_absoluteFilePath).split("\\n");
         final java.util.regex.Pattern istatement =
                 java.util.regex.Pattern.compile("\\s*i\\s*\\d+\\s+(\\d+.?\\d*)\\s+(\\d+.?\\d*)\\s+(\\d+.?\\d*)\\s+(-?\\d+.?\\d*)");
 
@@ -204,7 +204,7 @@ public final class CsoundUtil {
         Pattern pattern = Track.getPatternSelected();
         pattern.setInstr(instr_name);
 
-        List<String> score_lines = Arrays.asList(getExternalFileAsString("unisonMelody.txt").split("\\n"));
+        List<String> score_lines = Arrays.asList(getExternalFileAsString(Default.score_events_absoluteFilePath).split("\\n"));
 
         int score_size = score_lines.size();
         double[] differences = new double[score_size];
