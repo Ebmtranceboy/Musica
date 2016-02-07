@@ -17,8 +17,26 @@ public final class Matrix {
     public static String[] cells;
     private static Map<String,List<String>> edges = new HashMap<>();
     //private static final String TAG = "Matrix";
+    private boolean isInitialised = false;
+    private static Matrix self;
 
-    public static void spy(){
+    public void initialize() {
+        if (!isInitialised) {
+            isInitialised = true;
+        }
+    }
+
+    public static Matrix getInstance() {
+        if (self == null) {
+            self = new Matrix();
+        }
+        return self;
+    }
+
+     private Matrix() {
+    }
+
+    public void spy(){
         String instruments[] = CSD.mapInstr.keySet().toArray(new String[ninstr]);
         String effects[] =  CSD.mapFX.keySet().toArray(new String[nfx]);
         for(int i=0; i< ninstr+nfx; i++)
@@ -43,7 +61,7 @@ public final class Matrix {
                 Log.i(TAG,""+source+"->"+sink);*/
     }
 
-    public static void update(){
+    public void update(){
         reset();
         String instruments[] = CSD.mapInstr.keySet().toArray(new String[ninstr]);
         String effects[] =  CSD.mapFX.keySet().toArray(new String[nfx]);
@@ -62,7 +80,7 @@ public final class Matrix {
         }
     }
 
-    public static void reset() {
+    public void reset() {
         ninstr = CSD.getNbInstruments();
         nfx = CSD.getNbEffects();
         mLinks = new boolean[(ninstr + nfx + 1) * (nfx + 2)];
@@ -74,17 +92,17 @@ public final class Matrix {
 
     public static boolean get(int i, int j){return mLinks[i*(nfx+2)+j];}
 
-    public static void set(int i, int j) {
+    public void set(int i, int j) {
         mLinks[i * (nfx + 2) + j] = true;
         show(i, j);
     }
 
-    public static void unset(int i, int j) {
+    public void unset(int i, int j) {
         mLinks[i * (nfx + 2) + j] = false;
         show(i, j);
     }
 
-    private static void show(int i, int j) {
+    private void show(int i, int j) {
         String instruments[] = CSD.mapInstr.keySet().toArray(new String[ninstr]);
         String effects[] =  CSD.mapFX.keySet().toArray(new String[nfx]);
         if (i == ninstr + nfx && j == 0) {
@@ -120,7 +138,7 @@ public final class Matrix {
         return str;
     }
 
-    public static void unserialize(String str){
+    public void unserialize(String str){
         for(int i=0;i<ninstr+nfx+1;i++)
             for(int j=0;j<nfx+2;j++)
                 if(str.charAt(i * (nfx + 2) + j) == 'T') set(i,j); else unset(i,j);

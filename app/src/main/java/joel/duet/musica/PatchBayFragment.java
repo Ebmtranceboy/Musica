@@ -63,8 +63,8 @@ public final class PatchBayFragment extends Fragment {
                 int n = CSD.getNbEffects() + 2;
                 int j = position % n;
                 int i = (position - j) / n;
-                if (Matrix.get(i, j)) Matrix.unset(i, j);
-                else Matrix.set(i, j);
+                if (Matrix.get(i, j)) Matrix.getInstance().unset(i, j);
+                else Matrix.getInstance().set(i, j);
                 //Log.i(TAG,Matrix.serialize());
                 grid.invalidateViews();
             }

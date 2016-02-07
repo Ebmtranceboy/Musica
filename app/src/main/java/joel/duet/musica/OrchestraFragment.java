@@ -81,9 +81,9 @@ public final class OrchestraFragment extends FragmentPlus {
     @Override
     public void onFinishEditDialog(String inputText) {
         instrName = inputText;
-        Matrix.spy();
+        Matrix.getInstance().spy();
         CSD.mapInstr.put(instrName, "");
-        Matrix.update();
+        Matrix.getInstance().update();
         listInstr.add(instrName);
         instr_adapter.notifyDataSetChanged();
 

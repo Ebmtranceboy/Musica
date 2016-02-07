@@ -50,9 +50,9 @@ public final class InstrumentFragment extends Fragment{
                 MainActivity.sensible_code = new Runnable() {
                     @Override
                     public void run() {
-                        Matrix.spy();
+                        Matrix.getInstance().spy();
                         CSD.mapInstr.remove(instrName);
-                        Matrix.update();
+                        Matrix.getInstance().update();
 
                         fragmentManager.beginTransaction().replace(R.id.mainFrame,
                             new OrchestraFragment(),

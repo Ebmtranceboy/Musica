@@ -92,7 +92,7 @@ public final class PatternFragment extends Fragment {
         SimpleImageArrayAdapter adapter = new SimpleImageArrayAdapter(getContext(),Default.resolution_icons);
         resolution_spinner.setAdapter(adapter);
 
-        resolution_spinner.setSelection(getArguments().getInt("resolution"));
+        resolution_spinner.setSelection(getArguments().getInt("resolution_index"));
 
         resolution_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

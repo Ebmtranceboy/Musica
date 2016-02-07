@@ -78,6 +78,9 @@ public final class ScoreFragment extends Fragment {
                     case 4:
                         ScoreView.tool = ScoreView.Tool.SPLIT;
                         break;
+                    case 5:
+                        ScoreView.tool = ScoreView.Tool.QUANT;
+                        break;
                 }
                 scoreview.invalidate();
             }
@@ -155,14 +158,14 @@ public final class ScoreFragment extends Fragment {
         final Spinner resolution_spinner = (Spinner) view.findViewById(R.id.resolution);
         SimpleImageArrayAdapter adapter = new SimpleImageArrayAdapter(getContext(), Default.resolution_icons);
         resolution_spinner.setAdapter(adapter);
-        resolution_spinner.setSelection(Score.resolution);
+        resolution_spinner.setSelection(Score.resolution_index);
 
         final Spinner bars_spinner = (Spinner) view.findViewById(R.id.bars_spinner);
 
         resolution_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(Score.resolution<i) Score.bar_start *= Score.getResolution() / Default.resolutions[i];
+                if(Score.resolution_index <i) Score.bar_start *= Score.getResolution() / Default.resolutions[i];
                 else Score.bar_start /= Default.resolutions[i] / Score.getResolution();
 
                 while(ScoreView.number_patches * 16 <  Score.bar_start) ScoreView.number_patches++;
@@ -171,7 +174,7 @@ public final class ScoreFragment extends Fragment {
                 bars_adapter.notifyDataSetChanged();
 
                 bars_spinner.setSelection(Score.bar_start);
-                Score.resolution = i;
+                Score.resolution_index = i;
                 scoreview.invalidate();
             }
 
@@ -180,6 +183,8 @@ public final class ScoreFragment extends Fragment {
 
             }
         });
+
+        ScoreView.number_patches = 1 + (int) (Score.getSeconds() / (Score.getResolution() / 2));
 
         for (int i = 1; i <= ScoreView.number_patches * 16; i++) bars.add(i);
         bars_adapter = new ArrayAdapter<>(getContext(),
@@ -223,10 +228,8 @@ public final class ScoreFragment extends Fragment {
 
         scoreview = (ScoreView) view.findViewById(R.id.score_view);
 
-        ScoreView.number_patches = 1 + (int) (Score.getSeconds() / (Score.getResolution() / 2));
         ScoreView.edit_mode = false;
         edition_spinner.setVisibility(View.INVISIBLE);
         return view;
     }
-
 }

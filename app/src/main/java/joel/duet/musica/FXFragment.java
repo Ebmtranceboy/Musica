@@ -83,9 +83,9 @@ public final class FXFragment extends FragmentPlus{
     @Override
     public void onFinishEditDialog(String inputText) {
         effectName = inputText;
-        Matrix.spy();
+        Matrix.getInstance().spy();
         CSD.mapFX.put(effectName, "");
-        Matrix.update();
+        Matrix.getInstance().update();
         listEffect.add(effectName);
         effect_adapter.notifyDataSetChanged();
 

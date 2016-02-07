@@ -230,8 +230,7 @@ public final class ScoreView extends View {
                 final boolean showFocus = edit_mode
                         && track == Focus.track
                         && pattern == Focus.pattern
-                        && tool != Tool.JOIN
-                        && tool != Tool.SPLIT;
+                        && (tool == Tool.NONE || tool == Tool.MOVE || tool == Tool.COPY);
                 if (showFocus) setBlueAlpha(112); else setStrokeBlack();
                 canvas.drawRect(pattern.start * width / 16 / 32
                         , (t - 1) * track_height * height
@@ -314,7 +313,8 @@ public final class ScoreView extends View {
         COPY,
         MOVE,
         JOIN,
-        SPLIT
+        SPLIT,
+        QUANT
     }
 
     @Override
@@ -400,6 +400,9 @@ public final class ScoreView extends View {
 
                             Focus.reset();
 
+                        } else if(tool == Tool.QUANT){
+                            Track.getPatternSelected().quantize();
+
                         } else {
                             if(Track.getPatternSelected() != Focus.pattern){
                                 if(tool == Tool.NONE) {
@@ -412,7 +415,7 @@ public final class ScoreView extends View {
                                 FragmentManager fragmentManager = ScoreFragment.activity.getSupportFragmentManager();
 
                                 Bundle bundle = new Bundle();
-                                bundle.putInt("resolution", Track.getPatternSelected().resolution);
+                                bundle.putInt("resolution_index", Track.getPatternSelected().resolution);
                                 bundle.putString("instr_name", Track.getPatternSelected().getInstr());
                                 PatternFragment fragment = new PatternFragment();
                                 fragment.setArguments(bundle);

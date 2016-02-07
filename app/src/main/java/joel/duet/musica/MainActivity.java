@@ -33,8 +33,6 @@ public final class MainActivity extends AppCompatActivity
 
     static CsoundObj csoundObj = new CsoundObj(false, true);
     final CsoundUtil csoundUtil = new CsoundUtil(this);
-    //static SharedPreferences pref;
-    //static SharedPreferences.Editor editor;
     private DrawerLayout mDrawer;
     ActionBarDrawerToggle drawerToggle;
     static Toolbar toolbar;
@@ -54,6 +52,7 @@ public final class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         PreferenceManager.getInstance().initialize(this);
+        Matrix.getInstance().initialize();
 
         setContentView(R.layout.activity_main);
         csoundObj.setMessageLoggingEnabled(true);
@@ -374,7 +373,7 @@ public final class MainActivity extends AppCompatActivity
                             break;
                         case PATTERN:
                             bundle = new Bundle();
-                            bundle.putInt("resolution", Track.getPatternSelected().resolution);
+                            bundle.putInt("resolution_index", Track.getPatternSelected().resolution);
                             bundle.putString("instr_name", Track.getPatternSelected().getInstr());
                             PatternFragment patternFragment = new PatternFragment();
                             patternFragment.setArguments(bundle);

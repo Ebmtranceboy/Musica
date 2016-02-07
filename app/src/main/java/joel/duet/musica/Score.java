@@ -13,13 +13,13 @@ public final class Score {
     //private static final String TAG = "Score";
     private static final LinkedList<Track> mTracks = new LinkedList<>();
     private static int mIdTrackSelected = 0;
-    public static int resolution;
+    public static int resolution_index;
     public static int bar_start;
 
     //public static boolean is_score_loop = false;
 
     public static int getResolution() {
-        return Default.resolutions[Score.resolution];
+        return Default.resolutions[Score.resolution_index];
     }
 
     public static void createTrack(){

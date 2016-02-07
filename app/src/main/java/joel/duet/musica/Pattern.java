@@ -1,6 +1,6 @@
 package joel.duet.musica;
 
-//import android.util.Log;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -11,7 +11,7 @@ import java.util.List;
  * Created by joel on 22/01/16 at 22:18 at 22:19.
  */
 public final class Pattern {
-    //private static final String TAG = "Pattern";
+    private static final String TAG = "Pattern";
     private final LinkedList<Note> mNotes = new LinkedList<>();
     public int start;
     public int finish;
@@ -109,4 +109,26 @@ public final class Pattern {
         list.add(this);
         return list;
     }
+
+    private int quantizeLaps(int laps){
+        return Math.round((float)laps/Score.getResolution()) * Score.getResolution();
+    }
+
+    public void quantize() {
+        List<Note> older = new LinkedList<>();
+        older.addAll(mNotes);
+        mNotes.clear();
+        for(Note note : older){
+            Log.i(TAG,""+note.onset);
+            int onset = quantizeLaps(note.onset);
+            Log.i(TAG,""+onset);
+            int duration = quantizeLaps(note.duration);
+            if(duration == 0) duration = Score.getResolution();
+            createNote(onset,duration,note.pitch,note.loudness);
+        }
+        older.clear();
+        start = ((int) ((float) start/Score.getResolution())) * Score.getResolution();
+        finish = ((int) ((float) finish/Score.getResolution()) + 1) * Score.getResolution();
+    }
+
 }
