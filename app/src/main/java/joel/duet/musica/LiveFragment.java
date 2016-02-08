@@ -26,10 +26,10 @@ public final class LiveFragment extends Fragment {
 
     static private MainActivity activity;
     static private CsoundObj csoundObj;
-    KeyboardView keyboard;
-    int touchIds[] = new int[10];
-    float touchX[] = new float[10];
-    float touchY[] = new float[10];
+    private KeyboardView keyboard;
+    private final int[] touchIds = new int[10];
+    private final float[] touchX = new float[10];
+    private final float[] touchY = new float[10];
     static private boolean loudness_mode;
     static private boolean solo_mode;
 
@@ -97,7 +97,7 @@ public final class LiveFragment extends Fragment {
                 recordButton.setImageResource(R.drawable.ic_recording);
                 csoundObj.stop();
                 String csd = solo_mode ? CSD.recordPart((String) select_instr.getSelectedItem()) :
-                        Score.sendPatternsToSong((String) select_instr.getSelectedItem(), Score.allPatterns(),0);
+                        Score.sendPatternsForRecord((String) select_instr.getSelectedItem(), Score.allPatterns());
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
             }
         });
@@ -162,7 +162,7 @@ public final class LiveFragment extends Fragment {
                                             + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " "
                                             + (loudness_mode ?
                                                 CSD.pressure2dB(event.getPressure()) :
-                                                CSD.loudness2dB(Default.default_loudness)));
+                                                CSD.defaultLoudness2dB()));
 
                                 }
                             }
@@ -197,7 +197,7 @@ public final class LiveFragment extends Fragment {
         return view;
     }
 
-    protected int getTouchIdAssignment() {
+    private int getTouchIdAssignment() {
         for (int i = 0; i < touchIds.length; i++) {
             if (touchIds[i] == -1) {
                 return i;
@@ -206,7 +206,7 @@ public final class LiveFragment extends Fragment {
         return -1;
     }
 
-    protected int getTouchId(int touchId) {
+    private int getTouchId(int touchId) {
         for (int i = 0; i < touchIds.length; i++) {
             if (touchIds[i] == touchId) {
                 return i;

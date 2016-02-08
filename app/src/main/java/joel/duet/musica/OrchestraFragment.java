@@ -25,7 +25,7 @@ public final class OrchestraFragment extends FragmentPlus {
     static private MainActivity activity;
     //private static final String TAG = "Orchestra";
     static private ArrayAdapter<String> instr_adapter;
-    static String instrName;
+    private static String instrName;
     static private List<String> listInstr;
 
     @Override

@@ -28,13 +28,13 @@ import java.util.List;
  *
  * Created by joel on 06/02/16 at 22:32 at 22:38.
  */
-public class SimpleFileDialog {
+class SimpleFileDialog {
     private static final int FileOpen     = 0;
 	private static final int FileSave     = 1;
 	private static final int FolderChoose = 2;
 	private int Select_type = FileSave;
 	private String m_sdcardDirectory = "";
-	private Context m_context;
+	private final Context m_context;
     private TextView m_titleView;
 	public String default_file_name = "default.txt";
 	private String selected_file_name = default_file_name;

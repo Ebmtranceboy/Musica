@@ -24,7 +24,7 @@ public final class FXFragment extends FragmentPlus{
     static private MainActivity activity;
     //private static final String TAG = "FX";
     static private ArrayAdapter<String> effect_adapter;
-    static String effectName;
+    private static String effectName;
     static private List<String> listEffect;
 
     @Override

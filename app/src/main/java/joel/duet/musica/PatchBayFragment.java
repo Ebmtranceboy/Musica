@@ -1,6 +1,5 @@
 package joel.duet.musica;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 //import android.util.Log;
@@ -20,11 +19,6 @@ import android.widget.TextView;
 public final class PatchBayFragment extends Fragment {
     private static GridView grid;
     //private static final String TAG = "Patchbay";
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {

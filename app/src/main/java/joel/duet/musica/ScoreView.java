@@ -75,7 +75,7 @@ public final class ScoreView extends View {
 		init(context);
 	}
 
-	public void init(Context ctx) {
+	private void init(Context ctx) {
         paint.setAntiAlias(true);
 
         mScaleDetector = new ScaleGestureDetector(ctx, new ScaleListener());
@@ -316,7 +316,7 @@ public final class ScoreView extends View {
         QUANT
     }
 
-    public static Tool[] tools = {Tool.NONE, Tool.COPY, Tool.MOVE, Tool.JOIN, Tool.SPLIT, Tool.QUANT};
+    public static final Tool[] tools = {Tool.NONE, Tool.COPY, Tool.MOVE, Tool.JOIN, Tool.SPLIT, Tool.QUANT};
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent ev) {

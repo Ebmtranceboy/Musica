@@ -35,7 +35,6 @@ public final class MainActivity extends AppCompatActivity
     static CsoundObj csoundObj = new CsoundObj(false, true);
     final CsoundUtil csoundUtil = new CsoundUtil(this);
     private DrawerLayout mDrawer;
-    ActionBarDrawerToggle drawerToggle;
     static Toolbar toolbar;
     public static Runnable sensible_code;
     //private static final String TAG = "Musica";
@@ -76,7 +75,7 @@ public final class MainActivity extends AppCompatActivity
         });
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
                 this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
@@ -159,7 +158,7 @@ public final class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    File csd;
+    private File csd;
 
     private void OnFileChosen(File file) {
         csd = file;

@@ -28,8 +28,8 @@ public final class PatternFragment extends Fragment {
     private final LinkedList<String> instrumentIds = new LinkedList<>();
     private static final String TAG = "PatternFragment";
 
-    static public MainActivity activity;
-    static public CsoundObj csoundObj;
+    private static MainActivity activity;
+    private static CsoundObj csoundObj;
 
     @Override
     public void onAttach(Context context) {

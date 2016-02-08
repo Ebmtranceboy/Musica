@@ -1,6 +1,5 @@
 package joel.duet.musica;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,10 +26,6 @@ public final class InstrumentFragment extends Fragment{
         return instrumentCode.getText().toString();
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
         final View view = inflater.inflate(R.layout.instrument_fragment, container, false);

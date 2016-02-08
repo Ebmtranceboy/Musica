@@ -9,7 +9,7 @@ import java.util.List;
  *
  * Created by joel on 22/01/16 at 22:16 at 22:22.
  */
-public final class Score {
+final class Score {
     //private static final String TAG = "Score";
     private static final LinkedList<Track> mTracks = new LinkedList<>();
     private static int mIdTrackSelected = 0;
@@ -77,7 +77,7 @@ public final class Score {
         return patterns;
     }
 
-    public static List<Pattern> fix(List<Pattern> list){
+    private static List<Pattern> fix(List<Pattern> list){
         final List<Pattern> patterns = new ArrayList<>();
         Pattern fixed;
         int lastOnset;
@@ -162,22 +162,8 @@ public final class Score {
         return CSD.song(score,Math.min(finish, tick_finish) - tick_start);
     }
 
-    public static String sendPatternsToSong(String instrName, List<Pattern> unFixedPatterns, int... params){
-        int tick_start, tick_finish;
-        switch(params.length) {
-            case 2:
-                tick_start = params[0];
-                tick_finish = params[1];
-                break;
-            case 1:
-                tick_start = params[0];
-                tick_finish = Integer.MAX_VALUE;
-                break;
-            default:
-                tick_start = 0;
-                tick_finish = Integer.MAX_VALUE;
-                break;
-        }
+    public static String sendPatternsForRecord(String instrName, List<Pattern> unFixedPatterns){
+        int tick_start = 0, tick_finish = Integer.MAX_VALUE;
         int delay_start;
         int finish=0,start=Integer.MAX_VALUE;
 
@@ -213,6 +199,6 @@ public final class Score {
             //for(Pattern.Note not:list)  Log.i(TAG,""+not.onset+" "+not.pitch);
             score.add(new Pattern(list,pattern.getInstr()));
         }
-        return CSD.recordSong(instrName,score,Math.min(finish, tick_finish) - tick_start);
+        return CSD.recordSong(instrName, score, Math.min(finish, tick_finish) - tick_start);
     }
 }

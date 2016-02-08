@@ -32,7 +32,7 @@ public final class KeyboardView extends View {
     private int whitewidth;
     private int blackwidth2;
     private int blackheight;
-    private static boolean pressed[] = new boolean[nbkeys];
+    private static final boolean[] pressed = new boolean[nbkeys];
 
     public KeyboardView(Context context) {
         super(context);

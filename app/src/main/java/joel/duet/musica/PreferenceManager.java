@@ -113,7 +113,7 @@ public final class PreferenceManager {
             joel.duet.musica.Matrix.getInstance().unserialize(project.getString(MATRIX_KEY));
     }
 
-    public static JSONArray saveJSONOrchestra() throws JSONException {
+    private static JSONArray saveJSONOrchestra() throws JSONException {
         final JSONArray instruments = new JSONArray();
         JSONObject instr_obj;
 
@@ -126,7 +126,7 @@ public final class PreferenceManager {
         return instruments;
     }
 
-    public static void loadJSONOrchestra(JSONArray instruments) throws JSONException {
+    private static void loadJSONOrchestra(JSONArray instruments) throws JSONException {
         JSONObject instr_obj;
         for (int i = 0; i < instruments.length(); i++) {
             instr_obj = instruments.getJSONObject(i);
@@ -134,7 +134,7 @@ public final class PreferenceManager {
         }
     }
 
-    public static JSONArray saveJSONFX() throws JSONException {
+    private static JSONArray saveJSONFX() throws JSONException {
         final JSONArray effects = new JSONArray();
         JSONObject effect_obj;
 
@@ -147,7 +147,7 @@ public final class PreferenceManager {
         return effects;
     }
 
-    public static void loadJSONFX(JSONArray effects) throws JSONException {
+    private static void loadJSONFX(JSONArray effects) throws JSONException {
         JSONObject effect_obj;
         for (int i = 0; i < effects.length(); i++) {
             effect_obj = effects.getJSONObject(i);
@@ -155,7 +155,7 @@ public final class PreferenceManager {
         }
     }
 
-    public static JSONObject saveJSONTracks() throws JSONException {
+    private static JSONObject saveJSONTracks() throws JSONException {
         final int idTrackSelected = Score.getIdTrackSelected();
         final int idPatternSelected = Track.getIdPatternSelected();
 
@@ -221,7 +221,7 @@ public final class PreferenceManager {
         return jsonObject;
     }
 
-    public static void loadJSONTracks(JSONObject feed) throws JSONException {
+    private static void loadJSONTracks(JSONObject feed) throws JSONException {
         final int idTrackSelected = feed.getInt("idTrackSelected");
         final int idPatternSelected = feed.getInt("idPatternSelected");
         final JSONArray tracks = feed.getJSONArray("tracks");

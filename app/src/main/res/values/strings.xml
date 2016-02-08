@@ -5,9 +5,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="mail_icon">Goto Mail icon</string>
-    <string name="studio">Android Studio</string>
-    <string name="studio_mail">android.studio@android.com</string>
     <string name="drawer_icon">drawer_icon</string>
     <string name="import_label">Import</string>
     <string name="live_label">Live</string>
@@ -20,12 +17,10 @@
     <string name="master_label">Master</string>
     <string name="material_label">Material</string>
     <string name="subtitle_drawer">Musica</string>
-    <string name="welcome">Welcome! This is Musica</string>
     <string name="oct_label">oct:</string>
     <string name="play_label">Play</string>
     <string name="record_label">Record</string>
     <string name="instr_label">instr:</string>
-    <string name="dialog_label_label">New name</string>
     <string name="dialog_hint_label">initial uppercase then lowercase</string>
     <string name="new_instr_button_label">New Instrument</string>
     <string name="import_instr_button_label">Import Instrument</string>
@@ -41,14 +36,12 @@
     <string name="import_effect_button_label">Import effect</string>
     <string name="delete_effect_button_label">delete</string>
     <string name="add_to_fx_lib_button_label">Add to Lib</string>
-    <string name="tool_label">Edition Tool</string>
     <string name="new_track_label">New Track</string>
     <string name="extend_score_label">Extend Score</string>
     <string name="trim_score_label">Trim Score</string>
     <string name="play_button_label">Play</string>
     <string name="stop_button_label">Stop</string>
     <string name="preview_button_label">Preview</string>
-    <string name="loop_button_label">Loop</string>
     <string name="play_in_context_button_label">Play in context</string>
     <string name="welcome_screen_description">Welcome Screen</string>
     <string name="done_button_label">Done</string>
@@ -63,7 +56,6 @@
     <string name="dialog_save">Save As:</string>
     <string name="dialog_folder">Folder Select:</string>
     <string name="new_folder_label">New Folder</string>
-    <string name="solo_mode_label">Solo mode</string>
     <string-array name="oct_array">
         <item>1</item>
         <item>2</item>

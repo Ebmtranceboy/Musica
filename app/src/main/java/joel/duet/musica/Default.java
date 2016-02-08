@@ -4,7 +4,7 @@ package joel.duet.musica;
  *
  * Created by joel on 22/01/16 at 22:22 at 22:23.
  */
-public final class Default {
+final class Default {
 
     public static final int ticks_per_second = 32;
 

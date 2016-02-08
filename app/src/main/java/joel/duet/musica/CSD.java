@@ -13,15 +13,15 @@ import java.util.Map;
  *
  * Created by joel on 13/01/16 at 08:23 at 08:23 at 12:53 at 09:55.
  */
-public final class CSD {
+final class CSD {
     //private static final String TAG = "CSD";
 
-    static int sr = 44100;
-    static int ksmps = 100;
-    static int nchnls = 2;
-    static double zeroDbFs = 1;
+    private static final int sr = 44100;
+    private static final int ksmps = 100;
+    private static final int nchnls = 2;
+    private static final double zeroDbFs = 1;
 
-    static String header =
+    private static final String header =
             "\n<CsoundSynthesizer>"
                     + "\n<CsOptions>"
                     + "\n-d -odac -m0"
@@ -32,24 +32,24 @@ public final class CSD {
                     + "\nnchnls = " + nchnls
                     + "\n0dbfs = " + zeroDbFs;
 
-    static Map<String, String> mapFX = new LinkedHashMap<>(); //new new HashMap<>();
+    static final Map<String, String> mapFX = new LinkedHashMap<>(); //new new HashMap<>();
 
     static int getNbEffects() {
         return mapFX.keySet().size();
     }
 
 
-    static Map<String, String> mapInstr = new LinkedHashMap<>();//new HashMap<>();
+    static final Map<String, String> mapInstr = new LinkedHashMap<>();//new HashMap<>();
 
     static int getNbInstruments() {
         return mapInstr.keySet().size();
     }
 
     private static class Snippet {
-        String name;
+        final String name;
         int narg;
         String accL, accR;
-        String last;
+        final String last;
 
         private Snippet(int i, int j) {
             if (j <= getNbEffects()) {
@@ -76,7 +76,7 @@ public final class CSD {
         }
     }
 
-    public static void update(int i, int j) {
+    private static void update(int i, int j) {
         if (snippets[j] != null) {
             String in;
             if (i < getNbInstruments()) {
@@ -93,9 +93,9 @@ public final class CSD {
         } else snippets[j] = new Snippet(i, j);
     }
 
-    static Snippet snippets[];
+    private static Snippet[] snippets;
 
-    static String Master() {
+    private static String Master() {
         String master = "";
         snippets = new Snippet[getNbEffects() + 2];
         for(int i=0; i<getNbInstruments()+getNbEffects();i++)
@@ -113,26 +113,26 @@ public final class CSD {
         return "\n\ninstr Master" + master + resets + "\nendin";
     }
 
-    static String Voicer = "\n\ninstr Voicer"
+    private static final String Voicer = "\n\ninstr Voicer"
             + "\nSinstr = p4"
             + "\ninb nstrnum Sinstr"
             + "\nifrac = p5"
             + "\nevent_i \"i\", inb + ifrac/20, 0, -1, p6, p7"
             + "\nendin";
 
-    static String Silencer = "\n\ninstr Silencer"
+    private static final String Silencer = "\n\ninstr Silencer"
             + "\nSinstr = p4"
             + "\ninb nstrnum Sinstr"
             + "\nifrac = p5"
             + "\nevent_i \"i\", -(inb + ifrac/20), 0, 0"
             + "\nendin";
 
-    static String Metro = "\ngkmetro init 0"
+    private static final String Metro = "\ngkmetro init 0"
             + "\n\ninstr Metro"
             + "\ngkmetro metro " + Default.ticks_per_second
             + "\nendin";
 
-    static String Looper(Pattern pat, int frac,int duration) {
+    private static String Looper(Pattern pat, int frac, int duration) {
         String instr = pat.getInstr();
         int n = pat.getNbOfNotes();
         return "\n\ninstr Looper_" + frac
@@ -163,7 +163,7 @@ public final class CSD {
             + "\nendif"
             + "\nendin";}
 
-    static String InstrLoops(List<Pattern> score, int duration){
+    private static String InstrLoops(List<Pattern> score, int duration){
         String loops = "";
         int frac = 1;
         for(Pattern pattern:score){
@@ -173,7 +173,7 @@ public final class CSD {
         return loops;
     }
 
-    static String ScoreLoops(List<Pattern>score){
+    private static String ScoreLoops(List<Pattern> score){
         String loops = "";
         int frac = 1;
         for(Pattern pattern :score){
@@ -183,18 +183,18 @@ public final class CSD {
         return loops;
     }
 
-    static String ScoreMetro = "\ni\"Metro\" 0 -1";
+    private static final String ScoreMetro = "\ni\"Metro\" 0 -1";
 
-    static String initScore =
+    private static final String initScore =
             "\n\n</CsInstruments>"
                     + "\n<CsScore>"
                     + "\nf0 z"
                     + "\ni\"Master\" 0 -1";
 
-    static String endScore = "\n</CsScore>"
+    private static final String endScore = "\n</CsScore>"
                     + "\n</CsoundSynthesizer>";
 
-    static String resets;
+    private static String resets;
     static String part() {
         String inits = "";
         String udos = "";
@@ -277,5 +277,5 @@ public final class CSD {
         return Math.round(3*(pressure-32)/32-22);
     }
     public static int dB2Loudness(float dB){        return Math.round((dB+22)/3+1);}
-    public static int loudness2dB(int loudness){        return (loudness-1)*3-22; }
+    public static int defaultLoudness2dB() {        return (Default.default_loudness -1)*3-22; }
 }

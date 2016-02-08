@@ -10,9 +10,9 @@ import android.widget.ImageView;
  *
  * Created by joel on 24/01/16 at 15:15 at 15:17.
  */
-public final class SimpleImageArrayAdapter extends ArrayAdapter<Integer> {
+final class SimpleImageArrayAdapter extends ArrayAdapter<Integer> {
 
-    private Integer[] images;
+    private final Integer[] images;
 
     public SimpleImageArrayAdapter(Context context, Integer[] images) {
         super(context, android.R.layout.simple_list_item_1, images);

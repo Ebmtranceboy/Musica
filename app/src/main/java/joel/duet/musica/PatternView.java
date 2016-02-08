@@ -59,7 +59,7 @@ public final class PatternView extends View {
 		init(context);
 	}
 
-    public void init(Context ctx) {
+    private void init(Context ctx) {
         //paint.setAntiAlias(true);
         mScaleDetector = new ScaleGestureDetector(ctx, new ScaleListener());
     }
@@ -80,9 +80,9 @@ public final class PatternView extends View {
         PatternView.paint.setColor(Color.parseColor("#000000"));
     }
 
-    private static void setFillAlpha(int alpha) {
+    private static void setFillAlpha() {
         PatternView.paint.setStyle(Paint.Style.FILL);
-        PatternView.paint.setARGB(alpha, 255, 255, 255);
+        PatternView.paint.setARGB(64, 255, 255, 255);
     }
 
     private static void setFillGrey(int loudness) {
@@ -171,7 +171,7 @@ public final class PatternView extends View {
         }
 
         if (bar_begin >= 0) {
-            setFillAlpha(64);
+            setFillAlpha();
             canvas.drawRect(bar_begin * getResolution() * width_per_tick
                     , (insertion_line - 1) * height * line_height
                     , (bar_end + 1) * getResolution() *width_per_tick

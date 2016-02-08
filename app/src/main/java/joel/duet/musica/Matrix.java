@@ -15,7 +15,7 @@ public final class Matrix {
     private static int nfx;
     private static boolean[] mLinks;
     public static String[] cells;
-    private static Map<String,List<String>> edges = new HashMap<>();
+    private static final Map<String,List<String>> edges = new HashMap<>();
     //private static final String TAG = "Matrix";
     private boolean isInitialised = false;
     private static Matrix self;
@@ -80,7 +80,7 @@ public final class Matrix {
         }
     }
 
-    public void reset() {
+    private void reset() {
         ninstr = CSD.getNbInstruments();
         nfx = CSD.getNbEffects();
         mLinks = new boolean[(ninstr + nfx + 1) * (nfx + 2)];

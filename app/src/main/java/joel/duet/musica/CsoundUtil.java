@@ -42,10 +42,10 @@ import android.os.Environment;
 
 import java.util.regex.*;
 
-public final class CsoundUtil {
+final class CsoundUtil {
     /* Log.d("CsoundObj", "FRAMES:" + ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).
                 getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER));*/
-    Context context;
+    private final Context context;
     private static final String TAG = "CsoundUtil";
 
     public CsoundUtil(Context ctx) {
@@ -70,7 +70,7 @@ public final class CsoundUtil {
         return str.toString();
     }
 
-    protected File createTempFile(String csd) {
+    File createTempFile(String csd) {
         File f = null;
 
         try {
@@ -102,7 +102,7 @@ public final class CsoundUtil {
         }
     }
 
-    protected String getExternalFileAsString(String absoluteFilePath) {
+    String getExternalFileAsString(String absoluteFilePath) {
         final File root = Environment.getExternalStorageDirectory();
         try {
             if (root.canRead()) {

@@ -11,7 +11,9 @@ import android.support.annotation.NonNull;
  * Created by joel on 09/03/15.09:03
  */
 public final class ConfirmationFragment extends DialogFragment {
-    public ConfirmationFragment(){}
+    public ConfirmationFragment(){
+    // Empty constructor required for DialogFragment
+    }
 
     @Override
     @NonNull
