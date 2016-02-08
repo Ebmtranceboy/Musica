@@ -39,7 +39,6 @@ import android.util.Log;
 
 import android.content.Context;
 import android.os.Environment;
-import android.widget.SeekBar;
 
 import java.util.regex.*;
 
@@ -51,13 +50,6 @@ public final class CsoundUtil {
 
     public CsoundUtil(Context ctx) {
         context = ctx;
-    }
-
-    public void setSeekBarValue(SeekBar seekBar, double min, double max, double value) {
-        double range = max - min;
-        double percent = (value - min) / range;
-
-        seekBar.setProgress((int) (percent * seekBar.getMax()));
     }
 
     protected String getResourceFileAsString(int resId) {
@@ -82,7 +74,7 @@ public final class CsoundUtil {
         File f = null;
 
         try {
-            f = File.createTempFile("temp", ".csd", context.getCacheDir());
+            f = File.createTempFile("temp", ".part", context.getCacheDir());
             //Log.i(TAG,context.getCacheDir().getName());
             FileOutputStream fos = new FileOutputStream(f);
             fos.write(csd.getBytes());
@@ -132,7 +124,7 @@ public final class CsoundUtil {
         return "";
     }
 
-    public void patternize(String instr_name) {
+    public void patternize(String instr_name, boolean solo_mode) {
         final int idTrackSelected = Score.getIdTrackSelected();
         final int idPatternSelected = Track.getIdPatternSelected();
         Score.createTrack();
@@ -154,6 +146,7 @@ public final class CsoundUtil {
             while (matcher.find()) {
                 int onset = (int) Math.round(Double.parseDouble(matcher.group(1)) * Default.ticks_per_second);
                 int duration = (int) Math.round(Double.parseDouble(matcher.group(2)) * Default.ticks_per_second);
+                if (duration == 0) duration = 1;
 
                 if (pattern.start < 0) pattern.start = onset;
                 if (onset + duration > pattern.finish) pattern.finish = onset + duration;
@@ -166,7 +159,7 @@ public final class CsoundUtil {
                 pattern.createNote(onset - pattern.start, duration, oct * 12 + key,loudness);
             }
         }
-        pattern.start = 0;
+        if(solo_mode) pattern.start = 0;
         pattern.finish += 128; // a full note
         pattern.mPosY = Default.initial_pattern_height;
 

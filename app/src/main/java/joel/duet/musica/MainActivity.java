@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver;
+import android.widget.Toast;
 
 import com.csounds.CsoundObj;
 
@@ -202,11 +203,17 @@ public final class MainActivity extends AppCompatActivity
             currentFragment = State.PATCHBAY;
 
         } else if (id == R.id.nav_live) {
-            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new LiveFragment(),
-                    "LIVE").commit();
-            toolbar.setTitle("Live");
-            currentFragment = State.LIVE;
+            if (CSD.getNbInstruments() > 0) {
+                fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                        new LiveFragment(),
+                        "LIVE").commit();
+                toolbar.setTitle("Live");
+                currentFragment = State.LIVE;
+            } else {
+                final Toast toast = Toast.makeText(this,
+                        "Please, create an instrument first", Toast.LENGTH_LONG);
+                toast.show();
+            }
 
         } else if (id == R.id.nav_fx) {
             fragmentManager.beginTransaction().replace(R.id.mainFrame,
@@ -262,7 +269,7 @@ public final class MainActivity extends AppCompatActivity
                         fileOpenDialog.default_file_name = Environment.getExternalStorageDirectory().getAbsolutePath();
                     }
                     fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
-               }
+                }
             };
 
             final ConfirmationFragment confirmation = new ConfirmationFragment();

@@ -9,8 +9,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
@@ -31,6 +31,7 @@ public final class LiveFragment extends Fragment {
     float touchX[] = new float[10];
     float touchY[] = new float[10];
     static private boolean loudness_mode;
+    static private boolean solo_mode;
 
     @Override
     public void onAttach(Context context) {
@@ -38,7 +39,7 @@ public final class LiveFragment extends Fragment {
         activity = (MainActivity) context;
         csoundObj = MainActivity.csoundObj;
         csoundObj.stop();
-        csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.csd()));
+        csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
     }
 
     //Button startCsound, stopCsound, button1;
@@ -76,34 +77,57 @@ public final class LiveFragment extends Fragment {
                     }
                 });
 
-        Button playButton = (Button) view.findViewById(R.id.live_play);
-        Button recordButton = (Button) view.findViewById(R.id.live_record);
-        Button patternizeButton = (Button) view.findViewById(R.id.patternize);
-
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                csoundObj.stop();
-                csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.csd()));
-                csoundObj.sendScore(activity.csoundUtil.getExternalFileAsString(Default.score_events_absoluteFilePath).replaceAll("i +\\w+ +", "i\"" + select_instr.getSelectedItem() + "\" "));
+        final ToggleButton soloModeButton = (ToggleButton) view.findViewById(R.id.solo);
+        soloModeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                solo_mode = isChecked;
+                if (isChecked)
+                    soloModeButton.setBackgroundResource(R.drawable.ic_read_partition);
+                else soloModeButton.setBackgroundResource(R.drawable.ic_play_in_context);
             }
         });
+
+        final ImageButton recordButton = (ImageButton) view.findViewById(R.id.live_record);
+        ImageButton playButton = (ImageButton) view.findViewById(R.id.live_play);
+        ImageButton patternizeButton = (ImageButton) view.findViewById(R.id.patternize);
 
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                recordButton.setImageResource(R.drawable.ic_recording);
                 csoundObj.stop();
-                csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.recordPart((String) select_instr.getSelectedItem())));
+                String csd = solo_mode ? CSD.recordPart((String) select_instr.getSelectedItem()) :
+                        Score.sendPatternsToSong((String) select_instr.getSelectedItem(), Score.allPatterns(),0);
+                csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
+            }
+        });
+
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recordButton.setImageResource(R.drawable.ic_menu_live);
+                csoundObj.stop();
+                String csd = solo_mode ? CSD.part() : Score.sendPatterns(Score.allPatterns(), 0);
+                csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
+                csoundObj.sendScore(activity.csoundUtil.getExternalFileAsString(Default.score_events_absoluteFilePath).replaceAll("i +\\w+ +", "i\"" + select_instr.getSelectedItem() + "\" "));
             }
         });
 
         patternizeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activity.csoundUtil.patternize((String)select_instr.getSelectedItem());
+                recordButton.setImageResource(R.drawable.ic_menu_live);
+                activity.csoundUtil.patternize((String) select_instr.getSelectedItem(), solo_mode);
             }
         });
 
+        view.findViewById(R.id.stop).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recordButton.setImageResource(R.drawable.ic_menu_live);
+                csoundObj.stop();
+            }
+        });
         // define keyboard
 
         keyboard = (KeyboardView) view.findViewById(R.id.Keyboard);

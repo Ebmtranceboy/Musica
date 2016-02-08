@@ -195,7 +195,7 @@ public final class CSD {
                     + "\n</CsoundSynthesizer>";
 
     static String resets;
-    static String csd() {
+    static String part() {
         String inits = "";
         String udos = "";
         for(String udo : mapFX.keySet()){
@@ -254,6 +254,25 @@ public final class CSD {
         return header + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
     }
 
+     static String recordSong(String instrName,List<Pattern> score, int dur) {
+        String udos = "";
+        String inits = "";
+        for(String udo : mapFX.keySet()){
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo) + "\nendop";
+        }
+
+        resets = "";
+        String instruments = "";
+        for (String instr : mapInstr.keySet()) {
+            inits += "\nga_" + instr + "_L init 0";
+            inits += "\nga_" + instr + "_R init 0";
+            resets += "\nga_" + instr + "_L = 0";
+            resets += "\nga_" + instr + "_R = 0";
+            instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5" : "") +"\n" + mapInstr.get(instr) + "\nendin";
+        }
+        return header + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer
+                + Metro + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
+    }
     public static int pressure2dB(float pressure){
         return Math.round(3*(pressure-32)/32-22);
     }

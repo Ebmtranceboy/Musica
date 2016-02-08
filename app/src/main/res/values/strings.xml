@@ -63,6 +63,7 @@
     <string name="dialog_save">Save As:</string>
     <string name="dialog_folder">Folder Select:</string>
     <string name="new_folder_label">New Folder</string>
+    <string name="solo_mode_label">Solo mode</string>
     <string-array name="oct_array">
         <item>1</item>
         <item>2</item>

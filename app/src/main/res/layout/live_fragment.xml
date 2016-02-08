@@ -35,14 +35,25 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2" />
+
         <ToggleButton
             android:id="@+id/loudness"
-            android:background="@drawable/ic_loudness_off"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textOn=""
+            android:layout_weight="1"
+            android:background="@drawable/ic_loudness_off"
             android:textOff=""
-            android:layout_weight="1"/>
+            android:textOn="" />
+
+        <ToggleButton
+            android:id="@+id/solo"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/ic_read_partition"
+            android:textOff=""
+            android:textOn=""/>
+
 
     </TableRow>
 
@@ -64,29 +75,42 @@
         android:layout_weight="0"
         android:orientation="horizontal">
 
-        <Button
+        <ImageButton
             android:id="@+id/live_record"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/record_label" />
+            android:contentDescription="@string/record_label"
+            android:src="@drawable/ic_menu_live" />
 
-        <Button
+
+        <ImageButton
             android:id="@+id/live_play"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/play_label" />
+            android:contentDescription="@string/play_label"
+            android:src="@drawable/ic_play" />
 
-        <Button
+        <ImageButton
             android:id="@+id/patternize"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/patternize_label" />
+            android:contentDescription="@string/patternize_label"
+            android:src="@drawable/ic_menu_score" />
+
+        <ImageButton
+            android:id="@+id/stop"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/stop_button_label"
+            android:src="@drawable/ic_stop" />
 
 
     </TableRow>

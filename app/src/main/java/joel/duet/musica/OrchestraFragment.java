@@ -114,7 +114,7 @@ public final class OrchestraFragment extends FragmentPlus {
             @Override
             public void onClick(View view) {
                 csoundObj.stop();
-                csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.csd()));
+                csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
                 csoundObj.sendScore(activity.csoundUtil.getExternalFileAsString("unisonMelody.txt"));
             }
         });

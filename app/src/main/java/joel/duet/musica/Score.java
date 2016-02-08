@@ -161,4 +161,58 @@ public final class Score {
         }
         return CSD.song(score,Math.min(finish, tick_finish) - tick_start);
     }
+
+    public static String sendPatternsToSong(String instrName, List<Pattern> unFixedPatterns, int... params){
+        int tick_start, tick_finish;
+        switch(params.length) {
+            case 2:
+                tick_start = params[0];
+                tick_finish = params[1];
+                break;
+            case 1:
+                tick_start = params[0];
+                tick_finish = Integer.MAX_VALUE;
+                break;
+            default:
+                tick_start = 0;
+                tick_finish = Integer.MAX_VALUE;
+                break;
+        }
+        int delay_start;
+        int finish=0,start=Integer.MAX_VALUE;
+
+        final List<Pattern> score = new LinkedList<>();
+        List<Pattern.Note> list = new ArrayList<>();
+        List<Pattern> patterns = fix(unFixedPatterns);
+
+        for(Pattern pattern : patterns) {
+            delay_start = pattern.start-tick_start;
+            if(pattern.start < start) start = pattern.start;
+            if(pattern.finish > finish) finish = pattern.finish;
+
+            list.clear();
+            int lastOnset = 0;
+            boolean firstOnset = false;
+            Pattern.Note note = null;
+            for(int n = 1 ;n<=pattern.getNbOfNotes();n++) {
+                if(firstOnset) lastOnset = delay_start + note.onset;
+                note = pattern.getNote(n-1);
+                if (note.onset + pattern.start >= tick_start
+                        && note.onset + pattern.start <= tick_finish) {
+                    if(!firstOnset){
+                        lastOnset = 0;
+                        firstOnset = true;
+                    }
+                    list.add(new Pattern.Note(
+                            delay_start + note.onset - lastOnset,
+                            note.duration,
+                            note.pitch,
+                            note.loudness));
+                }
+            }
+            //for(Pattern.Note not:list)  Log.i(TAG,""+not.onset+" "+not.pitch);
+            score.add(new Pattern(list,pattern.getInstr()));
+        }
+        return CSD.recordSong(instrName,score,Math.min(finish, tick_finish) - tick_start);
+    }
 }
