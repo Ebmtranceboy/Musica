@@ -273,5 +273,4 @@ public final class PreferenceManager {
         Score.setTrackSelected(idTrackSelected);
         Track.setPatternSelected(idPatternSelected);
     }
-
 }

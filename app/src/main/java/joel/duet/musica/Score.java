@@ -16,8 +16,6 @@ public final class Score {
     public static int resolution_index;
     public static int bar_start;
 
-    //public static boolean is_score_loop = false;
-
     public static int getResolution() {
         return Default.resolutions[Score.resolution_index];
     }
@@ -65,7 +63,6 @@ public final class Score {
     public static float getSeconds(){
         return getDuration()/(float)Default.ticks_per_second;
     }
-
 
     public static void resetTracks(){
         mTracks.clear();

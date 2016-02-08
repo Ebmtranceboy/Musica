@@ -171,26 +171,25 @@ public final class ScoreView extends View {
     private void drawPatternPreview(float x0, float y0, float x1, float y1,
                                     Pattern pattern,Canvas canvas){
         int n;
-        int om = Integer.MAX_VALUE, dM = 0;
+        int dM = 0;
         int pm = Integer.MAX_VALUE, pM = 0;
         for(n=1; n<=pattern.getNbOfNotes(); n++){
             Pattern.setNoteSelected(n);
             final Pattern.Note note = Pattern.getNoteSelected();
-            if(note.onset < om) om = note.onset;
             if(dM<note.onset+note.duration) dM = note.onset+note.duration;
             if(note.pitch<pm) pm = note.pitch;
             if(pM<note.pitch) pM = note.pitch;
         }
 
-        final float kx = (x1-x0)/(1f*(pattern.finish-pattern.start));
-        final float ky = (y1-y0)/(1.1f*(pM-pm+2));
+        final float kx = (x1-x0) / (pattern.finish-pattern.start);
+        final float ky = (y1-y0) / (1.1f*(pM-pm+2));
 
         for(n=1; n<=pattern.getNbOfNotes(); n++) {
             Pattern.setNoteSelected(n);
             final Pattern.Note note = Pattern.getNoteSelected();
-            canvas.drawRect(x0 + (note.onset-om)*kx
+            canvas.drawRect(x0 + (note.onset)*kx
                     , y1 - (note.pitch-pm+1.5f)*ky
-                    , x0 + (note.onset + note.duration - om)*kx
+                    , x0 + (note.onset + note.duration)*kx
                     , y1 - (note.pitch-pm+0.5f)*ky, paint);
         }
     }
@@ -317,6 +316,8 @@ public final class ScoreView extends View {
         QUANT
     }
 
+    public static Tool[] tools = {Tool.NONE, Tool.COPY, Tool.MOVE, Tool.JOIN, Tool.SPLIT, Tool.QUANT};
+
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent ev) {
         // Let the ScaleGestureDetector inspect all events.
@@ -396,6 +397,7 @@ public final class ScoreView extends View {
                                 copy.finish = toSplit.finish;
                                 copy.setInstr(toSplit.getInstr());
                                 toSplit.finish = copy.start;
+                                copy.mPosY = Default.initial_pattern_height;
                             }
 
                             Focus.reset();

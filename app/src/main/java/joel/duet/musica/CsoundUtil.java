@@ -166,7 +166,9 @@ public final class CsoundUtil {
                 pattern.createNote(onset - pattern.start, duration, oct * 12 + key,loudness);
             }
         }
+        pattern.start = 0;
         pattern.finish += 128; // a full note
+        pattern.mPosY = Default.initial_pattern_height;
 
         Score.setTrackSelected(idTrackSelected);
         Track.setPatternSelected(idPatternSelected);

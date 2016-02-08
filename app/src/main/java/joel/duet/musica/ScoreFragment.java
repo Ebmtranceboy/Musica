@@ -62,26 +62,7 @@ public final class ScoreFragment extends Fragment {
         edition_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i){
-                    case 0:
-                        ScoreView.tool = ScoreView.Tool.NONE;
-                        break;
-                    case 1:
-                        ScoreView.tool = ScoreView.Tool.COPY;
-                        break;
-                    case 2:
-                        ScoreView.tool = ScoreView.Tool.MOVE;
-                        break;
-                    case 3:
-                        ScoreView.tool = ScoreView.Tool.JOIN;
-                        break;
-                    case 4:
-                        ScoreView.tool = ScoreView.Tool.SPLIT;
-                        break;
-                    case 5:
-                        ScoreView.tool = ScoreView.Tool.QUANT;
-                        break;
-                }
+                ScoreView.tool = ScoreView.tools[i];
                 scoreview.invalidate();
             }
 

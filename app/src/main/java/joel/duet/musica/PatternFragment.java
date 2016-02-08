@@ -42,7 +42,6 @@ public final class PatternFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
         final View view = inflater.inflate(R.layout.pattern_fragment, container, false);
 
-
         view.findViewById(R.id.mode).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,5 +150,4 @@ public final class PatternFragment extends Fragment {
 
         return view;
     }
-
 }
