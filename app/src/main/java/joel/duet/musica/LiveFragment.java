@@ -18,7 +18,7 @@ import com.csounds.CsoundObj;
 
 /**
  *
- * Created by joel on 12/01/16 at 23:16 at 11:00.
+ * Created by joel on 12/01/16 at 23:16 at 11:00 at 12:39.
  */
 public final class LiveFragment extends Fragment {
 
@@ -68,14 +68,14 @@ public final class LiveFragment extends Fragment {
         select_instr.setAdapter(instr_adapter);
 
         final ToggleButton loudnessButton = (ToggleButton) view.findViewById(R.id.loudness);
-                loudnessButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        loudness_mode = isChecked;
-                        if (isChecked)
-                            loudnessButton.setBackgroundResource(R.drawable.ic_loudness_on);
-                        else loudnessButton.setBackgroundResource(R.drawable.ic_loudness_off);
-                    }
-                });
+        loudnessButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                loudness_mode = isChecked;
+                if (isChecked)
+                    loudnessButton.setBackgroundResource(R.drawable.ic_loudness_on);
+                else loudnessButton.setBackgroundResource(R.drawable.ic_loudness_off);
+            }
+        });
 
         final ToggleButton soloModeButton = (ToggleButton) view.findViewById(R.id.solo);
         soloModeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -126,6 +126,7 @@ public final class LiveFragment extends Fragment {
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_menu_live);
                 csoundObj.stop();
+                csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
             }
         });
         // define keyboard
@@ -161,9 +162,8 @@ public final class LiveFragment extends Fragment {
                                             + select_instr.getSelectedItem() + "\" " + (id + 1) + " "
                                             + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " "
                                             + (loudness_mode ?
-                                                CSD.pressure2dB(event.getPressure()) :
-                                                CSD.defaultLoudness2dB()));
-
+                                            CSD.pressure2dB(event.getPressure()) :
+                                            CSD.defaultLoudness2dB()));
                                 }
                             }
                         }
