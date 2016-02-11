@@ -1,14 +1,19 @@
 package joel.duet.musica;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.io.File;
 
 /**
  *
@@ -17,6 +22,8 @@ import android.widget.TextView;
 public final class EffectFragment extends Fragment {
     private String effectName;
     private EditText effectCode;
+    private File effect_file;
+    static private MainActivity activity;
 
     public String getEffectName(){
         return effectName;
@@ -24,6 +31,12 @@ public final class EffectFragment extends Fragment {
 
     public String getEffectCode(){
         return effectCode.getText().toString();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        activity = (MainActivity) context;
     }
 
     @Override
@@ -50,8 +63,8 @@ public final class EffectFragment extends Fragment {
                         Matrix.getInstance().update();
 
                         fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                            new FXFragment(),
-                            "FX").commit();
+                                new FXFragment(),
+                                "FX").commit();
                         MainActivity.toolbar.setTitle("FX");
                         MainActivity.currentFragment = MainActivity.State.FX;
                     }
@@ -59,6 +72,35 @@ public final class EffectFragment extends Fragment {
 
                 final ConfirmationFragment confirmation = new ConfirmationFragment();
                 confirmation.show(fragmentManager, "Delete instrument Fragment");
+            }
+        });
+
+        final Button export_button = (Button) view.findViewById(R.id.add_to_fx_lib);
+        export_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
+                        new ContextThemeWrapper(getContext(), R.style.csoundAlertDialogStyle),
+                        "FileSave..",
+                        new SimpleFileDialog.SimpleFileDialogListener() {
+                            @Override
+                            public void onChosenDir(String chosenDir) {
+                                int index = chosenDir.indexOf("//");
+                                if (index >= 0) {
+                                    chosenDir = chosenDir.substring(index + 1);
+                                }
+                                effect_file = new File(chosenDir);
+                                activity.csoundUtil.saveStringAsExternalFile("opcode " + effectName + ", aa, aa\n" + getEffectCode() + "endop", effect_file.getAbsolutePath());
+                            }
+                        }
+                );
+                if (effect_file != null) {
+                    fileOpenDialog.default_file_name = effect_file.getParent();
+                } else {
+                    fileOpenDialog.default_file_name = Environment.getExternalStorageDirectory().getAbsolutePath();
+                }
+                fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
             }
         });
 

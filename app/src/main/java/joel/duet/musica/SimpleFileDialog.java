@@ -28,7 +28,7 @@ import java.util.List;
  *
  * Created by joel on 06/02/16 at 22:32 at 22:38.
  */
-class SimpleFileDialog {
+final class SimpleFileDialog {
     private static final int FileOpen     = 0;
 	private static final int FileSave     = 1;
 	private static final int FolderChoose = 2;

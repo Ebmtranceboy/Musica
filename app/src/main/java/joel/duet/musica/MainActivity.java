@@ -26,9 +26,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 
-//import com.csounds.bindings.ui.CsoundButtonBinding;
-//import com.csounds.bindings.ui.CsoundSliderBinding;
-
 public final class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -38,8 +35,6 @@ public final class MainActivity extends AppCompatActivity
     static Toolbar toolbar;
     public static Runnable sensible_code;
     //private static final String TAG = "Musica";
-
-    //Button startCsound, stopCsound;
 
     public enum State {
         WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, SCORE, PATTERN //, MASTER, PREFERENCES, MATERIAL
@@ -275,6 +270,7 @@ public final class MainActivity extends AppCompatActivity
             confirmation.show(fragmentManager, "Open project Fragment");
 
         } else if (id == R.id.save_project) {//GZIPOutputStream
+            // TODO warns if existing file
             SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
                     new ContextThemeWrapper(MainActivity.this, R.style.csoundAlertDialogStyle),
                     "FileSave..",
@@ -403,5 +399,4 @@ public final class MainActivity extends AppCompatActivity
         });
         super.onConfigurationChanged(newConfig);
     }
-
 }

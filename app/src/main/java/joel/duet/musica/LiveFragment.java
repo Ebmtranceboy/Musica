@@ -11,10 +11,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
 import com.csounds.CsoundObj;
+import com.csounds.bindings.ui.CsoundSliderBinding;
 
 /**
  *
@@ -32,6 +34,14 @@ public final class LiveFragment extends Fragment {
     private final float[] touchY = new float[10];
     static private boolean loudness_mode;
     static private boolean solo_mode;
+    private static SeekBar ktrlx, ktrly;
+
+    private void ktrlBindings(){
+        csoundObj.addBinding(new CsoundSliderBinding(ktrlx, "ktrlx", 0, 1));
+        csoundObj.addBinding(new CsoundSliderBinding(ktrly, "ktrly", 0, 1));
+//        csoundObj.addBinding(new CsoundButtonBinding(button1, "button1", 1));
+
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -87,6 +97,10 @@ public final class LiveFragment extends Fragment {
             }
         });
 
+        ktrlx = (SeekBar) view.findViewById(R.id.ktrlx);
+        ktrly = (SeekBar) view.findViewById(R.id.ktrly);
+        ktrlBindings();
+
         final ImageButton recordButton = (ImageButton) view.findViewById(R.id.live_record);
         ImageButton playButton = (ImageButton) view.findViewById(R.id.live_play);
         ImageButton patternizeButton = (ImageButton) view.findViewById(R.id.patternize);
@@ -96,6 +110,7 @@ public final class LiveFragment extends Fragment {
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_recording);
                 csoundObj.stop();
+                ktrlBindings();
                 String csd = solo_mode ? CSD.recordPart((String) select_instr.getSelectedItem()) :
                         Score.sendPatternsForRecord((String) select_instr.getSelectedItem(), Score.allPatterns());
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
@@ -107,6 +122,7 @@ public final class LiveFragment extends Fragment {
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_menu_live);
                 csoundObj.stop();
+                ktrlBindings();
                 String csd = solo_mode ? CSD.part() : Score.sendPatterns(Score.allPatterns(), 0);
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
                 csoundObj.sendScore(activity.csoundUtil.getExternalFileAsString(Default.score_events_absoluteFilePath).replaceAll("i +\\w+ +", "i\"" + select_instr.getSelectedItem() + "\" "));
@@ -126,6 +142,7 @@ public final class LiveFragment extends Fragment {
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_menu_live);
                 csoundObj.stop();
+                ktrlBindings();
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
             }
         });
@@ -215,34 +232,3 @@ public final class LiveFragment extends Fragment {
         return -1;
     }
 }
-
-        /*
-        startCsound = (Button) findViewById(R.id.StartCsound);
-        stopCsound = (Button) findViewById(R.id.StopCsound);
-        button1 = (Button) findViewById(R.id.Button1);
-        seekbar1 = (SeekBar) findViewById(R.id.SeekBar1);
-
-        startCsound.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                csoundObj.addBinding(new CsoundSliderBinding(seekbar1, "seekbar1", 0, 1));
-                csoundObj.addBinding(new CsoundButtonBinding(button1, "button1", 1));
-
-                csoundObj.startCsound(createTempFile(getResourceFileAsString(R.raw.statevar)));
-
-
-                stopCsound.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        csoundObj.stop();
-                    }
-                });
-            }
-        });
-
-
-        }
-
-
-
-*/

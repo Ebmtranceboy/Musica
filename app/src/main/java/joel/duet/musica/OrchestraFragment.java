@@ -2,8 +2,10 @@ package joel.duet.musica;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 //import android.util.Log;
+import android.support.v7.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +14,21 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
- * Created by joel on 14/01/16 at 11:43 at 11:43 at 23:17 at 12:48.
+ * Created by joel on 14/01/16 at 11:43 at 11:43 at 23:17 at 12:48 at 10:49 at 14:39 at 15:33.
  */
 public final class OrchestraFragment extends FragmentPlus {
-    //TODO implement import button
-    //TODO implement add to lib
     static private MainActivity activity;
     //private static final String TAG = "Orchestra";
     static private ArrayAdapter<String> instr_adapter;
     private static String instrName;
     static private List<String> listInstr;
+    private File instr_file;
 
     @Override
     public void onAttach(Context context) {
@@ -75,7 +77,71 @@ public final class OrchestraFragment extends FragmentPlus {
             }
         });
 
+        final Button import_instr = (Button) view.findViewById(R.id.import_instr);
+        import_instr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
+                        new ContextThemeWrapper(getContext(), R.style.csoundAlertDialogStyle),
+                        "FileOpen..",
+                        new SimpleFileDialog.SimpleFileDialogListener() {
+                            @Override
+                            public void onChosenDir(String chosenDir) {
+                                OnFileChosen(new File(chosenDir));
+                            }
+                        }
+                );
+                if (instr_file != null) fileOpenDialog.default_file_name = instr_file.getParent();
+                else
+                    fileOpenDialog.default_file_name = Environment.getExternalStorageDirectory().getAbsolutePath();
+                fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
+            }
+        });
+
         return view;
+    }
+
+    private class ParseInstr {
+        String name, body;
+
+        protected ParseInstr(String text) {
+            String[] lines = text.split("\n");
+            int i = 0;
+            String[] words;
+            while (i < lines.length) {
+                words = lines[i].split(" +");
+                int j = 0;
+                while (words[j].equals("") && j < words.length - 1) j++;
+                if (j < words.length && words[j].equals("instr")) {
+                    name = words[j + 1];
+                    break;
+                }
+                i++;
+            }
+
+            i++;
+
+            body = "";
+            while (i < lines.length) {
+                words = lines[i].split(" ");
+                if (!words[0].equals("endin")) body += lines[i] + "\n";
+                i++;
+            }
+        }
+    }
+
+    private void OnFileChosen(File file) {
+        instr_file = file;
+        String instr_text = activity.csoundUtil.getExternalFileAsString(file.getAbsolutePath());
+        ParseInstr instr = new ParseInstr(instr_text);
+        instrName = instr.name;
+        Matrix.getInstance().spy();
+        CSD.mapInstr.put(instrName, instr.body);
+        Matrix.getInstance().update();
+        listInstr.add(instrName);
+        instr_adapter.notifyDataSetChanged();
+
+        instrName = null;
     }
 
     @Override
@@ -101,83 +167,4 @@ public final class OrchestraFragment extends FragmentPlus {
 
     }
 }
-
-
-
-
-/*
-
-        playButton = (Button) view.findViewById(R.id.live_play);
-        recordButton = (Button) view.findViewById(R.id.live_record);
-
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                csoundObj.stop();
-                csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
-                csoundObj.sendScore(activity.csoundUtil.getExternalFileAsString("unisonMelody.txt"));
-            }
-        });
-
-        view.post(new Runnable() {
-            @Override
-            public void run() { // dimensions of view are ready
-              // populate oct spinner
-                final Spinner select_oct = (Spinner) view.findViewById(R.id.select_oct);
-                oct_adapter = ArrayAdapter.createFromResource(activity, R.array.oct_array, android.R.layout.simple_spinner_item);
-                oct_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                select_oct.setAdapter(oct_adapter);
-                select_oct.setSelection(8);
-
-                // populate instr spinner
-
-                final Spinner select_instr = (Spinner) view.findViewById(R.id.select_instr);
-                instr_adapter = new ArrayAdapter<>(activity.getBaseContext(), android.R.layout.simple_spinner_item, CSD.mapInstr.keySet().toArray(new CharSequence[CSD.mapInstr.keySet().size()]));
-                select_instr.setAdapter(instr_adapter);
-
-                recordButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        csoundObj.stop();
-                        csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.recordPart((String) select_instr.getSelectedItem())));
-                    }
-                });
-
-                keyboardArea = (LinearLayout) view.findViewById(R.id.KeyboardArea);
-
-                KeyboardView.keyboard_width = keyboardArea.getWidth();// width must be declare as a field
-                KeyboardView.keyboard_height = keyboardArea.getHeight();// height must be declare as a field
-
-                keyboard = new KeyboardView(activity);
-                keyboardArea.addView(keyboard);
-                keyboard.draw(-1, -1);
-                keyboard.show();
-
-                keyboardArea.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        int key;
-                        switch (event.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                float x = event.getX();
-                                float y = event.getY();
-                                key = keyboard.draw(x, y);
-                                Log.i(TAG, "key=" + key);
-
-                                csoundObj.sendScore("i\"" + select_instr.getSelectedItem() + "\" 0 0.5 " + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " -12");
-                                keyboard.show();
-                                break;
-
-                            case MotionEvent.ACTION_UP:
-                                keyboard.draw(-1, -1);
-                                keyboard.show();
-                                break;
-                        }
-                        return true;
-                    }
-                });
-            }
-        });
-
-        */
 
