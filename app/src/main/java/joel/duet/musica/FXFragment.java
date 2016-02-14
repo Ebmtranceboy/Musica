@@ -150,6 +150,7 @@ public final class FXFragment extends FragmentPlus {
     public void onFinishEditDialog(String inputText) {
         effectName = inputText;
         Matrix.getInstance().spy();
+        // TODO :improve default effect
         CSD.mapFX.put(effectName, "");
         Matrix.getInstance().update();
         listEffect.add(effectName);

@@ -6,6 +6,7 @@ package joel.duet.musica;
  */
 final class Default {
 
+    // TODO : make ticks_per_second depend on tempo
     public static final int ticks_per_second = 32;
 
     public static final int min_tracks_displayed = 5;
@@ -13,6 +14,7 @@ final class Default {
     public static final float bottom_margin = 0.05f;
 
     public static final int max_midi_note = 136;
+    // TODO : find something better for iniial height
     public static final float initial_pattern_height = -2500; //somewhat around A440
 
     public static final int default_loudness = 5; // from 1(ppp) to 8(fff)

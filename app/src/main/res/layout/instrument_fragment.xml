@@ -46,7 +46,7 @@
             android:text="@string/delete_instr_label" />
 
         <Button
-            android:id="@+id/add_to_lib"
+            android:id="@+id/add_to_instr_lib"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"

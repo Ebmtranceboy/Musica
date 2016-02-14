@@ -4,7 +4,7 @@
 
     <application
         android:allowBackup="false"
-        android:icon="@drawable/welcome"
+        android:icon="@drawable/ic_conductor"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">

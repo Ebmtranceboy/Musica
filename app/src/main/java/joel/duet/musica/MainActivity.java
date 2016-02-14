@@ -224,8 +224,10 @@ public final class MainActivity extends AppCompatActivity
             currentFragment = State.SCORE;
 
         } else if (id == R.id.nav_master) {
+            // TODO : implement gains
 
         } else if (id == R.id.nav_material) {
+            // TODO : implement synthpad generator
 
         } else if (id == R.id.new_project) {
             sensible_code = new Runnable() {
@@ -294,7 +296,7 @@ public final class MainActivity extends AppCompatActivity
             fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
 
         } else if (id == R.id.nav_preferences)
-
+// TODO : default sr, ksmps, nbchnls, 0dbfs
         {
 
         }
