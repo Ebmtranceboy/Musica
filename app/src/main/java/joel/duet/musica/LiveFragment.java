@@ -31,8 +31,10 @@ public final class LiveFragment extends Fragment {
     private final float[] touchX = new float[10];
     private final float[] touchY = new float[10];
     static private boolean loudness_mode;
+    static private boolean polyphonic_mode;
     static private boolean solo_mode;
     private static SeekBar ktrlx, ktrly;
+    private static String lastPch = "3.00";
 
     private void ktrlBindings(){
         csoundObj.addBinding(new CsoundSliderBinding(ktrlx, "ktrlx", 0, 1));
@@ -82,6 +84,16 @@ public final class LiveFragment extends Fragment {
                 if (isChecked)
                     loudnessButton.setBackgroundResource(R.drawable.ic_loudness_on);
                 else loudnessButton.setBackgroundResource(R.drawable.ic_loudness_off);
+            }
+        });
+
+        final ToggleButton phonicModeButton = (ToggleButton) view.findViewById(R.id.phonic_mode);
+        phonicModeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                polyphonic_mode = isChecked;
+                if (isChecked)
+                    phonicModeButton.setBackgroundResource(R.drawable.ic_polyphonic);
+                else phonicModeButton.setBackgroundResource(R.drawable.ic_monophonic);
             }
         });
 
@@ -173,12 +185,23 @@ public final class LiveFragment extends Fragment {
                                     key = keyboard.draw(touchX[id], touchY[id], true);
                                     //Log.i(TAG, "key=" + key);
 
-                                    csoundObj.sendScore("i\"Voicer\" 0 0 \""
+                                    if(polyphonic_mode)
+                                        csoundObj.sendScore("i\"Voicer\" 0 0 \""
                                             + select_instr.getSelectedItem() + "\" " + (id + 1) + " "
                                             + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " "
                                             + (loudness_mode ?
                                             CSD.pressure2dB(event.getPressure()) :
                                             CSD.defaultLoudness2dB()));
+                                    else{
+                                        csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id + 1));
+                                        String pch = select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key;
+                                        csoundObj.sendScore("i\"Voicer\" 0 0 \""
+                                                + select_instr.getSelectedItem() + "\" " + (id + 1) + " "
+                                                + pch + " "
+                                                + (loudness_mode ? CSD.pressure2dB(event.getPressure()) : CSD.defaultLoudness2dB()) + " "
+                                                + lastPch);
+                                        lastPch = pch;
+                                    }
                                 }
                             }
                         }
@@ -195,7 +218,8 @@ public final class LiveFragment extends Fragment {
                         if (id != -1) {
                             touchIds[id] = -1;
 
-                            csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id + 1));
+                            if(polyphonic_mode)
+                                csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id + 1));
 
                             keyboard.draw(touchX[id], touchY[id], false);
                             keyboard.show();
@@ -208,6 +232,8 @@ public final class LiveFragment extends Fragment {
         });
 
         loudness_mode = false;
+        polyphonic_mode = true;
+        solo_mode = true;
 
         return view;
     }

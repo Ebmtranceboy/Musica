@@ -117,7 +117,7 @@ final class CSD {
             + "\nSinstr = p4"
             + "\ninb nstrnum Sinstr"
             + "\nifrac = p5"
-            + "\nevent_i \"i\", inb + ifrac/20, 0, -1, p6, p7"
+            + "\nevent_i \"i\", inb + ifrac/20, 0, -1, p6, p7, p8"
             + "\nendin";
 
     private static final String Silencer = "\n\ninstr Silencer"
@@ -142,13 +142,15 @@ final class CSD {
             + "\nidur[] fillarray " + TextUtils.join(", ", pat.getDurationsInSeconds())
             + "\nivel[] fillarray " + TextUtils.join(", ", pat.getPressureIndB())
             + "\nkstepnum init 0"
+            + "\nkpch init 0"
             + "\nkwait init istp[0]"
             + "\nif(gkmetro==1) then"
             + "\n   if(kwait==0) then"
+            + "\n         kpreviouspch = kpch"
             + "\n         kpch = ipch[kstepnum]"
             + "\n         kdur = idur[kstepnum]"
             + "\n         kvel = ivel[kstepnum]"
-            + "\n         event \"i\", \"" + instr + "\" ,0,kdur,kpch,kvel"
+            + "\n         event \"i\", \"" + instr + "\" ,0,kdur,kpch,kvel,kpreviouspch"
             + "\n         kstepnum += 1"
             + "\n         if(kstepnum>=" + n + ") then"
             + "\n            kstepnum = 0"
@@ -249,7 +251,7 @@ final class CSD {
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-           instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5" : "") + "\n" + mapInstr.get(instr) + "\nendin";
+           instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") + "\n" + mapInstr.get(instr) + "\nendin";
         }
         return header + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
     }
@@ -268,7 +270,7 @@ final class CSD {
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-            instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5" : "") +"\n" + mapInstr.get(instr) + "\nendin";
+            instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") +"\n" + mapInstr.get(instr) + "\nendin";
         }
         return header + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer
                 + Metro + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;

@@ -46,6 +46,16 @@
             android:textOn="" />
 
         <ToggleButton
+            android:id="@+id/phonic_mode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/ic_polyphonic"
+            android:textOff=""
+            android:textOn="" />
+
+
+        <ToggleButton
             android:id="@+id/solo"
             android:layout_width="0dp"
             android:layout_height="match_parent"
