@@ -54,7 +54,6 @@
             android:textOff=""
             android:textOn="" />
 
-
         <ToggleButton
             android:id="@+id/solo"
             android:layout_width="0dp"
@@ -63,7 +62,6 @@
             android:background="@drawable/ic_read_partition"
             android:textOff=""
             android:textOn=""/>
-
 
     </TableRow>
 
@@ -94,7 +92,6 @@
             android:contentDescription="@string/record_label"
             android:src="@drawable/ic_menu_live" />
 
-
         <ImageButton
             android:id="@+id/live_play"
             style="?android:attr/buttonBarButtonStyle"
@@ -121,7 +118,6 @@
             android:layout_weight="1"
             android:contentDescription="@string/stop_button_label"
             android:src="@drawable/ic_stop" />
-
 
     </TableRow>
 

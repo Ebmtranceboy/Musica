@@ -32,7 +32,7 @@ final class CSD {
                     + "\nnchnls = " + nchnls
                     + "\n0dbfs = " + zeroDbFs;
 
-    static final Map<String, String> mapFX = new LinkedHashMap<>(); //new new HashMap<>();
+    static final Map<String, String> mapFX = new LinkedHashMap<>(); //new HashMap<>();
 
     static int getNbEffects() {
         return mapFX.keySet().size();

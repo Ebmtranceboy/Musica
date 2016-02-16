@@ -18,11 +18,17 @@ import android.widget.ToggleButton;
 import com.csounds.CsoundObj;
 import com.csounds.bindings.ui.CsoundSliderBinding;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 /**
  *
- * Created by joel on 12/01/16 at 23:16 at 11:00 at 12:39.
+ * Created by joel on 12/01/16 at 23:16 at 11:00 at 12:39 at 13:22.
  */
 public final class LiveFragment extends Fragment {
+    //private static final String TAG = "Live";
 
     static private MainActivity activity;
     static private CsoundObj csoundObj;
@@ -36,11 +42,10 @@ public final class LiveFragment extends Fragment {
     private static SeekBar ktrlx, ktrly;
     private static String lastPch = "3.00";
 
-    private void ktrlBindings(){
+    private void ktrlBindings() {
         csoundObj.addBinding(new CsoundSliderBinding(ktrlx, "ktrlx", 0, 1));
         csoundObj.addBinding(new CsoundSliderBinding(ktrly, "ktrly", 0, 1));
 //        csoundObj.addBinding(new CsoundButtonBinding(button1, "button1", 1));
-
     }
 
     @Override
@@ -51,10 +56,6 @@ public final class LiveFragment extends Fragment {
         csoundObj.stop();
         csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
     }
-
-    //Button startCsound, stopCsound, button1;
-    //SeekBar seekbar1;
-    //private static final String TAG = "Live";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
@@ -119,6 +120,7 @@ public final class LiveFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_recording);
+
                 csoundObj.stop();
                 ktrlBindings();
                 String csd = solo_mode ? CSD.recordPart((String) select_instr.getSelectedItem()) :
@@ -131,6 +133,8 @@ public final class LiveFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_menu_live);
+
+
                 csoundObj.stop();
                 ktrlBindings();
                 String csd = solo_mode ? CSD.part() : Score.sendPatterns(Score.allPatterns(), 0);
@@ -143,6 +147,7 @@ public final class LiveFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_menu_live);
+
                 activity.csoundUtil.patternize((String) select_instr.getSelectedItem(), solo_mode);
             }
         });
@@ -151,9 +156,21 @@ public final class LiveFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_menu_live);
-                csoundObj.stop();
-                ktrlBindings();
-                csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
+
+                final ExecutorService e = Executors.newScheduledThreadPool(1);
+
+                // schedule it to execute starting from now
+                ((ScheduledExecutorService) e).schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        csoundObj.stop();
+                        ktrlBindings();
+                        csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
+                    }
+                }, 1000, TimeUnit.MILLISECONDS);
+
+                // in case record_mode is on, this is needed for foutir to catch the last note
+                csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + 1);
             }
         });
         // define keyboard
@@ -185,23 +202,14 @@ public final class LiveFragment extends Fragment {
                                     key = keyboard.draw(touchX[id], touchY[id], true);
                                     //Log.i(TAG, "key=" + key);
 
-                                    if(polyphonic_mode)
-                                        csoundObj.sendScore("i\"Voicer\" 0 0 \""
+                                    if (!polyphonic_mode)csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id + 1));
+                                    String pch = select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key;
+                                    csoundObj.sendScore("i\"Voicer\" 0 0 \""
                                             + select_instr.getSelectedItem() + "\" " + (id + 1) + " "
-                                            + select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key + " "
-                                            + (loudness_mode ?
-                                            CSD.pressure2dB(event.getPressure()) :
-                                            CSD.defaultLoudness2dB()));
-                                    else{
-                                        csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id + 1));
-                                        String pch = select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key;
-                                        csoundObj.sendScore("i\"Voicer\" 0 0 \""
-                                                + select_instr.getSelectedItem() + "\" " + (id + 1) + " "
-                                                + pch + " "
-                                                + (loudness_mode ? CSD.pressure2dB(event.getPressure()) : CSD.defaultLoudness2dB()) + " "
-                                                + lastPch);
-                                        lastPch = pch;
-                                    }
+                                            + pch + " "
+                                            + (loudness_mode ? CSD.pressure2dB(event.getPressure()) : CSD.defaultLoudness2dB()) + " "
+                                            + lastPch);
+                                    lastPch = pch;
                                 }
                             }
                         }
@@ -218,7 +226,7 @@ public final class LiveFragment extends Fragment {
                         if (id != -1) {
                             touchIds[id] = -1;
 
-                            if(polyphonic_mode)
+                            if (polyphonic_mode)
                                 csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id + 1));
 
                             keyboard.draw(touchX[id], touchY[id], false);
