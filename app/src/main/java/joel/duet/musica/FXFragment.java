@@ -106,7 +106,7 @@ public final class FXFragment extends FragmentPlus {
     private class ParseEffect {
         String name, body;
 
-        protected ParseEffect(String text) {
+        ParseEffect(String text) {
             String[] lines = text.split("\n");
             int i = 0;
             String[] words;

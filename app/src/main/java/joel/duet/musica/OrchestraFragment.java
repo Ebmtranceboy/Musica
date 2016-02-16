@@ -104,7 +104,7 @@ public final class OrchestraFragment extends FragmentPlus {
     private class ParseInstr {
         String name, body;
 
-        protected ParseInstr(String text) {
+        ParseInstr(String text) {
             String[] lines = text.split("\n");
             int i = 0;
             String[] words;

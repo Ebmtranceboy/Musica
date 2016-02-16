@@ -6,7 +6,6 @@
 
     <string name="action_settings">Settings</string>
     <string name="drawer_icon">drawer_icon</string>
-    <string name="import_label">Import</string>
     <string name="live_label">Live</string>
     <string name="patchbay_label">Patchbay</string>
     <string name="orchestra_label">Orchestra</string>
@@ -24,12 +23,12 @@
     <string name="dialog_hint_label">initial uppercase then lowercase</string>
     <string name="new_instr_button_label">New Instrument</string>
     <string name="import_instr_button_label">Import Instrument</string>
-    <string name="monophonic_label">monophonic</string>
     <string name="delete_instr_label">Delete</string>
     <string name="add_to_lib_label">Add to lib</string>
     <string name="endin">endin</string>
     <string name="instr_title">instr %1$s</string>
     <string name="effect_title">opcode %1$s, aa, aa</string>
+    <string name="tempo_format">%1$s</string>
     <string name="pattern_title">track %1$s pattern %2$s</string>
     <string name="endop">endop</string>
     <string name="new_effect_button_label">New effect</string>
@@ -56,6 +55,9 @@
     <string name="dialog_save">Save As:</string>
     <string name="dialog_folder">Folder Select:</string>
     <string name="new_folder_label">New Folder</string>
+    <string name="options_score_file">temporary directory</string>
+    <string name="quarter_image_label">image of a quarter</string>
+    <string name="default_directory">/storage/scard0/</string>
     <string-array name="oct_array">
         <item>1</item>
         <item>2</item>

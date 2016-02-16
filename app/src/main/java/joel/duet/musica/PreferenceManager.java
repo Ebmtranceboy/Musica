@@ -24,6 +24,7 @@ public final class PreferenceManager {
     private static final String FX_KEY = "FX";
     private static final String MATRIX_KEY = "Matrix";
     private static final String TRACKS_KEY = "Tracks";
+    private static final String TEMPO_RATIO_KEY = "Tempo";
     private static final String PROJECT_KEY = "Project";
 
     @SuppressLint("CommitPrefEdits")
@@ -54,6 +55,7 @@ public final class PreferenceManager {
             json.put(FX_KEY, saveJSONFX());
             json.put(MATRIX_KEY, joel.duet.musica.Matrix.serialize());
             json.put(TRACKS_KEY, saveJSONTracks());
+            json.put(TEMPO_RATIO_KEY, CSD.tempo_ratio);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -111,6 +113,7 @@ public final class PreferenceManager {
         joel.duet.musica.Matrix.getInstance().update();
         if(project.getString(MATRIX_KEY).length() == (CSD.getNbInstruments()+CSD.getNbEffects()+1)*(CSD.getNbEffects()+2))
             joel.duet.musica.Matrix.getInstance().unserialize(project.getString(MATRIX_KEY));
+        CSD.tempo_ratio = project.getDouble(TEMPO_RATIO_KEY);
     }
 
     private static JSONArray saveJSONOrchestra() throws JSONException {

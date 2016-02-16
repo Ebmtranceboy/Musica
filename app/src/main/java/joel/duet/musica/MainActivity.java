@@ -34,10 +34,10 @@ public final class MainActivity extends AppCompatActivity
     private DrawerLayout mDrawer;
     static Toolbar toolbar;
     public static Runnable sensible_code;
-    //private static final String TAG = "Musica";
+   // private static final String TAG = "Musica";
 
     public enum State {
-        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, SCORE, PATTERN //, MASTER, PREFERENCES, MATERIAL
+        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, SCORE, PATTERN, OPTIONS //, MASTER, MATERIAL
     }
 
     static State currentFragment;
@@ -295,15 +295,17 @@ public final class MainActivity extends AppCompatActivity
             }
             fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
 
-        } else if (id == R.id.nav_preferences)
-// TODO : default sr, ksmps, nbchnls, 0dbfs
-        {
-
+        } else if (id == R.id.nav_preferences){
+        // TODO : default sr, ksmps, nbchnls, 0dbfs
+            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                    new OptionsFragment(),
+                    "OPTIONS").commit();
+            toolbar.setTitle("Options");
+            currentFragment = State.OPTIONS;
         }
 
         return true;
     }
-
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

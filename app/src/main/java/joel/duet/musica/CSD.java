@@ -15,6 +15,7 @@ import java.util.Map;
  */
 final class CSD {
     //private static final String TAG = "CSD";
+    public static double tempo_ratio = 1.0; // relative to 60 quater by second
 
     private static final int sr = 44100;
     private static final int ksmps = 100;
@@ -127,10 +128,10 @@ final class CSD {
             + "\nevent_i \"i\", -(inb + ifrac/20), 0, 0"
             + "\nendin";
 
-    private static final String Metro = "\ngkmetro init 0"
+    private static String Metro() { return "\ngkmetro init 0"
             + "\n\ninstr Metro"
-            + "\ngkmetro metro " + Default.ticks_per_second
-            + "\nendin";
+            + "\ngkmetro metro " + (Default.ticks_per_second * tempo_ratio)
+            + "\nendin";}
 
     private static String Looper(Pattern pat, int frac, int duration) {
         String instr = pat.getInstr();
@@ -234,7 +235,7 @@ final class CSD {
             instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr) + "\nendin";
         }
         return header + inits + udos + instruments + Master() + Voicer
-                + Metro + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
+                + Metro() + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
     }
 
     static String recordPart(String instrName) {
@@ -273,7 +274,7 @@ final class CSD {
             instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") +"\n" + mapInstr.get(instr) + "\nendin";
         }
         return header + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer
-                + Metro + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
+                + Metro() + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
     }
     public static int pressure2dB(float pressure){
         return Math.round(3*(pressure-32)/32-22);

@@ -6,7 +6,6 @@ package joel.duet.musica;
  */
 final class Default {
 
-    // TODO : make ticks_per_second depend on tempo
     public static final int ticks_per_second = 32;
 
     public static final int min_tracks_displayed = 5;
@@ -14,12 +13,11 @@ final class Default {
     public static final float bottom_margin = 0.05f;
 
     public static final int max_midi_note = 136;
-    // TODO : find something better for iniial height
-    public static final float initial_pattern_height = -2500; //somewhat around A440
+    public static final float initial_pattern_height = -1500; //somewhat around A440
 
     public static final int default_loudness = 5; // from 1(ppp) to 8(fff)
 
-    public static final String empty_project = "{\"Orchestra\":[],\"FX\":[],\"idTrackSelected\":0,\"idPatternSelected\":0,\"tracks\":[],\"Matrix\":\"FF\"}";
+    public static final String empty_project = "{\"Tempo\":1.0,\"Orchestra\":[],\"FX\":[],\"idTrackSelected\":0,\"idPatternSelected\":0,\"tracks\":[],\"Matrix\":\"FF\"}";
     public static final String score_events_absoluteFilePath = "/storage/sdcard0/unisonMelody.txt";
 
     public static final int[] resolutions = {128,64,32,16,8,4,2,1};
