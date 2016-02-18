@@ -43,7 +43,7 @@ public final class OptionsFragment extends Fragment {
             }
         });
 
-        String format = getResources().getString(R.string.tempo_format);
+        String format = getResources().getString(R.string.floating_point_format);
         options_tempo.setText(String.format(format,CSD.tempo_ratio * 60));
 
         return view;

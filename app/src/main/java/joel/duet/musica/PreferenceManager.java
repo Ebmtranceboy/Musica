@@ -26,6 +26,8 @@ public final class PreferenceManager {
     private static final String TRACKS_KEY = "Tracks";
     private static final String TEMPO_RATIO_KEY = "Tempo";
     private static final String PROJECT_KEY = "Project";
+    private static final String MASTER_GAIN_L_KEY = "GainL";
+    private static final String MASTER_GAIN_R_KEY = "GainR";
 
     @SuppressLint("CommitPrefEdits")
     public void initialize(Context context) {
@@ -56,6 +58,8 @@ public final class PreferenceManager {
             json.put(MATRIX_KEY, joel.duet.musica.Matrix.serialize());
             json.put(TRACKS_KEY, saveJSONTracks());
             json.put(TEMPO_RATIO_KEY, CSD.tempo_ratio);
+            json.put(MASTER_GAIN_L_KEY, CSD.master_gain_L);
+            json.put(MASTER_GAIN_R_KEY, CSD.master_gain_R);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -114,6 +118,8 @@ public final class PreferenceManager {
         if(project.getString(MATRIX_KEY).length() == (CSD.getNbInstruments()+CSD.getNbEffects()+1)*(CSD.getNbEffects()+2))
             joel.duet.musica.Matrix.getInstance().unserialize(project.getString(MATRIX_KEY));
         CSD.tempo_ratio = project.getDouble(TEMPO_RATIO_KEY);
+        CSD.master_gain_L = project.getDouble(MASTER_GAIN_L_KEY);
+        CSD.master_gain_R = project.getDouble(MASTER_GAIN_R_KEY);
     }
 
     private static JSONArray saveJSONOrchestra() throws JSONException {
@@ -123,7 +129,9 @@ public final class PreferenceManager {
         for (String instr : CSD.mapInstr.keySet()) {
             instr_obj = new JSONObject();
             instr_obj.put("name", instr);
-            instr_obj.put("body", CSD.mapInstr.get(instr));
+            instr_obj.put("body", CSD.mapInstr.get(instr).code);
+            instr_obj.put("gainL", CSD.mapInstr.get(instr).gainL);
+            instr_obj.put("gainR", CSD.mapInstr.get(instr).gainR);
             instruments.put(instr_obj);
         }
         return instruments;
@@ -133,7 +141,7 @@ public final class PreferenceManager {
         JSONObject instr_obj;
         for (int i = 0; i < instruments.length(); i++) {
             instr_obj = instruments.getJSONObject(i);
-            CSD.mapInstr.put(instr_obj.getString("name"), instr_obj.getString("body"));
+            CSD.mapInstr.put(instr_obj.getString("name"), new CSD.Content(instr_obj.getString("body"),instr_obj.getDouble("gainL"),instr_obj.getDouble("gainR")));
         }
     }
 
@@ -144,7 +152,9 @@ public final class PreferenceManager {
         for (String effect : CSD.mapFX.keySet()) {
             effect_obj = new JSONObject();
             effect_obj.put("name", effect);
-            effect_obj.put("body", CSD.mapFX.get(effect));
+            effect_obj.put("body", CSD.mapFX.get(effect).code);
+            effect_obj.put("gainL", CSD.mapFX.get(effect).gainL);
+            effect_obj.put("gainR", CSD.mapFX.get(effect).gainR);
             effects.put(effect_obj);
         }
         return effects;
@@ -154,7 +164,7 @@ public final class PreferenceManager {
         JSONObject effect_obj;
         for (int i = 0; i < effects.length(); i++) {
             effect_obj = effects.getJSONObject(i);
-            CSD.mapFX.put(effect_obj.getString("name"), effect_obj.getString("body"));
+            CSD.mapFX.put(effect_obj.getString("name"), new CSD.Content(effect_obj.getString("body"),effect_obj.getDouble("gainL"),effect_obj.getDouble("gainR")));
         }
     }
 

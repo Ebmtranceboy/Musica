@@ -47,7 +47,7 @@ public final class InstrumentFragment extends Fragment {
         String format = getResources().getString(R.string.instr_title);
         instrTitleView.setText(String.format(format, instrName));
         instrumentCode = (EditText) view.findViewById(R.id.instrumentCode);
-        instrumentCode.setText(CSD.mapInstr.get(instrName));
+        instrumentCode.setText(CSD.mapInstr.get(instrName).code);
 
         final Button del_button = (Button) view.findViewById(R.id.delete_instr);
         del_button.setOnClickListener(new View.OnClickListener() {

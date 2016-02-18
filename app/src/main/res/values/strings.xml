@@ -26,9 +26,13 @@
     <string name="delete_instr_label">Delete</string>
     <string name="add_to_lib_label">Add to lib</string>
     <string name="endin">endin</string>
+
     <string name="instr_title">instr %1$s</string>
     <string name="effect_title">opcode %1$s, aa, aa</string>
-    <string name="tempo_format">%1$s</string>
+    <string name="floating_point_format">%1$s</string>
+    <string name="master_line_L_format">%1$s_L</string>
+    <string name="master_line_R_format">%1$s_R</string>
+
     <string name="pattern_title">track %1$s pattern %2$s</string>
     <string name="endop">endop</string>
     <string name="new_effect_button_label">New effect</string>

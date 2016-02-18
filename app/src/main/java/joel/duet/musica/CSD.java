@@ -16,6 +16,7 @@ import java.util.Map;
 final class CSD {
     //private static final String TAG = "CSD";
     public static double tempo_ratio = 1.0; // relative to 60 quater by second
+    public static double master_gain_L = 1.0, master_gain_R = 1.0;
 
     private static final int sr = 44100;
     private static final int ksmps = 100;
@@ -33,14 +34,21 @@ final class CSD {
                     + "\nnchnls = " + nchnls
                     + "\n0dbfs = " + zeroDbFs;
 
-    static final Map<String, String> mapFX = new LinkedHashMap<>(); //new HashMap<>();
+    static class Content{
+        String code;
+        double gainL, gainR;
+        Content(String c, double gl, double gr) {code = c; gainL = gl; gainR = gr;}
+    }
+
+
+    static final Map<String, Content> mapFX = new LinkedHashMap<>(); //new HashMap<>();
 
     static int getNbEffects() {
         return mapFX.keySet().size();
     }
 
 
-    static final Map<String, String> mapInstr = new LinkedHashMap<>();//new HashMap<>();
+    static final Map<String, Content> mapInstr = new LinkedHashMap<>();//new HashMap<>();
 
     static int getNbInstruments() {
         return mapInstr.keySet().size();
@@ -58,7 +66,7 @@ final class CSD {
                 last = "a_" + name + "_L, a_" + name + "_R " + name + " ain_" + name + "_L, ain_" + name + "_R";
             } else {
                 name = "Master";
-                last = "outs ain_Master_L, ain_Master_R";
+                last = "k_Master_L chnget \"ktrl_Master_L\"\nk_Master_R chnget \"ktrl_Master_R\"\nouts k_Master_L * ain_Master_L, k_Master_R * ain_Master_R";
 
             }
             narg = Matrix.getNbActiveInput(j) - 1;
@@ -67,12 +75,12 @@ final class CSD {
             String in;
             if (i < getNbInstruments()) {
                 in = mapInstr.keySet().toArray(new String[getNbInstruments()])[i];
-                accL += "ga_" + in + "_L";
-                accR += "ga_" + in + "_R";
+                accL += "k_" + in + "_L * ga_" + in + "_L";
+                accR += "k_" + in + "_R * ga_" + in + "_R";
             } else {
                 in = mapFX.keySet().toArray(new String[getNbEffects()])[i - getNbInstruments()];
-                accL += "a_" + in + "_L";
-                accR += "a_" + in + "_R";
+                accL += "k_" + in + "_L * a_" + in + "_L";
+                accR += "k_" + in + "_R * a_" + in + "_R";
             }
         }
     }
@@ -82,13 +90,14 @@ final class CSD {
             String in;
             if (i < getNbInstruments()) {
                 in = mapInstr.keySet().toArray(new String[getNbInstruments()])[i];
-                snippets[j].accL += ", ga_" + in + "_L";
-                snippets[j].accR += ", ga_" + in + "_R";
+                snippets[j].accL += ", k_" + in + "_L * ga_" + in + "_L";
+                snippets[j].accR += ", k_" + in + "_R * ga_" + in + "_R";
             } else {
                 in = mapFX.keySet().toArray(new String[getNbEffects()])[i - getNbInstruments()];
-                snippets[j].accL += ", a_" + in + "_L";
-                snippets[j].accR += ", a_" + in + "_R";
+                snippets[j].accL += ", k_" + in + "_L * a_" + in + "_L";
+                snippets[j].accR += ", k_" + in + "_R * a_" + in + "_R";
             }
+
             snippets[j].narg --;
 
         } else snippets[j] = new Snippet(i, j);
@@ -98,12 +107,21 @@ final class CSD {
 
     private static String Master() {
         String master = "";
+        String ktrl_L = "", ktrl_R = "";
+        String in;
         snippets = new Snippet[getNbEffects() + 2];
-        for(int i=0; i<getNbInstruments()+getNbEffects();i++)
-            for(int j=1; j<=getNbEffects()+1;j++){
-                if(Matrix.get(i,j)){
-                    update(i,j);
-                    if(snippets[j].narg == 0) {
+        for(int i=0; i<getNbInstruments()+getNbEffects();i++) {
+            if(i<getNbInstruments())
+                in = mapInstr.keySet().toArray(new String[getNbInstruments()])[i];
+            else in = mapFX.keySet().toArray(new String[getNbEffects()])[i - getNbInstruments()];
+
+            ktrl_L += "\nk_" + in + "_L chnget \"ktrl_" + in + "_L\"";
+            ktrl_R += "\nk_" + in + "_R chnget \"ktrl_" + in + "_R\"";
+
+            for (int j = 1; j <= getNbEffects() + 1; j++) {
+                if (Matrix.get(i, j)) {
+                    update(i, j);
+                    if (snippets[j].narg == 0) {
                         master += "\n" + snippets[j].accL
                                 + "\n" + snippets[j].accR
                                 + "\n" + snippets[j].last;
@@ -111,7 +129,8 @@ final class CSD {
                     }
                 }
             }
-        return "\n\ninstr Master" + master + resets + "\nendin";
+        }
+        return "\n\ninstr Master" + ktrl_L + ktrl_R + master + resets + "\nendin";
     }
 
     private static final String Voicer = "\n\ninstr Voicer"
@@ -202,7 +221,7 @@ final class CSD {
         String inits = "";
         String udos = "";
         for(String udo : mapFX.keySet()){
-            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo) + "\nendop";
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo).code + "\nendop";
         }
 
         resets = "";
@@ -212,7 +231,7 @@ final class CSD {
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-            instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr) + "\nendin";
+            instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr).code + "\nendin";
         }
         //Log.i(TAG, "in :" + instruments);
         return header + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
@@ -222,7 +241,7 @@ final class CSD {
         String udos = "";
         String inits = "";
         for(String udo : mapFX.keySet()){
-            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo) + "\nendop";
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo).code + "\nendop";
         }
 
         resets = "";
@@ -232,7 +251,7 @@ final class CSD {
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-            instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr) + "\nendin";
+            instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr).code + "\nendin";
         }
         return header + inits + udos + instruments + Master() + Voicer
                 + Metro() + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
@@ -242,7 +261,7 @@ final class CSD {
         String udos="";
         String inits = "";
         for(String udo : mapFX.keySet()){
-            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo) + "\nendop";
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo).code + "\nendop";
         }
 
         resets = "";
@@ -252,7 +271,7 @@ final class CSD {
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-           instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") + "\n" + mapInstr.get(instr) + "\nendin";
+           instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") + "\n" + mapInstr.get(instr).code + "\nendin";
         }
         return header + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
     }
@@ -261,7 +280,7 @@ final class CSD {
         String udos = "";
         String inits = "";
         for(String udo : mapFX.keySet()){
-            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo) + "\nendop";
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo).code + "\nendop";
         }
 
         resets = "";
@@ -271,7 +290,7 @@ final class CSD {
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-            instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") +"\n" + mapInstr.get(instr) + "\nendin";
+            instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") +"\n" + mapInstr.get(instr).code + "\nendin";
         }
         return header + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer
                 + Metro() + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;

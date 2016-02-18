@@ -138,7 +138,7 @@ public final class FXFragment extends FragmentPlus {
         ParseEffect effect = new ParseEffect(effect_text);
         effectName = effect.name;
         Matrix.getInstance().spy();
-        CSD.mapFX.put(effectName, effect.body);
+        CSD.mapFX.put(effectName, new CSD.Content(effect.body,1.0,1.0));
         Matrix.getInstance().update();
         listEffect.add(effectName);
         effect_adapter.notifyDataSetChanged();
@@ -150,8 +150,7 @@ public final class FXFragment extends FragmentPlus {
     public void onFinishEditDialog(String inputText) {
         effectName = inputText;
         Matrix.getInstance().spy();
-        // TODO :improve default effect
-        CSD.mapFX.put(effectName, "");
+        CSD.mapFX.put(effectName, new CSD.Content("xout 0, 0",1.0,1.0));
         Matrix.getInstance().update();
         listEffect.add(effectName);
         effect_adapter.notifyDataSetChanged();

@@ -37,7 +37,7 @@ public final class MainActivity extends AppCompatActivity
    // private static final String TAG = "Musica";
 
     public enum State {
-        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, SCORE, PATTERN, OPTIONS //, MASTER, MATERIAL
+        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, SCORE, PATTERN, OPTIONS , MASTER//, MATERIAL
     }
 
     static State currentFragment;
@@ -95,7 +95,7 @@ public final class MainActivity extends AppCompatActivity
             final FragmentManager fragmentManager = getSupportFragmentManager();
             if (currentFragment == State.INSTRUMENT) {
                 InstrumentFragment fragment = (InstrumentFragment) fragmentManager.findFragmentByTag("INSTRUMENT");
-                CSD.mapInstr.put(fragment.getInstrName(), fragment.getInstrCode());
+                CSD.mapInstr.put(fragment.getInstrName(), new CSD.Content(fragment.getInstrCode(),1.0,1.0));
 
                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
                         new OrchestraFragment(),
@@ -104,7 +104,7 @@ public final class MainActivity extends AppCompatActivity
                 currentFragment = State.ORCHESTRA;
             } else if (currentFragment == State.EFFECT) {
                 EffectFragment fragment = (EffectFragment) fragmentManager.findFragmentByTag("EFFECT");
-                CSD.mapFX.put(fragment.getEffectName(), fragment.getEffectCode());
+                CSD.mapFX.put(fragment.getEffectName(), new CSD.Content(fragment.getEffectCode(),1.0,1.0));
 
                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
                         new FXFragment(),
@@ -178,11 +178,11 @@ public final class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         mDrawer.closeDrawer(GravityCompat.START);
-        csoundObj.stop();
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (id == R.id.nav_orchestra) {
+            csoundObj.stop();
             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                     new OrchestraFragment(),
                     "ORCHESTRA").commit();
@@ -190,6 +190,7 @@ public final class MainActivity extends AppCompatActivity
             currentFragment = State.ORCHESTRA;
 
         } else if (id == R.id.nav_patchbay) {
+            csoundObj.stop();
             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                     new PatchBayFragment(),
                     "PATCHBAY").commit();
@@ -198,6 +199,7 @@ public final class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_live) {
             if (CSD.getNbInstruments() > 0) {
+                csoundObj.stop();
                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
                         new LiveFragment(),
                         "LIVE").commit();
@@ -210,6 +212,7 @@ public final class MainActivity extends AppCompatActivity
             }
 
         } else if (id == R.id.nav_fx) {
+            csoundObj.stop();
             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                     new FXFragment(),
                     "FX").commit();
@@ -217,6 +220,7 @@ public final class MainActivity extends AppCompatActivity
             currentFragment = State.FX;
 
         } else if (id == R.id.nav_score) {
+            csoundObj.stop();
             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                     new ScoreFragment(),
                     "SCORE").commit();
@@ -224,12 +228,16 @@ public final class MainActivity extends AppCompatActivity
             currentFragment = State.SCORE;
 
         } else if (id == R.id.nav_master) {
-            // TODO : implement gains
-
+            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                    new MasterFragment(),
+                    "MASTER").commit();
+            toolbar.setTitle("Master");
+            currentFragment = State.MASTER;
         } else if (id == R.id.nav_material) {
-            // TODO : implement synthpad generator
+            // TODO : implement synthpad generator, formant generators
 
         } else if (id == R.id.new_project) {
+            csoundObj.stop();
             sensible_code = new Runnable() {
                 @Override
                 public void run() {
@@ -246,6 +254,7 @@ public final class MainActivity extends AppCompatActivity
             confirmation.show(fragmentManager, "New project Fragment");
 
         } else if (id == R.id.open_project) {
+            csoundObj.stop();
             sensible_code = new Runnable() {
                 @Override
                 public void run() {
@@ -297,6 +306,7 @@ public final class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_preferences){
         // TODO : default sr, ksmps, nbchnls, 0dbfs
+            csoundObj.stop();
             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                     new OptionsFragment(),
                     "OPTIONS").commit();

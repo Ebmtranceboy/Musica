@@ -47,7 +47,7 @@ public final class EffectFragment extends Fragment {
         String format = getResources().getString(R.string.effect_title);
         effectTitleView.setText(String.format(format, effectName));
         effectCode = (EditText)view.findViewById(R.id.effectCode);
-        effectCode.setText(CSD.mapFX.get(effectName));
+        effectCode.setText(CSD.mapFX.get(effectName).code);
 
         final Button del_button = (Button) view.findViewById(R.id.delete_effect);
         del_button.setOnClickListener(new View.OnClickListener() {
