@@ -17,6 +17,7 @@ final class Default {
 
     public static final int default_loudness = 5; // from 1(ppp) to 8(fff)
 
+    public static final String new_project_name = "New project";
     public static final String empty_project = "{\"GainL\":1.0,\"GainR:1.0\",\"Tempo\":1.0,\"Orchestra\":[],\"FX\":[],\"idTrackSelected\":0,\"idPatternSelected\":0,\"tracks\":[],\"Matrix\":\"FF\"}";
     public static final String score_events_absoluteFilePath = "/storage/sdcard0/unisonMelody.txt";
 

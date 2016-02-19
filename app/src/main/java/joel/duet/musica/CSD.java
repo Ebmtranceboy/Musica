@@ -17,11 +17,20 @@ final class CSD {
     //private static final String TAG = "CSD";
     public static double tempo_ratio = 1.0; // relative to 60 quater by second
     public static double master_gain_L = 1.0, master_gain_R = 1.0;
+    public static String projectName = Default.new_project_name;
 
     private static final int sr = 44100;
     private static final int ksmps = 100;
     private static final int nchnls = 2;
     private static final double zeroDbFs = 1;
+
+    public static String extractName(String filename){
+        int index = filename.indexOf(".");
+        String name = filename;
+        if(index>=0)
+            name = filename.substring(0,index);
+        return name;
+    }
 
     private static final String header =
             "\n<CsoundSynthesizer>"

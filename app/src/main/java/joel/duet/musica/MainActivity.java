@@ -64,7 +64,7 @@ public final class MainActivity extends AppCompatActivity
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
                         new WelcomeFragment(),
                         "WELCOME").commit();
-                toolbar.setTitle("Musica");
+                toolbar.setTitle(CSD.projectName);
                 currentFragment = State.WELCOME;
             }
         });
@@ -82,7 +82,7 @@ public final class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().replace(R.id.mainFrame,
                 new WelcomeFragment(),
                 "WELCOME").commit();
-        toolbar.setTitle("Musica");
+        toolbar.setTitle(CSD.projectName);
         currentFragment = State.WELCOME;
     }
 
@@ -95,7 +95,8 @@ public final class MainActivity extends AppCompatActivity
             final FragmentManager fragmentManager = getSupportFragmentManager();
             if (currentFragment == State.INSTRUMENT) {
                 InstrumentFragment fragment = (InstrumentFragment) fragmentManager.findFragmentByTag("INSTRUMENT");
-                CSD.mapInstr.put(fragment.getInstrName(), new CSD.Content(fragment.getInstrCode(), 1.0, 1.0));
+                CSD.Content content = CSD.mapInstr.get(fragment.getInstrName());
+                CSD.mapInstr.put(fragment.getInstrName(), new CSD.Content(fragment.getInstrCode(), content.gainL, content.gainR));
 
                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
                         new OrchestraFragment(),
@@ -104,7 +105,8 @@ public final class MainActivity extends AppCompatActivity
                 currentFragment = State.ORCHESTRA;
             } else if (currentFragment == State.EFFECT) {
                 EffectFragment fragment = (EffectFragment) fragmentManager.findFragmentByTag("EFFECT");
-                CSD.mapFX.put(fragment.getEffectName(), new CSD.Content(fragment.getEffectCode(), 1.0, 1.0));
+                CSD.Content content = CSD.mapFX.get(fragment.getEffectName());
+                CSD.mapFX.put(fragment.getEffectName(), new CSD.Content(fragment.getEffectCode(), content.gainL, content.gainR));
 
                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
                         new FXFragment(),
@@ -122,7 +124,7 @@ public final class MainActivity extends AppCompatActivity
                     fragmentManager.beginTransaction().replace(R.id.mainFrame,
                             new WelcomeFragment(),
                             "WELCOME").commit();
-                    toolbar.setTitle("Musica");
+                    toolbar.setTitle(CSD.projectName);
                     currentFragment = State.WELCOME;
                 } else super.onBackPressed();
             }
@@ -167,7 +169,7 @@ public final class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
                 new WelcomeFragment(),
                 "WELCOME").commit();
-        toolbar.setTitle("Musica");
+        toolbar.setTitle(CSD.projectName);
         currentFragment = State.WELCOME;
     }
 
@@ -246,7 +248,8 @@ public final class MainActivity extends AppCompatActivity
                     fragmentManager.beginTransaction().replace(R.id.mainFrame,
                             new WelcomeFragment(),
                             "WELCOME").commit();
-                    toolbar.setTitle("Musica");
+                    CSD.projectName = Default.new_project_name;
+                    toolbar.setTitle(CSD.projectName);
                     currentFragment = State.WELCOME;
                 }
             };
@@ -265,7 +268,9 @@ public final class MainActivity extends AppCompatActivity
                             new SimpleFileDialog.SimpleFileDialogListener() {
                                 @Override
                                 public void onChosenDir(String chosenDir) {
-                                    MainActivity.this.OnFileChosen(new File(chosenDir));
+                                    File file = new File(chosenDir);
+                                    CSD.projectName = CSD.extractName(file.getName());
+                                    MainActivity.this.OnFileChosen(file);
                                 }
                             }
                     );
@@ -294,6 +299,7 @@ public final class MainActivity extends AppCompatActivity
                                 chosenDir = chosenDir.substring(index + 1);
                             }
                             File newFile = new File(chosenDir);
+                            CSD.projectName = CSD.extractName(newFile.getName());
                             csoundUtil.saveStringAsExternalFile(PreferenceManager.project().toString(), newFile.getAbsolutePath());
                         }
                     }
@@ -407,7 +413,7 @@ public final class MainActivity extends AppCompatActivity
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                                     new WelcomeFragment(),
                                     "WELCOME").commit();
-                            toolbar.setTitle("Musica");
+                            toolbar.setTitle(CSD.projectName);
                     }
                 }
             }
