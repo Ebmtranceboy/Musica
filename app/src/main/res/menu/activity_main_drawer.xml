@@ -11,6 +11,10 @@
             android:icon="@drawable/ic_menu_patchbay"
             android:title="@string/patchbay_label" />
         <item
+            android:id="@+id/nav_master"
+            android:icon="@drawable/ic_menu_master"
+            android:title="@string/master_label" />
+        <item
             android:id="@+id/nav_live"
             android:icon="@drawable/ic_menu_live"
             android:title="@string/live_label" />
@@ -22,10 +26,6 @@
             android:id="@+id/nav_score"
             android:icon="@drawable/ic_menu_score"
             android:title="@string/score_label" />
-         <item
-            android:id="@+id/nav_master"
-            android:icon="@drawable/ic_menu_master"
-            android:title="@string/master_label" />
         <item
             android:id="@+id/nav_material"
             android:icon="@drawable/ic_menu_material"

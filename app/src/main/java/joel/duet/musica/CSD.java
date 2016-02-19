@@ -35,7 +35,7 @@ final class CSD {
                     + "\n0dbfs = " + zeroDbFs;
 
     static class Content{
-        String code;
+        final String code;
         double gainL, gainR;
         Content(String c, double gl, double gr) {code = c; gainL = gl; gainR = gr;}
     }
@@ -66,7 +66,11 @@ final class CSD {
                 last = "a_" + name + "_L, a_" + name + "_R " + name + " ain_" + name + "_L, ain_" + name + "_R";
             } else {
                 name = "Master";
-                last = "k_Master_L chnget \"ktrl_Master_L\"\nk_Master_R chnget \"ktrl_Master_R\"\nouts k_Master_L * ain_Master_L, k_Master_R * ain_Master_R";
+                last = "\nk_Master_L init " + master_gain_L
+                    + "\nk_Master_R init " + master_gain_R
+                    + "\nk_Master_L chnget \"ktrl_Master_L\""
+                    + "\nk_Master_R chnget \"ktrl_Master_R\""
+                    + "\nouts k_Master_L * ain_Master_L, k_Master_R * ain_Master_R";
 
             }
             narg = Matrix.getNbActiveInput(j) - 1;
@@ -111,9 +115,16 @@ final class CSD {
         String in;
         snippets = new Snippet[getNbEffects() + 2];
         for(int i=0; i<getNbInstruments()+getNbEffects();i++) {
-            if(i<getNbInstruments())
+            if(i<getNbInstruments()) {
                 in = mapInstr.keySet().toArray(new String[getNbInstruments()])[i];
-            else in = mapFX.keySet().toArray(new String[getNbEffects()])[i - getNbInstruments()];
+                ktrl_L += "\nk_" + in + "_L init " + mapInstr.get(in).gainL;
+                ktrl_R += "\nk_" + in + "_R init " + mapInstr.get(in).gainR;
+            }
+            else{
+                in = mapFX.keySet().toArray(new String[getNbEffects()])[i - getNbInstruments()];
+                ktrl_L += "\nk_" + in + "_L init " + mapFX.get(in).gainL;
+                ktrl_R += "\nk_" + in + "_R init " + mapFX.get(in).gainR;
+            }
 
             ktrl_L += "\nk_" + in + "_L chnget \"ktrl_" + in + "_L\"";
             ktrl_R += "\nk_" + in + "_R chnget \"ktrl_" + in + "_R\"";

@@ -11,14 +11,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.csounds.CsoundObj;
-import com.csounds.bindings.ui.CsoundSliderBinding;
+
 
 /**
  *
  * Created by joel on 17/02/16 at 10:37 at 11:23 at 09:31 at 10:12 at 18:53.
  */
-public final class MasterFragment extends Fragment {
-    static private CsoundObj csoundObj;
+public final class MasterFragment extends Fragment{
+    private CsoundObj csoundObj;
 
     @Override
     public void onAttach(Context context) {
@@ -26,7 +26,7 @@ public final class MasterFragment extends Fragment {
         csoundObj = MainActivity.csoundObj;
     }
 
-    void registerLine(LayoutInflater inflater, ViewGroup container, final String componentName, LinearLayout verticalLayout, final int formatId, final boolean isInstr) {
+    private void registerLine(LayoutInflater inflater, ViewGroup container, final String componentName, LinearLayout verticalLayout, final int formatId, final boolean isInstr) {
         SeekBar seekBar;
 
         LinearLayout line = (LinearLayout) inflater.inflate(R.layout.master_line, container, false);
@@ -36,56 +36,27 @@ public final class MasterFragment extends Fragment {
 
         final TextView gaindb = (TextView) line.findViewById(R.id.gain_db);
         seekBar = (SeekBar) line.findViewById(R.id.gain);
+        double val;
+
         if (isInstr) {
             if (formatId == R.string.master_line_L_format)
-                seekBar.setProgress((int) Math.round(CSD.mapInstr.get(componentName).gainL * seekBar.getMax()));
-            else seekBar.setProgress((int) Math.round(CSD.mapInstr.get(componentName).gainR * seekBar.getMax()));
+                val = CSD.mapInstr.get(componentName).gainL;
+            else val = CSD.mapInstr.get(componentName).gainR;
         } else {
             if (componentName.equals("Master")) {
                 if (formatId == R.string.master_line_L_format)
-                    seekBar.setProgress((int) Math.round(CSD.master_gain_L * seekBar.getMax()));
-                else seekBar.setProgress((int) Math.round(CSD.master_gain_R * seekBar.getMax()));
+                    val = CSD.master_gain_L;
+                else val = CSD.master_gain_R;
             } else {
                 if (formatId == R.string.master_line_L_format)
-                    seekBar.setProgress((int) Math.round(CSD.mapFX.get(componentName).gainL * seekBar.getMax()));
-                else seekBar.setProgress((int) Math.round(CSD.mapFX.get(componentName).gainR * seekBar.getMax()));
+                    val = CSD.mapFX.get(componentName).gainL;
+                else val = CSD.mapFX.get(componentName).gainR;
             }
         }
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
+        seekBar.setProgress((int) Math.round(val* seekBar.getMax()));
+        gaindb.setText(String.format("%1s", val));
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    double val = progress / (double) seekBar.getMax();
-                    gaindb.setText(String.format(getResources().getString(R.string.floating_point_format),
-                            val));
-
-                    if (isInstr) {
-                        if (formatId == R.string.master_line_L_format)
-                            CSD.mapInstr.get(componentName).gainL = val;
-                        else CSD.mapInstr.get(componentName).gainR = val;
-                    } else {
-                        if (componentName.equals("Master")) {
-                            if (formatId == R.string.master_line_L_format)
-                                CSD.master_gain_L = val;
-                            else CSD.master_gain_R = val;
-                        } else {
-                            if (formatId == R.string.master_line_L_format)
-                                CSD.mapFX.get(componentName).gainL = val;
-                            else CSD.mapFX.get(componentName).gainR = val;
-                        }
-                    }
-                }
-            }
-        });
-        csoundObj.addBinding(new CsoundSliderBinding(seekBar, "ktrl_" + String.format(format, componentName), 0, 1));
+        csoundObj.addBinding(new SlidingCsoundBindingUI(seekBar, "ktrl_" + String.format(format, componentName), 0, 1, gaindb, isInstr, formatId, componentName));
 
         verticalLayout.addView(line);
     }
