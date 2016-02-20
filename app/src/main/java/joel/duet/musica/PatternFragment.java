@@ -2,7 +2,7 @@ package joel.duet.musica;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -23,7 +24,7 @@ import java.util.LinkedList;
  *
  * Created by joel on 22/01/16 at 23:25 at 14:27.
  */
-public final class PatternFragment extends Fragment {
+public final class PatternFragment extends FragmentPlus {
     private PatternView patternview;
     private final LinkedList<String> instrumentIds = new LinkedList<>();
     private static final String TAG = "PatternFragment";
@@ -41,11 +42,15 @@ public final class PatternFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
         final View view = inflater.inflate(R.layout.pattern_fragment, container, false);
+        final ImageButton arpeggio_button = (ImageButton) view.findViewById(R.id.arpeggio);
 
         view.findViewById(R.id.mode).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 PatternView.edit_mode = !PatternView.edit_mode;
+                if(PatternView.edit_mode) arpeggio_button.setVisibility(View.VISIBLE);
+                else arpeggio_button.setVisibility(View.INVISIBLE);
+
             }
         });
 
@@ -77,6 +82,18 @@ public final class PatternFragment extends Fragment {
                     public void onNothingSelected(AdapterView<?> adapterView) {
                     }
                 });
+
+        arpeggio_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                InputTextDialogFragment commandLabDialog = new InputTextDialogFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("state", "PATTERN");
+                commandLabDialog.setArguments(bundle);
+                commandLabDialog.show(fragmentManager, "fragment_command_lab");
+            }
+        });
 
         view.findViewById(R.id.recenter).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,5 +166,37 @@ public final class PatternFragment extends Fragment {
         instrument_spinner.setSelection(instr_selected);
 
         return view;
+    }
+
+    @Override
+    public void onFinishEditDialog(String inputText) {
+        String[] command = inputText.split(" +");
+        int n = patternview.pattern.getNbOfNotes();
+        int period = patternview.pattern.getNote(n-1).onset+patternview.pattern.getNote(n-1).duration;
+
+        if(command[0].equals("repeat")){
+            boolean roomLeft = true;
+            int mark = period;
+
+            while(roomLeft){
+                for(int i=0; i<n; i++) {
+                    Pattern.Note note = patternview.pattern.getNote(i);
+                    if (mark + note.onset + note.duration < patternview.pattern.finish - patternview.pattern.start)
+                        patternview.pattern.createNote(mark + note.onset, note.duration, note.pitch, note.loudness);
+                    else roomLeft = false;
+                }
+                if(roomLeft) mark += period;
+            }
+        } else if(command[0].equals("transpose")){
+            try {
+                int delta = Integer.parseInt(command[1]);
+                for (int i = 0; i < n; i++) {
+                    Pattern.Note note = patternview.pattern.getNote(i);
+                    note.pitch += delta;
+                }
+            } catch (NumberFormatException exp){exp.printStackTrace();}
+        }
+
+        patternview.invalidate();
     }
 }

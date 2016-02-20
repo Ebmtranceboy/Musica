@@ -38,6 +38,16 @@
             android:layout_weight="1" />
 
         <ImageButton
+            android:id="@+id/arpeggio"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="invisible"
+            android:contentDescription="@string/lab_label"
+            android:src="@drawable/ic_arpeggiator" />
+
+        <ImageButton
             android:id="@+id/recenter"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="match_parent"

@@ -62,6 +62,7 @@
     <string name="options_score_file">temporary directory</string>
     <string name="quarter_image_label">image of a quarter</string>
     <string name="default_directory">/storage/scard0/</string>
+    <string name="lab_label">lab_label</string>
     <string-array name="oct_array">
         <item>1</item>
         <item>2</item>
