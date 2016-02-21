@@ -47,6 +47,10 @@
                     android:id="@+id/save_project"
                     android:icon="@drawable/ic_save_project"
                     android:title="@string/save_project_label" />
+                <item
+                    android:id="@+id/render_project"
+                    android:icon="@drawable/ic_parchment"
+                    android:title="@string/render_project_label" />
             </menu>
         </item>
     </group>

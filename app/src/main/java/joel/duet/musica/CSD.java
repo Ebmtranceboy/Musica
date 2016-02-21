@@ -18,6 +18,7 @@ final class CSD {
     public static double tempo_ratio = 1.0; // relative to 60 quater by second
     public static double master_gain_L = 1.0, master_gain_R = 1.0;
     public static String projectName = Default.new_project_name;
+    public static String globals = Default.material;
 
     private static final int sr = 44100;
     private static final int ksmps = 100;
@@ -49,13 +50,11 @@ final class CSD {
         Content(String c, double gl, double gr) {code = c; gainL = gl; gainR = gr;}
     }
 
-
     static final Map<String, Content> mapFX = new LinkedHashMap<>(); //new HashMap<>();
 
     static int getNbEffects() {
         return mapFX.keySet().size();
     }
-
 
     static final Map<String, Content> mapInstr = new LinkedHashMap<>();//new HashMap<>();
 
@@ -254,7 +253,7 @@ final class CSD {
             instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr).code + "\nendin";
         }
         //Log.i(TAG, "in :" + instruments);
-        return header + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
+        return header + globals + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
     }
 
     static String song(List<Pattern> score, int dur) {
@@ -273,7 +272,7 @@ final class CSD {
             resets += "\nga_" + instr + "_R = 0";
             instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr).code + "\nendin";
         }
-        return header + inits + udos + instruments + Master() + Voicer
+        return header + globals + inits + udos + instruments + Master() + Voicer
                 + Metro() + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
     }
 
@@ -293,7 +292,7 @@ final class CSD {
             resets += "\nga_" + instr + "_R = 0";
            instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") + "\n" + mapInstr.get(instr).code + "\nendin";
         }
-        return header + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
+        return header + globals + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
     }
 
      static String recordSong(String instrName,List<Pattern> score, int dur) {
@@ -312,7 +311,7 @@ final class CSD {
             resets += "\nga_" + instr + "_R = 0";
             instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") +"\n" + mapInstr.get(instr).code + "\nendin";
         }
-        return header + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer
+        return header + globals + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer
                 + Metro() + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
     }
     public static int pressure2dB(float pressure){

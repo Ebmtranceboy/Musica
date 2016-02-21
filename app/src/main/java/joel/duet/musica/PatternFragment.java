@@ -3,6 +3,7 @@ package joel.duet.musica;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.ToggleButton;
 
 import com.csounds.CsoundObj;
@@ -43,13 +43,20 @@ public final class PatternFragment extends FragmentPlus {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
         final View view = inflater.inflate(R.layout.pattern_fragment, container, false);
         final ImageButton arpeggio_button = (ImageButton) view.findViewById(R.id.arpeggio);
+        final ToggleButton mode_button = (ToggleButton)view.findViewById(R.id.mode);
 
-        view.findViewById(R.id.mode).setOnClickListener(new View.OnClickListener() {
+        mode_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 PatternView.edit_mode = !PatternView.edit_mode;
-                if(PatternView.edit_mode) arpeggio_button.setVisibility(View.VISIBLE);
-                else arpeggio_button.setVisibility(View.INVISIBLE);
+                if (PatternView.edit_mode) {
+                    arpeggio_button.setVisibility(View.VISIBLE);
+                    mode_button.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+                } else {
+                    arpeggio_button.setVisibility(View.INVISIBLE);
+                     mode_button.setTextColor(Default.grays[192]);
+                }
 
             }
         });
@@ -156,7 +163,7 @@ public final class PatternFragment extends FragmentPlus {
         patternview = (PatternView) view.findViewById(R.id.pattern_view);
         PatternView.note_loudness = (ImageView) view.findViewById(R.id.note_loudness);
 
-        PatternView.edit_mode = ((Switch)view.findViewById(R.id.mode)).isChecked();
+        PatternView.edit_mode = mode_button.isChecked();
 
         int instr_selected = 0;
         String names[] = CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()]);

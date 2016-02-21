@@ -2,107 +2,104 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="@dimen/activity_horizontal_margin"
-    android:layout_marginLeft="@dimen/activity_vertical_margin"
-    android:layout_marginRight="@dimen/activity_vertical_margin"
-    android:layout_marginTop="@dimen/activity_horizontal_margin"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-
-        <Switch
-            android:id="@+id/mode"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOff="Visit"
-            android:textOn="Edit" />
+            android:orientation="horizontal">
 
-        <ToggleButton
-            android:id="@+id/loudness"
-            android:background="@drawable/ic_loudness_off"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textOn=""
-            android:textOff=""
-            android:layout_weight="1"/>
 
-        <Spinner
-            android:id="@+id/instrument"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <ToggleButton
+                android:id="@+id/mode"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:textColorTertiary"
+                android:textOff="Visit"
+                android:textOn="Edit"
+                android:textSize="12sp" />
 
-        <ImageButton
-            android:id="@+id/arpeggio"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:visibility="invisible"
-            android:contentDescription="@string/lab_label"
-            android:src="@drawable/ic_arpeggiator" />
+            <ToggleButton
+                android:id="@+id/loudness"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_loudness_off"
+                android:textOff=""
+                android:textOn="" />
 
-        <ImageButton
-            android:id="@+id/recenter"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/recenter_button_label"
-            android:src="@drawable/ic_recenter" />
+            <Spinner
+                android:id="@+id/instrument"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <Spinner
-            android:id="@+id/resolution"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <ImageButton
+                android:id="@+id/arpeggio"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/lab_label"
+                android:src="@drawable/ic_arpeggiator"
+                android:visibility="invisible" />
 
-        <ImageButton
-            android:id="@+id/preview"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/preview_button_label"
-            android:src="@drawable/ic_read_partition" />
+            <ImageButton
+                android:id="@+id/recenter"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/recenter_button_label"
+                android:src="@drawable/ic_recenter" />
 
-        <ImageButton
-            android:id="@+id/in_context"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/play_in_context_button_label"
-            android:src="@drawable/ic_play_in_context" />
+            <Spinner
+                android:id="@+id/resolution"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <ImageButton
-            android:id="@+id/stop"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/stop_button_label"
-            android:src="@drawable/ic_stop" />
+            <ImageButton
+                android:id="@+id/preview"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/preview_button_label"
+                android:src="@drawable/ic_read_partition" />
 
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/in_context"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/play_in_context_button_label"
+                android:src="@drawable/ic_play_in_context" />
+
+            <ImageButton
+                android:id="@+id/stop"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/stop_button_label"
+                android:src="@drawable/ic_stop" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <joel.duet.musica.PatternView
-        android:id="@+id/pattern_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+
+        <joel.duet.musica.PatternView
+            android:id="@+id/pattern_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <ImageView
+            android:id="@+id/note_loudness"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/note_loudness"
-            android:contentDescription="@string/loudness_label"/>
+            android:contentDescription="@string/loudness_label" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -37,7 +37,7 @@ public final class MainActivity extends AppCompatActivity
     // private static final String TAG = "Musica";
 
     public enum State {
-        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, SCORE, PATTERN, OPTIONS, MASTER//, MATERIAL
+        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, SCORE, PATTERN, OPTIONS, MASTER, MATERIAL
     }
 
     static State currentFragment;
@@ -121,6 +121,11 @@ public final class MainActivity extends AppCompatActivity
                 currentFragment = State.SCORE;
             } else {
                 if (currentFragment != State.WELCOME) {
+                    if(currentFragment == State.MATERIAL){
+                        MaterialFragment fragment = (MaterialFragment) fragmentManager.findFragmentByTag("MATERIAL");
+                        CSD.globals = fragment.getGlobals();
+                    }
+
                     fragmentManager.beginTransaction().replace(R.id.mainFrame,
                             new WelcomeFragment(),
                             "WELCOME").commit();
@@ -173,7 +178,6 @@ public final class MainActivity extends AppCompatActivity
         currentFragment = State.WELCOME;
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -238,6 +242,13 @@ public final class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_material) {
             // TODO : implement synthpad generator, formant generators
+            // csoundObj.stop();
+            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                    new MaterialFragment(),
+                    "MATERIAL").commit();
+            toolbar.setTitle("Globals");
+            currentFragment = State.MATERIAL;
+
 
         } else if (id == R.id.new_project) {
             csoundObj.stop();
@@ -310,6 +321,9 @@ public final class MainActivity extends AppCompatActivity
                 fileOpenDialog.default_file_name = Environment.getExternalStorageDirectory().getAbsolutePath();
             }
             fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
+
+        }  else if (id == R.id.render_project) {
+            csoundUtil.saveStringAsExternalFile(Score.sendPatterns(Score.allPatterns(), 0), "/storage/sdcard0/" + CSD.projectName + ".csd");
 
         } else if (id == R.id.nav_preferences) {
             // TODO : default sr, ksmps, nbchnls, 0dbfs

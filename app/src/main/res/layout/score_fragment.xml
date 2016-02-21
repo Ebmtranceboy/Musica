@@ -2,92 +2,87 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_marginBottom="@dimen/activity_horizontal_margin"
-    android:layout_marginTop="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_vertical_margin"
-    android:layout_marginLeft="@dimen/activity_vertical_margin">
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <Switch
-            android:id="@+id/mode"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textOn="Edit"
-            android:textOff="Visit" />
+            android:orientation="horizontal">
 
-        <Spinner
-            android:id="@+id/edition"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <ToggleButton
+                android:id="@+id/mode"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:textColorTertiary"
+                android:textOff="Visit"
+                android:textOn="Edit"
+                android:textSize="12sp" />
 
-        <ImageButton
-            android:id="@+id/new_track"
-            style="?android:attr/buttonStyleSmall"
-            android:src="@drawable/ic_add"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/new_track_label" />
+            <Spinner
+                android:id="@+id/edition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <ImageButton
-            android:id="@+id/extend_score"
-            style="?android:attr/buttonStyleSmall"
-            android:src="@drawable/ic_more"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/extend_score_label" />
+            <ImageButton
+                android:id="@+id/new_track"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/new_track_label"
+                android:src="@drawable/ic_add" />
 
-        <ImageButton
-            android:id="@+id/trim_score"
-            style="?android:attr/buttonStyleSmall"
-            android:src="@drawable/ic_crop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/trim_score_label" />
+            <ImageButton
+                android:id="@+id/extend_score"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/extend_score_label"
+                android:src="@drawable/ic_more" />
 
-        <Spinner
-            android:id="@+id/resolution"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-        <Spinner
-            android:id="@+id/bars_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <ImageButton
+                android:id="@+id/trim_score"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/trim_score_label"
+                android:src="@drawable/ic_crop" />
 
-        <ImageButton
-            android:id="@+id/play"
-            style="?android:attr/buttonStyleSmall"
-            android:src="@drawable/ic_play"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/play_button_label" />
+            <Spinner
+                android:id="@+id/resolution"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <ImageButton
-            android:id="@+id/stop"
-            style="?android:attr/buttonStyleSmall"
-            android:src="@drawable/ic_stop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/stop_button_label" />
+            <Spinner
+                android:id="@+id/bars_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/play"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/play_button_label"
+                android:src="@drawable/ic_play" />
+
+            <ImageButton
+                android:id="@+id/stop"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/stop_button_label"
+                android:src="@drawable/ic_stop" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <joel.duet.musica.ScoreView
+        android:id="@+id/score_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/score_view"/>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

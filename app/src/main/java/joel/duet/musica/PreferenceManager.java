@@ -28,6 +28,7 @@ public final class PreferenceManager {
     private static final String PROJECT_KEY = "Project";
     private static final String MASTER_GAIN_L_KEY = "GainL";
     private static final String MASTER_GAIN_R_KEY = "GainR";
+    private static final String GLOBALS_KEY = "Globals";
 
     @SuppressLint("CommitPrefEdits")
     public void initialize(Context context) {
@@ -60,6 +61,7 @@ public final class PreferenceManager {
             json.put(TEMPO_RATIO_KEY, CSD.tempo_ratio);
             json.put(MASTER_GAIN_L_KEY, CSD.master_gain_L);
             json.put(MASTER_GAIN_R_KEY, CSD.master_gain_R);
+            json.put(GLOBALS_KEY, CSD.globals);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -77,6 +79,11 @@ public final class PreferenceManager {
         CSD.mapFX.clear();
         Score.resetTracks();
         joel.duet.musica.Matrix.getInstance().update();
+        CSD.tempo_ratio = 1.0;
+        CSD.master_gain_L = 1.0;
+        CSD.master_gain_R = 1.0;
+        CSD.globals = Default.material;
+        CSD.projectName = Default.new_project_name;
     }
 
     private void loadPreferences() {
@@ -120,6 +127,7 @@ public final class PreferenceManager {
         CSD.tempo_ratio = project.getDouble(TEMPO_RATIO_KEY);
         CSD.master_gain_L = project.getDouble(MASTER_GAIN_L_KEY);
         CSD.master_gain_R = project.getDouble(MASTER_GAIN_R_KEY);
+        CSD.globals = project.getString(GLOBALS_KEY);
     }
 
     private static JSONArray saveJSONOrchestra() throws JSONException {

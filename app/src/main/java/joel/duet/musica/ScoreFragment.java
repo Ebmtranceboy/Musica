@@ -3,6 +3,7 @@ package joel.duet.musica;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.ToggleButton;
 
 import com.csounds.CsoundObj;
 
@@ -41,16 +43,21 @@ public final class ScoreFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
         final View view = inflater.inflate(R.layout.score_fragment, container, false);
+        final ToggleButton mode_button = (ToggleButton)view.findViewById(R.id.mode);
 
-
-        view.findViewById(R.id.mode).setOnClickListener(new View.OnClickListener() {
+        mode_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ScoreView.edit_mode = !ScoreView.edit_mode;
                 ScoreView.tool = ScoreView.Tool.NONE;
                 edition_spinner.setSelection(0);
-                if(ScoreView.edit_mode) edition_spinner.setVisibility(View.VISIBLE);
-                else edition_spinner.setVisibility(View.INVISIBLE);
+                if (ScoreView.edit_mode) {
+                    edition_spinner.setVisibility(View.VISIBLE);
+                    mode_button.setTextColor(ContextCompat.getColor(getContext(),R.color.colorAccent));
+                } else{
+                    edition_spinner.setVisibility(View.INVISIBLE);
+                    mode_button.setTextColor(Default.grays[192]);
+                }
                 scoreview.invalidate();
             }
         });
