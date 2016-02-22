@@ -17,6 +17,7 @@ import android.widget.ListView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.*;
 
 /**
  *
@@ -103,31 +104,27 @@ public final class OrchestraFragment extends FragmentPlus {
 
     private class ParseInstr {
         String name, body;
+        private final java.util.regex.Pattern header = java.util.regex.Pattern.compile(" *instr +(\\w+)\\b");
+        private final java.util.regex.Pattern footer = java.util.regex.Pattern.compile(" *endin\\b");
 
         ParseInstr(String text) {
             String[] lines = text.split("\n");
             int i = 0;
-            String[] words;
             while (i < lines.length) {
-                words = lines[i].split(" +");
-                int j = 0;
-                while (words[j].equals("") && j < words.length - 1) j++;
-                if (j < words.length && words[j].equals("instr")) {
-                    name = words[j + 1];
+                Matcher matcher = header.matcher(lines[i]);
+                if (matcher.find()) {
+                    name = matcher.group(1);
                     break;
                 }
                 i++;
             }
-
             i++;
 
             body = "";
-            boolean done = false;
-            while (i < lines.length && !done) {
-                words = lines[i].split(" ");
-                if(words.length > 0)
-                    if (!words[0].equals("endin")) body += lines[i] + "\n";
-                    else done = true;
+            while (i < lines.length) {
+                Matcher matcher = footer.matcher(lines[i]);
+                if(matcher.find()) break;
+                else body += lines[i] + "\n";
                 i++;
             }
         }
@@ -138,13 +135,15 @@ public final class OrchestraFragment extends FragmentPlus {
         String instr_text = activity.csoundUtil.getExternalFileAsString(file.getAbsolutePath());
         ParseInstr instr = new ParseInstr(instr_text);
         instrName = instr.name;
+        if(instrName != null){
         Matrix.getInstance().spy();
         CSD.mapInstr.put(instrName, new CSD.Content(instr.body,1.0,1.0));
         Matrix.getInstance().update();
         listInstr.add(instrName);
         instr_adapter.notifyDataSetChanged();
+            instrName = null;
+        }
 
-        instrName = null;
     }
 
     @Override

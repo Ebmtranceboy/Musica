@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.view.ContextThemeWrapper;
-import android.util.Log;
+//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +17,7 @@ import android.widget.ListView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.*;
 
 /**
  *
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public final class FXFragment extends FragmentPlus {
     static private MainActivity activity;
-    private static final String TAG = "FX";
+    //private static final String TAG = "FX";
     static private ArrayAdapter<String> effect_adapter;
     private static String effectName;
     static private List<String> listEffect;
@@ -105,31 +106,27 @@ public final class FXFragment extends FragmentPlus {
 
     private class ParseEffect {
         String name, body;
+        private final java.util.regex.Pattern header = java.util.regex.Pattern.compile(" *opcode +(\\w+)\\b");
+        private final java.util.regex.Pattern footer = java.util.regex.Pattern.compile(" *endop\\b");
 
         ParseEffect(String text) {
             String[] lines = text.split("\n");
             int i = 0;
-            String[] words;
             while (i < lines.length) {
-                words = lines[i].split("[ ,]+");
-                int j = 0;
-                while (words[j].equals("") && j < words.length - 1) j++;
-                if (j < words.length && words[j].equals("opcode")) {
-                    name = words[j + 1];
+                Matcher matcher = header.matcher(lines[i]);
+                if (matcher.find()) {
+                    name = matcher.group(1);
                     break;
                 }
                 i++;
             }
-
             i++;
 
             body = "";
-            boolean done = false;
-            while (i < lines.length && !done) {
-                words = lines[i].split(" ");
-                if(words.length>0)
-                    if (!words[0].equals("endop")) body += lines[i] + "\n";
-                    else done = true;
+            while (i < lines.length) {
+                Matcher matcher = footer.matcher(lines[i]);
+                if(matcher.find()) break;
+                else body += lines[i] + "\n";
                 i++;
             }
         }
