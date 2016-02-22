@@ -122,9 +122,12 @@ public final class OrchestraFragment extends FragmentPlus {
             i++;
 
             body = "";
-            while (i < lines.length) {
+            boolean done = false;
+            while (i < lines.length && !done) {
                 words = lines[i].split(" ");
-                if (!words[0].equals("endin")) body += lines[i] + "\n";
+                if(words.length > 0)
+                    if (!words[0].equals("endin")) body += lines[i] + "\n";
+                    else done = true;
                 i++;
             }
         }

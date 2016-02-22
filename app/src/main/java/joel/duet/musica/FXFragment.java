@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.view.ContextThemeWrapper;
-//import android.util.Log;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 public final class FXFragment extends FragmentPlus {
     static private MainActivity activity;
-    //private static final String TAG = "FX";
+    private static final String TAG = "FX";
     static private ArrayAdapter<String> effect_adapter;
     private static String effectName;
     static private List<String> listEffect;
@@ -124,9 +124,12 @@ public final class FXFragment extends FragmentPlus {
             i++;
 
             body = "";
-            while (i < lines.length) {
+            boolean done = false;
+            while (i < lines.length && !done) {
                 words = lines[i].split(" ");
-                if (!words[0].equals("endop")) body += lines[i] + "\n";
+                if(words.length>0)
+                    if (!words[0].equals("endop")) body += lines[i] + "\n";
+                    else done = true;
                 i++;
             }
         }
