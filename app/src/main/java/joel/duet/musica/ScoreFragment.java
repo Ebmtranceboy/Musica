@@ -179,7 +179,8 @@ public final class ScoreFragment extends Fragment {
                 android.R.layout.simple_list_item_1,
                 bars);
         bars_spinner.setAdapter(bars_adapter);
-        bars_spinner.setSelection(Score.bar_start);
+        if(Score.bar_start<ScoreView.number_patches*16) bars_spinner.setSelection(Score.bar_start);
+        else bars_spinner.setSelection(1);
 
         bars_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
