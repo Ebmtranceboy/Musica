@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
+//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +26,7 @@ import java.util.List;
 public final class ScoreFragment extends Fragment {
     private final LinkedList<Integer> bars = new LinkedList<>();
     private static Spinner edition_spinner;
-    private static final String TAG = "ScoreFragment";
+    //private static final String TAG = "ScoreFragment";
 
     private static ScoreView scoreview;
     private static ArrayAdapter<Integer> bars_adapter;

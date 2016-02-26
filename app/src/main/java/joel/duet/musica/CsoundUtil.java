@@ -144,7 +144,7 @@ final class CsoundUtil {
         for (String line : lines) {
             Matcher matcher = istatement.matcher(line);
             while (matcher.find()) {
-                int onset = (int) Math.round(Double.parseDouble(matcher.group(1)) * Default.ticks_per_second);
+                int onset = (int) Math.round(Double.parseDouble(matcher.group(1)) * Default.ticks_per_second * CSD.tempo_ratio);
                 int duration = (int) Math.round(Double.parseDouble(matcher.group(2)) * Default.ticks_per_second);
                 if (duration == 0) duration = 1;
 
