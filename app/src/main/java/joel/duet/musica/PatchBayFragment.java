@@ -38,15 +38,16 @@ public final class PatchBayFragment extends Fragment {
 
                 int color = 0x00FFFFFF; // Transparent
                 if (j == 0) {
-                    if (i < CSD.getNbInstruments()) color = 0x7F0000FF; // Opaque Blue
-                    else if (i < CSD.getNbInstruments() + CSD.getNbEffects()) color = 0x7F00FF00;
+                    if (i < CSD.getNbInstruments()) color = Default.instrument_color;
+                    else if (i < CSD.getNbInstruments() + CSD.getNbEffects()) color = Default.effect_color;
                 } else if (i == CSD.getNbInstruments() + CSD.getNbEffects() && j > 0) {
-                    if (j <= CSD.getNbEffects()) color = 0x7F00FF00;
-                    else color = 0x7FFF0000;
+                    if (j <= CSD.getNbEffects()) color = Default.effect_color;
+                    else color = Default.master_color;
                 }
 
                 view.setBackgroundColor(color);
-                ((TextView) view).setGravity(Gravity.CENTER | Gravity.BOTTOM);
+                ((TextView) view).setTextSize(20.0f);
+                ((TextView) view).setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 
                 return view;
             }

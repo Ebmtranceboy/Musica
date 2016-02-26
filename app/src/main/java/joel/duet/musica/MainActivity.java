@@ -323,7 +323,7 @@ public final class MainActivity extends AppCompatActivity
             fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
 
         }  else if (id == R.id.render_project) {
-            csoundUtil.saveStringAsExternalFile(Score.sendPatterns(Score.allPatterns(), 0), "/storage/sdcard0/" + CSD.projectName + ".csd");
+            csoundUtil.saveStringAsExternalFile(Score.sendPatterns(Score.allPatterns(), true, 0), "/storage/sdcard0/" + CSD.projectName + ".csd");
 
         } else if (id == R.id.nav_preferences) {
             // TODO : default sr, ksmps, nbchnls, 0dbfs

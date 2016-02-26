@@ -133,7 +133,7 @@ public final class PatternFragment extends FragmentPlus {
         view.findViewById(R.id.preview).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String csd = Score.sendPatterns(patternview.pattern.singleton(),
+                String csd = Score.sendPatterns(patternview.pattern.singleton(), false,
                         patternview.pattern.start,
                         patternview.pattern.finish);
                 Log.i(TAG, csd);
@@ -145,7 +145,7 @@ public final class PatternFragment extends FragmentPlus {
         view.findViewById(R.id.in_context).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String csd = Score.sendPatterns(Score.allPatterns(),
+                String csd = Score.sendPatterns(Score.allPatterns(), false,
                         patternview.pattern.start,
                         patternview.pattern.finish);
                 csoundObj.stop();

@@ -68,16 +68,17 @@ final class CSD {
         String accL, accR;
         final String last;
 
-        private Snippet(int i, int j) {
+        private Snippet(int i, int j, boolean flattenControls) {
             if (j <= getNbEffects()) {
                 name = mapFX.keySet().toArray(new String[getNbInstruments()])[j - 1];
-                last = "a_" + name + "_L, a_" + name + "_R " + name + " ain_" + name + "_L, ain_" + name + "_R";
+                last = "a_" + name + "_L, a_" + name + "_R " + name
+                        + " ain_" + name + "_L, ain_" + name + "_R";
             } else {
                 name = "Master";
                 last = "\nk_Master_L init " + master_gain_L
                     + "\nk_Master_R init " + master_gain_R
-                    + "\nk_Master_L chnget \"ktrl_Master_L\""
-                    + "\nk_Master_R chnget \"ktrl_Master_R\""
+                    + (!flattenControls?"\nk_Master_L chnget \"ktrl_Master_L\""
+                    +                  "\nk_Master_R chnget \"ktrl_Master_R\"":"")
                     + "\nouts k_Master_L * ain_Master_L, k_Master_R * ain_Master_R";
 
             }
@@ -97,7 +98,7 @@ final class CSD {
         }
     }
 
-    private static void update(int i, int j) {
+    private static void update(int i, int j, boolean flattenControls) {
         if (snippets[j] != null) {
             String in;
             if (i < getNbInstruments()) {
@@ -112,12 +113,12 @@ final class CSD {
 
             snippets[j].narg --;
 
-        } else snippets[j] = new Snippet(i, j);
+        } else snippets[j] = new Snippet(i, j, flattenControls);
     }
 
     private static Snippet[] snippets;
 
-    private static String Master() {
+    private static String Master(boolean flattenControls) {
         String master = "";
         String ktrl_L = "", ktrl_R = "";
         String in;
@@ -134,12 +135,14 @@ final class CSD {
                 ktrl_R += "\nk_" + in + "_R init " + mapFX.get(in).gainR;
             }
 
-            ktrl_L += "\nk_" + in + "_L chnget \"ktrl_" + in + "_L\"";
-            ktrl_R += "\nk_" + in + "_R chnget \"ktrl_" + in + "_R\"";
+            if(!flattenControls) {
+                ktrl_L += "\nk_" + in + "_L chnget \"ktrl_" + in + "_L\"";
+                ktrl_R += "\nk_" + in + "_R chnget \"ktrl_" + in + "_R\"";
+            }
 
             for (int j = 1; j <= getNbEffects() + 1; j++) {
                 if (Matrix.get(i, j)) {
-                    update(i, j);
+                    update(i, j, flattenControls);
                     if (snippets[j].narg == 0) {
                         master += "\n" + snippets[j].accL
                                 + "\n" + snippets[j].accR
@@ -253,10 +256,11 @@ final class CSD {
             instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr).code + "\nendin";
         }
         //Log.i(TAG, "in :" + instruments);
-        return header + globals + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
+        return header + globals + inits + udos + instruments + Master(false) + Voicer + Silencer
+                + initScore + endScore;
     }
 
-    static String song(List<Pattern> score, int dur) {
+    static String song(List<Pattern> score, int dur,boolean flattenControls) {
         String udos = "";
         String inits = "";
         for(String udo : mapFX.keySet()){
@@ -272,8 +276,9 @@ final class CSD {
             resets += "\nga_" + instr + "_R = 0";
             instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr).code + "\nendin";
         }
-        return header + globals + inits + udos + instruments + Master() + Voicer
-                + Metro() + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
+        return header + globals + inits + udos + instruments + Master(flattenControls) + Voicer
+                + Metro() + InstrLoops(score,dur) + Silencer
+                + initScore + ScoreMetro + ScoreLoops(score) + endScore;
     }
 
     static String recordPart(String instrName) {
@@ -290,9 +295,12 @@ final class CSD {
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-           instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") + "\n" + mapInstr.get(instr).code + "\nendin";
+           instruments += "\n\ninstr " + instr
+                   + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "")
+                   + "\n" + mapInstr.get(instr).code + "\nendin";
         }
-        return header + globals + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer + Silencer + initScore + endScore;
+        return header + globals + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0"
+                + inits + udos + instruments + Master(false) + Voicer + Silencer + initScore + endScore;
     }
 
      static String recordSong(String instrName,List<Pattern> score, int dur) {
@@ -309,10 +317,14 @@ final class CSD {
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-            instruments += "\n\ninstr " + instr + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "") +"\n" + mapInstr.get(instr).code + "\nendin";
+            instruments += "\n\ninstr " + instr
+                    + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "")
+                    +"\n" + mapInstr.get(instr).code + "\nendin";
         }
-        return header + globals + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0" + inits + udos + instruments + Master() + Voicer
-                + Metro() + InstrLoops(score,dur) + Silencer + initScore + ScoreMetro + ScoreLoops(score) + endScore;
+        return header + globals + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0"
+                + inits + udos + instruments + Master(false) + Voicer
+                + Metro() + InstrLoops(score,dur) + Silencer
+                + initScore + ScoreMetro + ScoreLoops(score) + endScore;
     }
     public static int pressure2dB(float pressure){
         return Math.round(3*(pressure-32)/32-22);

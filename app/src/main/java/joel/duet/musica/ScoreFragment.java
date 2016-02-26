@@ -197,9 +197,9 @@ public final class ScoreFragment extends Fragment {
         view.findViewById(R.id.play).setOnClickListener(new View.OnClickListener() {
                                                             @Override
                                                             public void onClick(View view) {
-                                                                String csd = Score.sendPatterns(Score.allPatterns(),
+                                                                String csd = Score.sendPatterns(Score.allPatterns(),false,
                                                                         bars_spinner.getSelectedItemPosition() * Score.getResolution());
-                                                                Log.i(TAG, csd);
+                                                                //Log.i(TAG, csd);
                                                                 csoundObj.stop();
                                                                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
                                                             }

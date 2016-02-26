@@ -38,22 +38,27 @@ public final class MasterFragment extends Fragment{
         seekBar = (SeekBar) line.findViewById(R.id.gain);
         double val;
 
+        int color;
         if (isInstr) {
+            color = Default.instrument_color;
             if (formatId == R.string.master_line_L_format)
                 val = CSD.mapInstr.get(componentName).gainL;
             else val = CSD.mapInstr.get(componentName).gainR;
         } else {
             if (componentName.equals("Master")) {
+                color = Default.master_color;
                 if (formatId == R.string.master_line_L_format)
                     val = CSD.master_gain_L;
                 else val = CSD.master_gain_R;
             } else {
+                color = Default.effect_color;
                 if (formatId == R.string.master_line_L_format)
                     val = CSD.mapFX.get(componentName).gainL;
                 else val = CSD.mapFX.get(componentName).gainR;
             }
         }
         seekBar.setProgress((int) Math.round(val* seekBar.getMax()));
+        lineName.setBackgroundColor(color);
         gaindb.setText(String.format("%1s", val));
 
         csoundObj.addBinding(new SlidingCsoundBindingUI(seekBar, "ktrl_" + String.format(format, componentName), 0, 1, gaindb, isInstr, formatId, componentName));

@@ -137,7 +137,7 @@ public final class LiveFragment extends Fragment {
 
                 csoundObj.stop();
                 ktrlBindings();
-                String csd = solo_mode ? CSD.part() : Score.sendPatterns(Score.allPatterns(), 0);
+                String csd = solo_mode ? CSD.part() : Score.sendPatterns(Score.allPatterns(), false, 0);
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
                 csoundObj.sendScore(activity.csoundUtil.getExternalFileAsString(Default.score_events_absoluteFilePath).replaceAll("i +\\w+ +", "i\"" + select_instr.getSelectedItem() + "\" "));
             }
@@ -167,7 +167,7 @@ public final class LiveFragment extends Fragment {
                         ktrlBindings();
                         csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
                     }
-                }, 1000, TimeUnit.MILLISECONDS);
+                }, 500, TimeUnit.MILLISECONDS);
 
                 // in case record_mode is on, this is needed for foutir to catch the last note
                 csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + 1);

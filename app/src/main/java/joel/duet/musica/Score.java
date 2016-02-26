@@ -155,7 +155,7 @@ final class Score {
         return result;
     }
 
-    public static String sendPatterns(List<Pattern> unFixedPatterns, int... params){
+    public static String sendPatterns(List<Pattern> unFixedPatterns, boolean flattenControls, int... params){
         int tick_start, tick_finish;
         switch(params.length) {
             case 2:
@@ -173,7 +173,7 @@ final class Score {
         }
 
         ScoreAttributes attributes = prepareScore(unFixedPatterns,tick_start,tick_finish);
-        return CSD.song(attributes.score,Math.min(attributes.finish, tick_finish) - tick_start);
+        return CSD.song(attributes.score,Math.min(attributes.finish, tick_finish) - tick_start,flattenControls);
     }
 
     public static String sendPatternsForRecord(String instrName, List<Pattern> unFixedPatterns){
