@@ -150,7 +150,7 @@ public final class FXFragment extends FragmentPlus {
     public void onFinishEditDialog(String inputText) {
         effectName = inputText;
         Matrix.getInstance().spy();
-        CSD.mapFX.put(effectName, new CSD.Content("xout 0, 0",1.0,1.0));
+        CSD.mapFX.put(effectName, new CSD.Content("ain1, ain2 xin\n\nxout ain1, ain2",1.0,1.0));
         Matrix.getInstance().update();
         listEffect.add(effectName);
         effect_adapter.notifyDataSetChanged();

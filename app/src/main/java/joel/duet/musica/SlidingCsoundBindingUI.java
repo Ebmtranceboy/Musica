@@ -19,8 +19,10 @@ final class SlidingCsoundBindingUI extends CsoundSliderBinding {
 	private CsoundObj csoundObj;
 	private boolean cacheDirty = true;
 	private CsoundMYFLTArray ptr = null;
-
+ //public SlidingCsoundBindingUI(){}
     public SlidingCsoundBindingUI(SeekBar seekBar, final String channelName, double min, double max, final TextView gaindb, final boolean isInstr, final int formatId, final String componentName) {
+
+		super();
 		this.seekBar = seekBar;
 		this.channelName = channelName;
 		this.minValue = min;

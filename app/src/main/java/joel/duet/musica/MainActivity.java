@@ -58,7 +58,12 @@ public final class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 csoundObj.stop();
+                //csoundObj.forgetMessages();
+                csoundObj.getCsound().Stop();
+                csoundObj.getCsound().Reset();
+                csoundObj.getCsound().Start();
                 csoundObj = new CsoundObj(false, true);
                 csoundObj.setMessageLoggingEnabled(true);
                 getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
@@ -72,7 +77,7 @@ public final class MainActivity extends AppCompatActivity
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
                 this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawer.setDrawerListener(drawerToggle);
+        mDrawer.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
