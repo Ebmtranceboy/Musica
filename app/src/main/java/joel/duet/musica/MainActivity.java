@@ -358,12 +358,6 @@ public final class MainActivity extends AppCompatActivity
                     final FragmentManager fragmentManager = getSupportFragmentManager();
 
                     switch (currentFragment) {
-                        case LIVE:
-                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new LiveFragment(),
-                                    "LIVE").commit();
-                            toolbar.setTitle("Live");
-                            break;
                         case ORCHESTRA:
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                                     new OrchestraFragment(),
@@ -387,6 +381,18 @@ public final class MainActivity extends AppCompatActivity
                                     new PatchBayFragment(),
                                     "PATCHBAY").commit();
                             toolbar.setTitle("Patch Bay");
+                            break;
+                        case MASTER:
+                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                                    new MasterFragment(),
+                                    "MASTER").commit();
+                            toolbar.setTitle("Master");
+                            break;
+                        case LIVE:
+                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                                    new LiveFragment(),
+                                    "LIVE").commit();
+                            toolbar.setTitle("Live");
                             break;
                         case FX:
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
@@ -427,6 +433,19 @@ public final class MainActivity extends AppCompatActivity
 
                             currentFragment = MainActivity.State.PATTERN;
                             break;
+                        case MATERIAL:
+                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                                    new MaterialFragment(),
+                                    "MATERIAL").commit();
+                            toolbar.setTitle("Globals");
+                            break;
+                        case OPTIONS:
+                           fragmentManager.beginTransaction().replace(R.id.mainFrame,
+                                    new OptionsFragment(),
+                                    "OPTIONS").commit();
+                            toolbar.setTitle("Options");
+                            break;
+
 
                         default:
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
