@@ -22,7 +22,7 @@ import joel.duet.musica.databinding.EffectFragmentBinding;
 public final class EffectFragment extends Fragment {
     private File effect_file;
     static private MainActivity activity;
-    EffectFragmentBinding binding;
+    private EffectFragmentBinding binding;
     String effectName;
 
     @Override

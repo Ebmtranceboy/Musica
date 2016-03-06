@@ -39,10 +39,8 @@ public final class MainActivity extends AppCompatActivity
 
     private DrawerLayout mDrawer;
     static Toolbar toolbar;
-    ActionBarDrawerToggle drawerToggle;
 
-    ActivityMainBinding act_binding;
-    ContentMainBinding cnt_binding;
+    private ContentMainBinding cnt_binding;
 
     public static Runnable sensible_code;
     static State currentFragment;
@@ -56,7 +54,7 @@ public final class MainActivity extends AppCompatActivity
         Options, Material
     }
 
-    public <F extends Fragment> void newFragment(State state, F newInstance){
+    private <F extends Fragment> void newFragment(State state, F newInstance){
         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
                 newInstance,
                 state.toString()).commit();
@@ -69,7 +67,7 @@ public final class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         cnt_binding = DataBindingUtil.setContentView(this, R.layout.content_main);
-        act_binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        ActivityMainBinding act_binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         PreferenceManager.getInstance().initialize(this);
         Matrix.getInstance().initialize();
@@ -79,7 +77,7 @@ public final class MainActivity extends AppCompatActivity
         mDrawer = act_binding.drawerLayout;
 
         setSupportActionBar(toolbar);
-        drawerToggle = new ActionBarDrawerToggle(
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
                 this, mDrawer, toolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
@@ -88,7 +86,8 @@ public final class MainActivity extends AppCompatActivity
 
         drawerToggle.syncState();
 
-        /*bar_binding.fab*/act_binding.bar.fab.setOnClickListener(new View.OnClickListener() {
+        /*bar_binding.fab*/
+        act_binding.bar.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 

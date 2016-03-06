@@ -43,7 +43,7 @@ public final class PatternView extends View {
         public final ObservableBoolean loudness_mode = new ObservableBoolean();
     }
 
-    public static User user = new User();
+    public static final User user = new User();
 
     public static ImageView note_loudness;
 

@@ -39,7 +39,7 @@ public final class ScoreView extends View {
         public final ObservableBoolean edit_mode = new ObservableBoolean();
     }
 
-    public static User user = new User();
+    public static final User user = new User();
 
     public static Tool tool;
     private static int bar_begin = -1;

@@ -64,7 +64,7 @@ public final class LiveFragment extends Fragment {
         public final ObservableBoolean solo_mode = new ObservableBoolean();
     }
 
-    static User user = new User();
+    private static final User user = new User();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
@@ -227,7 +227,7 @@ public final class LiveFragment extends Fragment {
                                             + select_instr.getSelectedItem() + "\" " + (id + 1) + " "
                                             + pch + " "
                                             + (user.loudness_mode.get() ? CSD.pressure2dB(event.getPressure()) :
-                                                CSD.defaultLoudness2dB()) + " "
+                                            CSD.defaultLoudness2dB()) + " "
                                             + lastPch);
                                     lastPch = pch;
                                 }

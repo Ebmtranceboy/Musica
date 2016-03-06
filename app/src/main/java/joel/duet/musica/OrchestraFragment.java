@@ -32,7 +32,6 @@ public final class OrchestraFragment extends FragmentPlus {
     private static String instrName;
     static private List<String> listInstr;
     private File instr_file;
-    OrchestraFragmentBinding binding;
 
     @Override
     public void onAttach(Context context) {
@@ -42,7 +41,7 @@ public final class OrchestraFragment extends FragmentPlus {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
-        binding = DataBindingUtil.inflate(inflater,
+        OrchestraFragmentBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.orchestra_fragment,
                 container,
                 false);

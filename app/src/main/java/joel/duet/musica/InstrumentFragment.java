@@ -22,7 +22,7 @@ import joel.duet.musica.databinding.InstrumentFragmentBinding;
 public final class InstrumentFragment extends Fragment {
     private File instr_file;
     static private MainActivity activity;
-    InstrumentFragmentBinding binding;
+    private InstrumentFragmentBinding binding;
     String instrumentName;
 
     @Override

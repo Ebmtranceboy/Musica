@@ -33,7 +33,6 @@ public final class FXFragment extends FragmentPlus {
     private static String effectName;
     static private List<String> listEffect;
     private File effect_file;
-    FxFragmentBinding binding;
 
     @Override
     public void onAttach(Context context) {
@@ -43,7 +42,7 @@ public final class FXFragment extends FragmentPlus {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
-        binding = DataBindingUtil.inflate(inflater,
+        FxFragmentBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.fx_fragment,
                 container,
                 false);
