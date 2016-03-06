@@ -1,6 +1,7 @@
 package joel.duet.musica;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -9,29 +10,20 @@ import android.support.v7.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import java.io.File;
 
+import joel.duet.musica.databinding.EffectFragmentBinding;
+
 /**
  *
- * Created by joel on 21/01/16 at 14:07 at 14:44.
+ * Created by joel on 21/01/16 at 14:07 at 14:44 at 09:26 at 09:29 at 10:41.
  */
 public final class EffectFragment extends Fragment {
-    private String effectName;
-    private EditText effectCode;
     private File effect_file;
     static private MainActivity activity;
-
-    public String getEffectName(){
-        return effectName;
-    }
-
-    public String getEffectCode(){
-        return effectCode.getText().toString();
-    }
+    EffectFragmentBinding binding;
+    String effectName;
 
     @Override
     public void onAttach(Context context) {
@@ -41,19 +33,22 @@ public final class EffectFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
-        final View view = inflater.inflate(R.layout.effect_fragment, container, false);
         effectName = getArguments().getString("effectName");
-        TextView effectTitleView = (TextView) view.findViewById(R.id.effect_title);
-        String format = getResources().getString(R.string.effect_title);
-        effectTitleView.setText(String.format(format, effectName));
-        effectCode = (EditText)view.findViewById(R.id.effectCode);
-        effectCode.setText(CSD.mapFX.get(effectName).code);
 
-        final Button del_button = (Button) view.findViewById(R.id.delete_effect);
-        del_button.setOnClickListener(new View.OnClickListener() {
+        binding = DataBindingUtil.inflate(inflater,
+                R.layout.effect_fragment,
+                container,
+                false);
+
+        binding.effectName.setText(String.format(getResources().getString(R.string.effect_title),
+                effectName));
+        binding.effectCode.setText(CSD.mapFX.get(effectName).code);
+
+        binding.deleteEffect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                final FragmentManager fragmentManager =
+                        getActivity().getSupportFragmentManager();
 
                 MainActivity.sensible_code = new Runnable() {
                     @Override
@@ -64,9 +59,9 @@ public final class EffectFragment extends Fragment {
 
                         fragmentManager.beginTransaction().replace(R.id.mainFrame,
                                 new FXFragment(),
-                                "FX").commit();
+                                "Fx").commit();
                         MainActivity.toolbar.setTitle("FX");
-                        MainActivity.currentFragment = MainActivity.State.FX;
+                        MainActivity.currentFragment = MainActivity.State.Fx;
                     }
                 };
 
@@ -75,13 +70,13 @@ public final class EffectFragment extends Fragment {
             }
         });
 
-        final Button export_button = (Button) view.findViewById(R.id.add_to_fx_lib);
-        export_button.setOnClickListener(new View.OnClickListener() {
+        binding.addToFxLib.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                updateModel();
                 SimpleFileDialog fileOpenDialog = new SimpleFileDialog(
-                        new ContextThemeWrapper(getContext(), R.style.csoundAlertDialogStyle),
+                        new ContextThemeWrapper(getContext(),
+                                R.style.csoundAlertDialogStyle),
                         "FileSave..",
                         new SimpleFileDialog.SimpleFileDialogListener() {
                             @Override
@@ -91,19 +86,38 @@ public final class EffectFragment extends Fragment {
                                     chosenDir = chosenDir.substring(index + 1);
                                 }
                                 effect_file = new File(chosenDir);
-                                activity.csoundUtil.saveStringAsExternalFile("opcode " + effectName + ", aa, aa\n" + getEffectCode() + "endop", effect_file.getAbsolutePath());
+                                activity.csoundUtil.saveStringAsExternalFile(
+                                        "opcode " + effectName + ", aa, aa\n"
+                                                + CSD.mapFX.get(effectName).code
+                                                + "endop", effect_file.getAbsolutePath());
                             }
                         }
                 );
                 if (effect_file != null) {
                     fileOpenDialog.default_file_name = effect_file.getParent();
                 } else {
-                    fileOpenDialog.default_file_name = Environment.getExternalStorageDirectory().getAbsolutePath();
+                    fileOpenDialog.default_file_name =
+                            Environment.getExternalStorageDirectory().getAbsolutePath();
                 }
                 fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
             }
         });
 
-        return view;
+        return binding.getRoot();
+    }
+
+    private void updateModel(){
+        CSD.Content content = CSD.mapFX.get(effectName);
+        if(content != null && binding != null)
+            CSD.mapFX.put(effectName,
+                    new CSD.Content(binding.effectCode.getText().toString(),
+                            content.gainL,
+                            content.gainR));
+    }
+
+    @Override
+    public void onPause() {
+        updateModel();
+        super.onPause();
     }
 }

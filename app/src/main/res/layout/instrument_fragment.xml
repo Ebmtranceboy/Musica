@@ -1,51 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/instr_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:typeface="monospace" />
-
-    <EditText
-        android:id="@+id/instrumentCode"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="top|start"
-        android:inputType="text|textMultiLine|textNoSuggestions"
-        android:typeface="monospace" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/endin"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:typeface="monospace" />
+        <TextView
+            android:id="@+id/instrumentName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:typeface="monospace" />
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/delete_instr"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+        <EditText
+            android:id="@+id/instrumentCode"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="@string/delete_instr_label" />
+            android:gravity="top|start"
+            android:inputType="text|textMultiLine|textNoSuggestions"
+            android:typeface="monospace" />
 
-        <Button
-            android:id="@+id/add_to_instr_lib"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/add_to_lib_label" />
-    </TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/endin"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:typeface="monospace" />
 
-</LinearLayout>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/delete_instr"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/delete_instr_label" />
+
+            <Button
+                android:id="@+id/add_to_instr_lib"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/add_to_lib_label" />
+        </TableRow>
+
+    </LinearLayout>
+</layout>

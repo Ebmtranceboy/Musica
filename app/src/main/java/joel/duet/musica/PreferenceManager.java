@@ -3,6 +3,7 @@ package joel.duet.musica;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -10,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- *
  * Created by joel on 04/02/16 at 23:19 at 23:21 at 20:23.
  */
 public final class PreferenceManager {
@@ -30,13 +30,34 @@ public final class PreferenceManager {
     private static final String MASTER_GAIN_R_KEY = "GainR";
     private static final String GLOBALS_KEY = "Globals";
 
+    private class TransportTask extends AsyncTask<Runnable, Void, Void> {
+        protected Void doInBackground(Runnable... tasks) {
+
+            for (Runnable task : tasks) {
+                task.run();
+                // Escape early if cancel() is called
+                if (isCancelled()) break;
+            }
+            return null;
+        }
+    }
+
     @SuppressLint("CommitPrefEdits")
-    public void initialize(Context context) {
+    public void initialize(Context ctx) {
+        final Context context = ctx;
+        Runnable task;
+
         if (!isInitialised) {
-            preferences = context.getSharedPreferences(PROJECT_KEY, Context.MODE_PRIVATE);
-            editor = preferences.edit();
-            loadPreferences();
-            isInitialised = true;
+            task = new Runnable() {
+                @Override
+                public void run() {
+                    preferences = context.getSharedPreferences(PROJECT_KEY, Context.MODE_PRIVATE);
+                    editor = preferences.edit();
+                    loadPreferences();
+                    isInitialised = true;
+                }
+            };
+            TransportTask.execute(task);
         }
     }
 
@@ -69,10 +90,16 @@ public final class PreferenceManager {
     }
 
     public void savePreferences() {
-        JSONObject json = project();
-        editor.putString(PROJECT_KEY, json.toString());
-        editor.commit();
-    }
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                JSONObject json = project();
+                editor.putString(PROJECT_KEY, json.toString());
+                editor.commit();
+            }
+        };
+        TransportTask.execute(task);
+     }
 
     public static void resetProject() {
         CSD.mapInstr.clear();
@@ -122,7 +149,7 @@ public final class PreferenceManager {
         loadJSONFX(project.getJSONArray(FX_KEY));
         loadJSONTracks(project.getJSONObject(TRACKS_KEY));
         joel.duet.musica.Matrix.getInstance().update();
-        if(project.getString(MATRIX_KEY).length() == (CSD.getNbInstruments()+CSD.getNbEffects()+1)*(CSD.getNbEffects()+2))
+        if (project.getString(MATRIX_KEY).length() == (CSD.getNbInstruments() + CSD.getNbEffects() + 1) * (CSD.getNbEffects() + 2))
             joel.duet.musica.Matrix.getInstance().unserialize(project.getString(MATRIX_KEY));
         CSD.tempo_ratio = project.getDouble(TEMPO_RATIO_KEY);
         CSD.master_gain_L = project.getDouble(MASTER_GAIN_L_KEY);
@@ -149,7 +176,7 @@ public final class PreferenceManager {
         JSONObject instr_obj;
         for (int i = 0; i < instruments.length(); i++) {
             instr_obj = instruments.getJSONObject(i);
-            CSD.mapInstr.put(instr_obj.getString("name"), new CSD.Content(instr_obj.getString("body"),instr_obj.getDouble("gainL"),instr_obj.getDouble("gainR")));
+            CSD.mapInstr.put(instr_obj.getString("name"), new CSD.Content(instr_obj.getString("body"), instr_obj.getDouble("gainL"), instr_obj.getDouble("gainR")));
         }
     }
 
@@ -172,7 +199,7 @@ public final class PreferenceManager {
         JSONObject effect_obj;
         for (int i = 0; i < effects.length(); i++) {
             effect_obj = effects.getJSONObject(i);
-            CSD.mapFX.put(effect_obj.getString("name"), new CSD.Content(effect_obj.getString("body"),effect_obj.getDouble("gainL"),effect_obj.getDouble("gainR")));
+            CSD.mapFX.put(effect_obj.getString("name"), new CSD.Content(effect_obj.getString("body"), effect_obj.getDouble("gainL"), effect_obj.getDouble("gainR")));
         }
     }
 

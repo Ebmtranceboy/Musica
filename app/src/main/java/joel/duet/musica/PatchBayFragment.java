@@ -1,5 +1,6 @@
 package joel.duet.musica;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 //import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
+import joel.duet.musica.databinding.PatchbayFragmentBinding;
 
 /**
  *
@@ -22,8 +24,9 @@ public final class PatchBayFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
-        final View view = inflater.inflate(R.layout.patchbay_fragment, container, false);
-        grid = (GridView) view.findViewById(R.id.grid_view);
+        PatchbayFragmentBinding binding =
+                DataBindingUtil.inflate(inflater, R.layout.patchbay_fragment, container, false);
+        grid = binding.gridView;
 
         grid.setNumColumns(CSD.getNbEffects() + 2);
         grid.setAdapter(new ArrayAdapter<String>(getContext(),
@@ -65,6 +68,6 @@ public final class PatchBayFragment extends Fragment {
             }
         });
 
-        return view;
+        return binding.getRoot();
     }
 }

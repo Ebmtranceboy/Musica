@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <TableRow
             android:layout_width="match_parent"
@@ -11,34 +12,35 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_4th_note"
-                android:contentDescription="@string/quarter_image_label" />
+                android:contentDescription="@string/quarter_image_label"
+                android:src="@drawable/ic_4th_note" />
 
             <EditText
+                android:id="@+id/options_tempo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
                 android:ems="10"
-                android:id="@+id/options_tempo" />
+                android:inputType="numberDecimal" />
 
         </TableRow>
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/options_score_file"
-            android:id="@+id/textView" />
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/options_score_file"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/options_directory"
-            android:text="@string/default_directory"
-            android:inputType="text" />
-    </TableRow>
-</TableLayout>
+            <EditText
+                android:id="@+id/options_directory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:text="@string/default_directory" />
+        </TableRow>
+    </TableLayout>
+</layout>

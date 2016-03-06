@@ -1,5 +1,6 @@
 package joel.duet.musica;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +12,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+
+import joel.duet.musica.databinding.InputTextDialogBinding;
 
 public final class InputTextDialogFragment extends DialogFragment implements
 		OnEditorActionListener {
@@ -26,19 +29,19 @@ public final class InputTextDialogFragment extends DialogFragment implements
         // Empty constructor required for DialogFragment
     }
 
-
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.input_text_dialog, container);
-		mEditText = (EditText) view.findViewById(R.id.edit_name_box);
+		InputTextDialogBinding binding =
+                DataBindingUtil.inflate(inflater, R.layout.input_text_dialog, container, false);
+		mEditText = binding.editNameBox;
 		getDialog().setTitle("Name it");
 		// Show soft keyboard automatically
 		mEditText.requestFocus();
 		mEditText.setOnEditorActionListener(this);
 
         state = getArguments().getString("state");
-		view.findViewById(R.id.done_button).setOnClickListener(new View.OnClickListener() {
+		binding.doneButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // When button is clicked, call up to owning activity.
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -47,7 +50,7 @@ public final class InputTextDialogFragment extends DialogFragment implements
 			    getDialog().dismiss();
             }
         });
-        return view;
+        return binding.getRoot();
 	}
 
 	@Override

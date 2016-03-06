@@ -1,88 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <HorizontalScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ToggleButton
-                android:id="@+id/mode"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?android:textColorTertiary"
-                android:textOff="Visit"
-                android:textOn="Edit"
-                android:textSize="12sp" />
-
-            <Spinner
-                android:id="@+id/edition"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <ImageButton
-                android:id="@+id/new_track"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/new_track_label"
-                android:src="@drawable/ic_add" />
-
-            <ImageButton
-                android:id="@+id/extend_score"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/extend_score_label"
-                android:src="@drawable/ic_more" />
-
-            <ImageButton
-                android:id="@+id/trim_score"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/trim_score_label"
-                android:src="@drawable/ic_crop" />
-
-            <Spinner
-                android:id="@+id/resolution"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <Spinner
-                android:id="@+id/bars_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <ImageButton
-                android:id="@+id/play"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/play_button_label"
-                android:src="@drawable/ic_play" />
-
-            <ImageButton
-                android:id="@+id/stop"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/stop_button_label"
-                android:src="@drawable/ic_stop" />
-        </LinearLayout>
-    </HorizontalScrollView>
-
-    <joel.duet.musica.ScoreView
-        android:id="@+id/score_view"
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<data>
+    <import type="android.view.View"/>
+    <variable name="user" type="joel.duet.musica.ScoreView.User"/>
+</data>
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ToggleButton
+                    android:id="@+id/mode"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@{user.edit_mode ? @color/colorAccent : @color/colorNeutral}"
+                    android:textOff="Visit"
+                    android:textOn="Edit"
+                    android:textSize="12sp" />
+
+                <Spinner
+                    android:visibility="@{user.edit_mode  ? View.VISIBLE : View.INVISIBLE}"
+                    android:id="@+id/edition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageButton
+                    android:id="@+id/new_track"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/new_track_label"
+                    android:src="@drawable/ic_add" />
+
+                <ImageButton
+                    android:id="@+id/extend_score"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/extend_score_label"
+                    android:src="@drawable/ic_more" />
+
+                <ImageButton
+                    android:id="@+id/trim_score"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/trim_score_label"
+                    android:src="@drawable/ic_crop" />
+
+                <Spinner
+                    android:id="@+id/resolution"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Spinner
+                    android:id="@+id/bars_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageButton
+                    android:id="@+id/play"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/play_button_label"
+                    android:src="@drawable/ic_play" />
+
+                <ImageButton
+                    android:id="@+id/stop"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/stop_button_label"
+                    android:src="@drawable/ic_stop" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <joel.duet.musica.ScoreView
+            android:id="@+id/score_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</layout>

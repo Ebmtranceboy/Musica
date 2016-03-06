@@ -1,6 +1,7 @@
 package joel.duet.musica;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.*;
 
+import joel.duet.musica.databinding.FxFragmentBinding;
+
 /**
  *
  * Created by joel on 21/01/16 at 08:16 at 14:17 at 14:41.
@@ -30,7 +33,7 @@ public final class FXFragment extends FragmentPlus {
     private static String effectName;
     static private List<String> listEffect;
     private File effect_file;
-
+    FxFragmentBinding binding;
 
     @Override
     public void onAttach(Context context) {
@@ -40,9 +43,13 @@ public final class FXFragment extends FragmentPlus {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
-        final View view = inflater.inflate(R.layout.fx_fragment, container, false);
+        binding = DataBindingUtil.inflate(inflater,
+                R.layout.fx_fragment,
+                container,
+                false);
 
-        final ListView listEffectView = (ListView) view.findViewById(R.id.listEffect);
+
+        final ListView listEffectView = binding.listEffect;
         listEffect = new ArrayList<>();
         listEffect.addAll(CSD.mapFX.keySet());
         effect_adapter = new ArrayAdapter<>(activity.getBaseContext(), android.R.layout.simple_spinner_item, listEffect);
@@ -59,27 +66,27 @@ public final class FXFragment extends FragmentPlus {
                 fragment.setArguments(bundle);
                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
                         fragment,
-                        "EFFECT").commit();
+                        "Effect").commit();
                 MainActivity.toolbar.setTitle(effectName);
-                MainActivity.currentFragment = MainActivity.State.EFFECT;
+                MainActivity.currentFragment = MainActivity.State.Effect;
                 effectName = null;
             }
         });
 
-        final Button new_effect = (Button) view.findViewById(R.id.new_effect);
+        final Button new_effect = binding.newEffect;
         new_effect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 Bundle bundle = new Bundle();
-                bundle.putString("state", "FX");
+                bundle.putString("state", "Fx");
                 InputTextDialogFragment editNameDialog = new InputTextDialogFragment();
                 editNameDialog.setArguments(bundle);
                 editNameDialog.show(fragmentManager, "fragment_edit_name");
             }
         });
 
-        final Button import_effect = (Button) view.findViewById(R.id.import_effect);
+        final Button import_effect = binding.importEffect;
         import_effect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,13 +108,15 @@ public final class FXFragment extends FragmentPlus {
         });
 
 
-        return view;
+        return binding.getRoot();
     }
 
     private class ParseEffect {
         String name, body;
-        private final java.util.regex.Pattern header = java.util.regex.Pattern.compile(" *opcode +(\\w+)\\b");
-        private final java.util.regex.Pattern footer = java.util.regex.Pattern.compile(" *endop\\b");
+        private final java.util.regex.Pattern header =
+                java.util.regex.Pattern.compile(" *opcode +(\\w+)\\b");
+        private final java.util.regex.Pattern footer =
+                java.util.regex.Pattern.compile(" *endop\\b");
 
         ParseEffect(String text) {
             String[] lines = text.split("\n");
@@ -134,23 +143,26 @@ public final class FXFragment extends FragmentPlus {
 
     private void OnFileChosen(File file) {
         effect_file = file;
-        String effect_text = activity.csoundUtil.getExternalFileAsString(file.getAbsolutePath());
+        String effect_text =
+                activity.csoundUtil.getExternalFileAsString(file.getAbsolutePath());
         ParseEffect effect = new ParseEffect(effect_text);
         effectName = effect.name;
-        Matrix.getInstance().spy();
-        CSD.mapFX.put(effectName, new CSD.Content(effect.body,1.0,1.0));
-        Matrix.getInstance().update();
-        listEffect.add(effectName);
-        effect_adapter.notifyDataSetChanged();
-
-        effectName = null;
+        if(effectName != null) {
+            Matrix.getInstance().spy();
+            CSD.mapFX.put(effectName, new CSD.Content(effect.body, 1.0, 1.0));
+            Matrix.getInstance().update();
+            listEffect.add(effectName);
+            effect_adapter.notifyDataSetChanged();
+            effectName = null;
+        }
     }
 
     @Override
     public void onFinishEditDialog(String inputText) {
         effectName = inputText;
         Matrix.getInstance().spy();
-        CSD.mapFX.put(effectName, new CSD.Content("ain1, ain2 xin\n\nxout ain1, ain2",1.0,1.0));
+        CSD.mapFX.put(effectName, new CSD.Content("ain1, ain2 xin\n"
+                + "\nxout ain1, ain2\n",1.0,1.0));
         Matrix.getInstance().update();
         listEffect.add(effectName);
         effect_adapter.notifyDataSetChanged();
@@ -162,10 +174,9 @@ public final class FXFragment extends FragmentPlus {
         fragment.setArguments(bundle);
         fragmentManager.beginTransaction().replace(R.id.mainFrame,
                 fragment,
-                "EFFECT").commit();
+                "Effect").commit();
         MainActivity.toolbar.setTitle(effectName);
-        MainActivity.currentFragment = MainActivity.State.EFFECT;
+        MainActivity.currentFragment = MainActivity.State.Effect;
         effectName = null;
-
     }
 }

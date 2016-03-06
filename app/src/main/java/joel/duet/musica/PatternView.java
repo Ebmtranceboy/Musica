@@ -1,6 +1,7 @@
 package joel.duet.musica;
 
 import android.content.Context;
+import android.databinding.ObservableBoolean;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -37,8 +38,13 @@ public final class PatternView extends View {
     private static int number_ticks;
     private ScaleGestureDetector mScaleDetector;
 
-    public static boolean edit_mode;
-    public static boolean loudness_mode;
+    public static class User{
+        public final ObservableBoolean edit_mode = new ObservableBoolean();
+        public final ObservableBoolean loudness_mode = new ObservableBoolean();
+    }
+
+    public static User user = new User();
+
     public static ImageView note_loudness;
 
     // Absolutely NON static
@@ -228,7 +234,7 @@ public final class PatternView extends View {
                 coords[1] = y;
                 mInverse.mapPoints(coords);
 
-                if (edit_mode) {
+                if (user.edit_mode.get()) {
                     insertion_line = closestY(coords[1]);
                     boolean existing_note = false;
                     int n = 1;
@@ -243,19 +249,19 @@ public final class PatternView extends View {
                     }
 
                     if (!existing_note ) {
-                        if(!loudness_mode) {
+                        if(!user.loudness_mode.get()) {
                             bar_begin = closestX(coords[0]);
                             bar_end = bar_begin;
                         }
                     } else {
-                        if(loudness_mode){
+                        if(user.loudness_mode.get()){
                             note.loudness = note.loudness % 8 + 1;
                             note_loudness.setImageResource(Default.loudness_icons[8-note.loudness]);
                             note_loudness.setVisibility(VISIBLE);
                         } else pattern.deleteNote(note);
                     }
                     invalidate();
-                } else if(loudness_mode){
+                } else if(user.loudness_mode.get()){
                     insertion_line = closestY(coords[1]);
                     boolean existing_note = false;
                     int n = 1;
@@ -290,7 +296,7 @@ public final class PatternView extends View {
                     final float dx = x - mLastTouchX;
                     final float dy = y - mLastTouchY;
 
-                    if (!edit_mode) {
+                    if (!user.edit_mode.get()) {
                         //final float tx = pattern.mPosX;
                         //final float ty = pattern.mPosY;
                         pattern.mPosX += dx;
@@ -329,7 +335,8 @@ public final class PatternView extends View {
                         n++;
                     }
                     if (non_overlap) {
-                        pattern.createNote(start, finish - start, Default.max_midi_note - insertion_line, Default.default_loudness);
+                        pattern.createNote(start, finish - start,
+                                Default.max_midi_note - insertion_line, Default.default_loudness);
                     }
                 }
                 bar_begin = -1;

@@ -1,6 +1,7 @@
 package joel.duet.musica;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,6 +12,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.csounds.CsoundObj;
+
+import joel.duet.musica.databinding.MasterFragmentBinding;
+import joel.duet.musica.databinding.MasterLineBinding;
 
 
 /**
@@ -26,16 +30,22 @@ public final class MasterFragment extends Fragment{
         csoundObj = MainActivity.csoundObj;
     }
 
-    private void registerLine(LayoutInflater inflater, ViewGroup container, final String componentName, LinearLayout verticalLayout, final int formatId, final boolean isInstr) {
+    private void registerLine(LayoutInflater inflater,
+                              ViewGroup container,
+                              final String componentName,
+                              LinearLayout verticalLayout,
+                              final int formatId,
+                              final boolean isInstr) {
         SeekBar seekBar;
 
-        LinearLayout line = (LinearLayout) inflater.inflate(R.layout.master_line, container, false);
-        TextView lineName = (TextView) line.findViewById(R.id.component_name);
+        MasterLineBinding binding =
+                DataBindingUtil.inflate(inflater, R.layout.master_line, container, false);
+        TextView lineName = binding.componentName;
         final String format = getResources().getString(formatId);
         lineName.setText(String.format(format, componentName));
 
-        final TextView gaindb = (TextView) line.findViewById(R.id.gain_db);
-        seekBar = (SeekBar) line.findViewById(R.id.gain);
+        final TextView gaindb = binding.gainDb;
+        seekBar = binding.gain;
         double val;
 
         int color;
@@ -61,16 +71,19 @@ public final class MasterFragment extends Fragment{
         lineName.setBackgroundColor(color);
         gaindb.setText(String.format("%1s", val));
 
-        csoundObj.addBinding(new SlidingCsoundBindingUI(seekBar, "ktrl_" + String.format(format, componentName), 0, 1, gaindb, isInstr, formatId, componentName));
+        csoundObj.addBinding(new SlidingCsoundBindingUI(seekBar,
+                "ktrl_" + String.format(format, componentName), 0, 1,
+                gaindb, isInstr, formatId, componentName));
 
-        verticalLayout.addView(line);
+        verticalLayout.addView(binding.getRoot());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
-        final View view = inflater.inflate(R.layout.master_fragment, container, false);
+        MasterFragmentBinding binding =
+                DataBindingUtil.inflate(inflater, R.layout.master_fragment, container, false);
 
-        LinearLayout verticalLayout = (LinearLayout) view.findViewById(R.id.master);
+        LinearLayout verticalLayout = binding.master;
 
         String[] instrNames = CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()]);
         for (int i = 0; i < CSD.getNbInstruments(); i++) {
@@ -87,7 +100,7 @@ public final class MasterFragment extends Fragment{
         registerLine(inflater, container, "Master", verticalLayout, R.string.master_line_L_format, false);
         registerLine(inflater, container, "Master", verticalLayout, R.string.master_line_R_format, false);
 
-        return view;
+        return binding.getRoot();
     }
 
 }

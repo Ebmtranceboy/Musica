@@ -1,105 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<data>
+    <import type="android.view.View"/>
+    <variable name="user" type="joel.duet.musica.PatternView.User"/>
+</data>
 
-    <HorizontalScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
-            <ToggleButton
-                android:id="@+id/mode"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?android:textColorTertiary"
-                android:textOff="Visit"
-                android:textOn="Edit"
-                android:textSize="12sp" />
-
-            <ToggleButton
-                android:id="@+id/loudness"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_loudness_off"
-                android:textOff=""
-                android:textOn="" />
-
-            <Spinner
-                android:id="@+id/instrument"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <ImageButton
-                android:id="@+id/arpeggio"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/lab_label"
-                android:src="@drawable/ic_arpeggiator"
-                android:visibility="invisible" />
-
-            <ImageButton
-                android:id="@+id/recenter"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/recenter_button_label"
-                android:src="@drawable/ic_recenter" />
-
-            <Spinner
-                android:id="@+id/resolution"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <ImageButton
-                android:id="@+id/preview"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/preview_button_label"
-                android:src="@drawable/ic_read_partition" />
-
-            <ImageButton
-                android:id="@+id/in_context"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/play_in_context_button_label"
-                android:src="@drawable/ic_play_in_context" />
-
-            <ImageButton
-                android:id="@+id/stop"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/stop_button_label"
-                android:src="@drawable/ic_stop" />
-
-        </LinearLayout>
-    </HorizontalScrollView>
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <joel.duet.musica.PatternView
-            android:id="@+id/pattern_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:id="@+id/note_loudness"
+        <HorizontalScrollView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/loudness_label" />
-    </RelativeLayout>
+            android:layout_height="wrap_content">
 
-</LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <ToggleButton
+                    android:id="@+id/mode"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@{user.edit_mode ? @color/colorAccent : @color/colorNeutral}"
+                    android:textOff="Visit"
+                    android:textOn="Edit"
+                    android:textSize="12sp" />
+
+                <ToggleButton
+                    android:id="@+id/loudness"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@{user.loudness_mode ? @drawable/ic_loudness_on : @drawable/ic_loudness_off}"
+                    android:textOff=""
+                    android:textOn="" />
+
+                <Spinner
+                    android:id="@+id/instrument"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageButton
+                    android:id="@+id/arpeggio"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/lab_label"
+                    android:visibility="@{user.edit_mode  ? View.VISIBLE : View.INVISIBLE}"
+                    android:src="@drawable/ic_arpeggiator"/>
+
+                <ImageButton
+                    android:id="@+id/recenter"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/recenter_button_label"
+                    android:src="@drawable/ic_recenter" />
+
+                <Spinner
+                    android:id="@+id/resolution"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageButton
+                    android:id="@+id/preview"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/preview_button_label"
+                    android:src="@drawable/ic_read_partition" />
+
+                <ImageButton
+                    android:id="@+id/in_context"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/play_in_context_button_label"
+                    android:src="@drawable/ic_play_in_context" />
+
+                <ImageButton
+                    android:id="@+id/stop"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/stop_button_label"
+                    android:src="@drawable/ic_stop" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <joel.duet.musica.PatternView
+                android:id="@+id/pattern_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:id="@+id/note_loudness"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/loudness_label" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</layout>

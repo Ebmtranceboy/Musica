@@ -1,9 +1,10 @@
 package joel.duet.musica;
 
 import android.content.res.Configuration;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 //import android.util.Log;
 import android.support.v7.view.ContextThemeWrapper;
@@ -26,36 +27,68 @@ import org.json.JSONObject;
 
 import java.io.File;
 
+import joel.duet.musica.databinding.ActivityMainBinding;
+import joel.duet.musica.databinding.ContentMainBinding;
+
 public final class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    //private static final String TAG = "Musica";
     static CsoundObj csoundObj = new CsoundObj(false, true);
     final CsoundUtil csoundUtil = new CsoundUtil(this);
+
     private DrawerLayout mDrawer;
     static Toolbar toolbar;
+    ActionBarDrawerToggle drawerToggle;
+
+    ActivityMainBinding act_binding;
+    ContentMainBinding cnt_binding;
+
     public static Runnable sensible_code;
-    // private static final String TAG = "Musica";
+    static State currentFragment;
 
     public enum State {
-        WELCOME, LIVE, ORCHESTRA, INSTRUMENT, PATCHBAY, FX, EFFECT, SCORE, PATTERN, OPTIONS, MASTER, MATERIAL
+        Welcome,
+        Instrument, Orchestra,
+        Patchbay, Master,
+        Live, Fx, Effect,
+        Pattern, Score,
+        Options, Material
     }
 
-    static State currentFragment;
+    public <F extends Fragment> void newFragment(State state, F newInstance){
+        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
+                newInstance,
+                state.toString()).commit();
+        toolbar.setTitle(state.toString());
+        currentFragment = state;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        cnt_binding = DataBindingUtil.setContentView(this, R.layout.content_main);
+        act_binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
         PreferenceManager.getInstance().initialize(this);
         Matrix.getInstance().initialize();
 
-        setContentView(R.layout.activity_main);
         csoundObj.setMessageLoggingEnabled(true);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        toolbar = act_binding.bar.toolbar;
+        mDrawer = act_binding.drawerLayout;
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        setSupportActionBar(toolbar);
+        drawerToggle = new ActionBarDrawerToggle(
+                this, mDrawer, toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+
+        mDrawer.addDrawerListener(drawerToggle);
+
+        drawerToggle.syncState();
+
+        /*bar_binding.fab*/act_binding.bar.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -66,29 +99,13 @@ public final class MainActivity extends AppCompatActivity
                 csoundObj.getCsound().Start();
                 csoundObj = new CsoundObj(false, true);
                 csoundObj.setMessageLoggingEnabled(true);
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
-                        new WelcomeFragment(),
-                        "WELCOME").commit();
+                newFragment(State.Welcome, new WelcomeFragment());
                 toolbar.setTitle(CSD.projectName);
-                currentFragment = State.WELCOME;
             }
         });
 
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawer.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        final FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                new WelcomeFragment(),
-                "WELCOME").commit();
-        toolbar.setTitle(CSD.projectName);
-        currentFragment = State.WELCOME;
+        act_binding.navView.setNavigationItemSelectedListener(this);
+        newFragment(State.Welcome, new WelcomeFragment());
     }
 
     @Override
@@ -98,44 +115,26 @@ public final class MainActivity extends AppCompatActivity
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
             final FragmentManager fragmentManager = getSupportFragmentManager();
-            if (currentFragment == State.INSTRUMENT) {
-                InstrumentFragment fragment = (InstrumentFragment) fragmentManager.findFragmentByTag("INSTRUMENT");
-                CSD.Content content = CSD.mapInstr.get(fragment.getInstrName());
-                CSD.mapInstr.put(fragment.getInstrName(), new CSD.Content(fragment.getInstrCode(), content.gainL, content.gainR));
 
-                fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                        new OrchestraFragment(),
-                        "ORCHESTRA").commit();
-                toolbar.setTitle("Orchestra");
-                currentFragment = State.ORCHESTRA;
-            } else if (currentFragment == State.EFFECT) {
-                EffectFragment fragment = (EffectFragment) fragmentManager.findFragmentByTag("EFFECT");
-                CSD.Content content = CSD.mapFX.get(fragment.getEffectName());
-                CSD.mapFX.put(fragment.getEffectName(), new CSD.Content(fragment.getEffectCode(), content.gainL, content.gainR));
+            if (currentFragment == State.Instrument) {
+                newFragment(State.Orchestra, new OrchestraFragment());
 
-                fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                        new FXFragment(),
-                        "FX").commit();
-                toolbar.setTitle("FX");
-                currentFragment = State.FX;
-            } else if (currentFragment == State.PATTERN) {
-                fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                        new ScoreFragment(),
-                        "SCORE").commit();
-                toolbar.setTitle("Score");
-                currentFragment = State.SCORE;
+            } else if (currentFragment == State.Effect) {
+                newFragment(State.Fx, new FXFragment());
+
+            } else if (currentFragment == State.Pattern) {
+                newFragment(State.Score, new ScoreFragment());
+
             } else {
-                if (currentFragment != State.WELCOME) {
-                    if(currentFragment == State.MATERIAL){
-                        MaterialFragment fragment = (MaterialFragment) fragmentManager.findFragmentByTag("MATERIAL");
+                if (currentFragment != State.Welcome) {
+                    if(currentFragment == State.Material){
+                        MaterialFragment fragment =
+                                (MaterialFragment) fragmentManager.findFragmentByTag("Material");
                         CSD.globals = fragment.getGlobals();
                     }
 
-                    fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                            new WelcomeFragment(),
-                            "WELCOME").commit();
+                    newFragment(State.Welcome, new WelcomeFragment());
                     toolbar.setTitle(CSD.projectName);
-                    currentFragment = State.WELCOME;
                 } else super.onBackPressed();
             }
         }
@@ -171,16 +170,14 @@ public final class MainActivity extends AppCompatActivity
         csd = file;
         PreferenceManager.resetProject();
         try {
-            JSONObject project = new JSONObject(csoundUtil.getExternalFileAsString(csd.getAbsolutePath()));
+            JSONObject project =
+                    new JSONObject(csoundUtil.getExternalFileAsString(csd.getAbsolutePath()));
             PreferenceManager.loadProject(project);
         } catch (JSONException e1) {
             e1.printStackTrace();
         }
-        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
-                new WelcomeFragment(),
-                "WELCOME").commit();
+        newFragment(State.Welcome, new WelcomeFragment());
         toolbar.setTitle(CSD.projectName);
-        currentFragment = State.WELCOME;
     }
 
     @Override
@@ -194,35 +191,19 @@ public final class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_orchestra) {
             csoundObj.stop();
-            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new OrchestraFragment(),
-                    "ORCHESTRA").commit();
-            toolbar.setTitle("Orchestra");
-            currentFragment = State.ORCHESTRA;
+            newFragment(State.Orchestra, new OrchestraFragment());
 
         } else if (id == R.id.nav_patchbay) {
             csoundObj.stop();
-            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new PatchBayFragment(),
-                    "PATCHBAY").commit();
-            toolbar.setTitle("Patch Bay");
-            currentFragment = State.PATCHBAY;
+            newFragment(State.Patchbay, new PatchBayFragment());
 
         } else if (id == R.id.nav_master) {
-            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new MasterFragment(),
-                    "MASTER").commit();
-            toolbar.setTitle("Master");
-            currentFragment = State.MASTER;
+            newFragment(State.Master, new MasterFragment());
 
         } else if (id == R.id.nav_live) {
             if (CSD.getNbInstruments() > 0) {
                 csoundObj.stop();
-                fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                        new LiveFragment(),
-                        "LIVE").commit();
-                toolbar.setTitle("Live");
-                currentFragment = State.LIVE;
+                newFragment(State.Live, new LiveFragment());
             } else {
                 final Toast toast = Toast.makeText(this,
                         "Please, create an instrument first", Toast.LENGTH_LONG);
@@ -231,28 +212,17 @@ public final class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_fx) {
             csoundObj.stop();
-            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new FXFragment(),
-                    "FX").commit();
-            toolbar.setTitle("FX");
-            currentFragment = State.FX;
+            newFragment(State.Fx, new FXFragment());
 
         } else if (id == R.id.nav_score) {
             csoundObj.stop();
-            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new ScoreFragment(),
-                    "SCORE").commit();
-            toolbar.setTitle("Score");
-            currentFragment = State.SCORE;
+            newFragment(State.Score, new ScoreFragment());
 
         } else if (id == R.id.nav_material) {
             // TODO : implement synthpad generator, formant generators
             // csoundObj.stop();
-            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new MaterialFragment(),
-                    "MATERIAL").commit();
+            newFragment(State.Material, new MaterialFragment());
             toolbar.setTitle("Globals");
-            currentFragment = State.MATERIAL;
 
 
         } else if (id == R.id.new_project) {
@@ -261,12 +231,9 @@ public final class MainActivity extends AppCompatActivity
                 @Override
                 public void run() {
                     PreferenceManager.resetProject();
-                    fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                            new WelcomeFragment(),
-                            "WELCOME").commit();
+                    newFragment(State.Welcome, new WelcomeFragment());
                     CSD.projectName = Default.new_project_name;
                     toolbar.setTitle(CSD.projectName);
-                    currentFragment = State.WELCOME;
                 }
             };
 
@@ -293,7 +260,8 @@ public final class MainActivity extends AppCompatActivity
                     if (csd != null) {
                         fileOpenDialog.default_file_name = csd.getAbsolutePath();
                     } else {
-                        fileOpenDialog.default_file_name = Environment.getExternalStorageDirectory().getAbsolutePath();
+                        fileOpenDialog.default_file_name =
+                                Environment.getExternalStorageDirectory().getAbsolutePath();
                     }
                     fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
                 }
@@ -316,28 +284,27 @@ public final class MainActivity extends AppCompatActivity
                             }
                             File newFile = new File(chosenDir);
                             CSD.projectName = CSD.extractName(newFile.getName());
-                            csoundUtil.saveStringAsExternalFile(PreferenceManager.project().toString(), newFile.getAbsolutePath());
+                            csoundUtil.saveStringAsExternalFile(PreferenceManager.project().toString(),
+                                    newFile.getAbsolutePath());
                         }
                     }
             );
             if (csd != null) {
                 fileOpenDialog.default_file_name = csd.getParent();
             } else {
-                fileOpenDialog.default_file_name = Environment.getExternalStorageDirectory().getAbsolutePath();
+                fileOpenDialog.default_file_name =
+                        Environment.getExternalStorageDirectory().getAbsolutePath();
             }
             fileOpenDialog.chooseFile_or_Dir(fileOpenDialog.default_file_name);
 
         }  else if (id == R.id.render_project) {
-            csoundUtil.saveStringAsExternalFile(Score.sendPatterns(Score.allPatterns(), true, 0), "/storage/sdcard0/" + CSD.projectName + ".csd");
+            csoundUtil.saveStringAsExternalFile(Score.sendPatterns(Score.allPatterns(), true, 0),
+                    "/storage/sdcard0/" + CSD.projectName + ".csd");
 
         } else if (id == R.id.nav_preferences) {
             // TODO : default sr, ksmps, nbchnls, 0dbfs
             csoundObj.stop();
-            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                    new OptionsFragment(),
-                    "OPTIONS").commit();
-            toolbar.setTitle("Options");
-            currentFragment = State.OPTIONS;
+            newFragment(State.Options, new OptionsFragment());
         }
 
         return true;
@@ -345,7 +312,7 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        final View mView = findViewById(R.id.mainFrame);
+        final View mView = cnt_binding.mainFrame;
         final int oldHeight = mView.getHeight();
         final int oldWidth = mView.getWidth();
 
@@ -358,68 +325,59 @@ public final class MainActivity extends AppCompatActivity
                     final FragmentManager fragmentManager = getSupportFragmentManager();
 
                     switch (currentFragment) {
-                        case ORCHESTRA:
-                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new OrchestraFragment(),
-                                    "ORCHESTRA").commit();
-                            toolbar.setTitle("Orchestra");
+                        case Orchestra:
+                            newFragment(State.Orchestra, new OrchestraFragment());
                             break;
-                        case INSTRUMENT:
-                            InstrumentFragment fragment = (InstrumentFragment) fragmentManager.findFragmentByTag("INSTRUMENT");
+
+                        case Instrument:
+                            InstrumentFragment fragment =
+                                    (InstrumentFragment) fragmentManager.findFragmentByTag("Instrument");
                             Bundle bundle = new Bundle();
-                            String instrName = fragment.getInstrName();
+                            String instrName = fragment.instrumentName;
                             bundle.putString("instrName", instrName);
                             fragment = new InstrumentFragment();
                             fragment.setArguments(bundle);
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                                     fragment,
-                                    "INSTRUMENT").commit();
+                                    "Instrument").commit();
                             toolbar.setTitle(instrName);
                             break;
-                        case PATCHBAY:
-                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new PatchBayFragment(),
-                                    "PATCHBAY").commit();
-                            toolbar.setTitle("Patch Bay");
+
+                        case Patchbay:
+                            newFragment(State.Patchbay, new PatchBayFragment());
                             break;
-                        case MASTER:
-                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new MasterFragment(),
-                                    "MASTER").commit();
-                            toolbar.setTitle("Master");
+
+                        case Master:
+                            newFragment(State.Master, new MasterFragment());
                             break;
-                        case LIVE:
-                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new LiveFragment(),
-                                    "LIVE").commit();
-                            toolbar.setTitle("Live");
+
+                        case Live:
+                            newFragment(State.Live, new LiveFragment());
                             break;
-                        case FX:
-                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new FXFragment(),
-                                    "FX").commit();
-                            toolbar.setTitle("FX");
+
+                        case Fx:
+                            newFragment(State.Fx, new FXFragment());
                             break;
-                        case EFFECT:
-                            EffectFragment fr = (EffectFragment) fragmentManager.findFragmentByTag("EFFECT");
+
+                        case Effect:
+                            EffectFragment fr = (EffectFragment) fragmentManager.findFragmentByTag("Effect");
                             bundle = new Bundle();
-                            String effectName = fr.getEffectName();
+                            String effectName = fr.effectName;
                             bundle.putString("effectName", effectName);
                             fr = new EffectFragment();
                             fr.setArguments(bundle);
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                                     fr,
-                                    "EFFECT").commit();
+                                    "Effect").commit();
                             toolbar.setTitle(effectName);
                             break;
 
-                        case SCORE:
-                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new ScoreFragment(),
-                                    "SCORE").commit();
-                            toolbar.setTitle("Score");
+                        case Score:
+                            newFragment(State.Score, new ScoreFragment());
+
                             break;
-                        case PATTERN:
+
+                        case Pattern:
                             bundle = new Bundle();
                             bundle.putInt("resolution_index", Track.getPatternSelected().resolution);
                             bundle.putString("instr_name", Track.getPatternSelected().getInstr());
@@ -427,30 +385,23 @@ public final class MainActivity extends AppCompatActivity
                             patternFragment.setArguments(bundle);
                             fragmentManager.beginTransaction().replace(R.id.mainFrame,
                                     patternFragment,
-                                    "PATTERN").commit();
+                                    "Pattern").commit();
                             String format = getResources().getString(R.string.pattern_title);
                             toolbar.setTitle(String.format(format, Score.getIdTrackSelected(), Track.getIdPatternSelected()));
 
-                            currentFragment = MainActivity.State.PATTERN;
                             break;
-                        case MATERIAL:
-                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new MaterialFragment(),
-                                    "MATERIAL").commit();
+
+                        case Material:
+                            newFragment(State.Material, new MaterialFragment());
                             toolbar.setTitle("Globals");
                             break;
-                        case OPTIONS:
-                           fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new OptionsFragment(),
-                                    "OPTIONS").commit();
-                            toolbar.setTitle("Options");
+
+                        case Options:
+                            newFragment(State.Options, new OptionsFragment());
                             break;
 
-
                         default:
-                            fragmentManager.beginTransaction().replace(R.id.mainFrame,
-                                    new WelcomeFragment(),
-                                    "WELCOME").commit();
+                            newFragment(State.Welcome, new WelcomeFragment());
                             toolbar.setTitle(CSD.projectName);
                     }
                 }

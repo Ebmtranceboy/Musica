@@ -1,129 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/live_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <TableRow
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<data>
+    <variable
+        name="user"
+        type="joel.duet.musica.LiveFragment.User"/>
+</data>
+    <LinearLayout
+        android:id="@+id/live_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/instr_label" />
-
-        <Spinner
-            android:id="@+id/select_instr"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/oct_label" />
-
-        <Spinner
-            android:id="@+id/select_oct"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2" />
-
-        <ToggleButton
-            android:id="@+id/loudness"
-            android:layout_width="0dp"
+        <TableRow
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/ic_loudness_off"
-            android:textOff=""
-            android:textOn="" />
+            android:layout_weight="0"
+            android:orientation="horizontal">
 
-        <ToggleButton
-            android:id="@+id/phonic_mode"
-            android:layout_width="0dp"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/instr_label" />
+
+            <Spinner
+                android:id="@+id/select_instr"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/oct_label" />
+
+            <Spinner
+                android:id="@+id/select_oct"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2" />
+
+            <ToggleButton
+                android:id="@+id/loudness"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@{user.loudness_mode ? @drawable/ic_loudness_on : @drawable/ic_loudness_off}"
+                android:textOff=""
+                android:textOn="" />
+
+            <ToggleButton
+                android:id="@+id/phonic_mode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@{user.polyphonic_mode ? @drawable/ic_polyphonic : @drawable/ic_monophonic}"
+                android:textOff=""
+                android:textOn="" />
+
+            <ToggleButton
+                android:id="@+id/solo"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@{user.solo_mode ? @drawable/ic_read_partition : @drawable/ic_play_in_context}"
+                android:textOff=""
+                android:textOn="" />
+
+        </TableRow>
+
+        <SeekBar
+            android:id="@+id/ktrlx"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/ic_polyphonic"
-            android:textOff=""
-            android:textOn="" />
+            android:layout_weight="0" />
 
-        <ToggleButton
-            android:id="@+id/solo"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/ic_read_partition"
-            android:textOff=""
-            android:textOn=""/>
+        <SeekBar
+            android:id="@+id/ktrly"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0" />
 
-    </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:orientation="horizontal">
 
-    <SeekBar
-        android:id="@+id/ktrlx"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0" />
+            <ImageButton
+                android:id="@+id/live_record"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/record_label"
+                android:src="@drawable/ic_menu_live" />
 
-    <SeekBar
-        android:id="@+id/ktrly"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0" />
+            <ImageButton
+                android:id="@+id/live_play"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/play_label"
+                android:src="@drawable/ic_play" />
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/patternize"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/patternize_label"
+                android:src="@drawable/ic_menu_score" />
 
-        <ImageButton
-            android:id="@+id/live_record"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/record_label"
-            android:src="@drawable/ic_menu_live" />
+            <ImageButton
+                android:id="@+id/stop"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/stop_button_label"
+                android:src="@drawable/ic_stop" />
 
-        <ImageButton
-            android:id="@+id/live_play"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/play_label"
-            android:src="@drawable/ic_play" />
+        </TableRow>
 
-        <ImageButton
-            android:id="@+id/patternize"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/patternize_label"
-            android:src="@drawable/ic_menu_score" />
-
-        <ImageButton
-            android:id="@+id/stop"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/stop_button_label"
-            android:src="@drawable/ic_stop" />
-
-    </TableRow>
-
-    <joel.duet.musica.KeyboardView
-        android:id="@+id/Keyboard"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-</LinearLayout>
+        <joel.duet.musica.KeyboardView
+            android:id="@+id/Keyboard"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+</layout>

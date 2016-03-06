@@ -1,6 +1,7 @@
 package joel.duet.musica;
 
 import android.content.Context;
+import android.databinding.ObservableBoolean;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -34,7 +35,12 @@ public final class ScoreView extends View {
     private static final Matrix mMatrix = new Matrix();
     private static final Matrix mInverse = new Matrix();
 
-    public static boolean edit_mode;
+    public static class User{
+        public final ObservableBoolean edit_mode = new ObservableBoolean();
+    }
+
+    public static User user = new User();
+
     public static Tool tool;
     private static int bar_begin = -1;
     private static int bar_end;
@@ -226,7 +232,7 @@ public final class ScoreView extends View {
             for (int p = 1; p <= track.getNbOfPatterns(); p++) {
                 Track.setPatternSelected(p);
                 final Pattern pattern = Track.getPatternSelected();
-                final boolean showFocus = edit_mode
+                final boolean showFocus = user.edit_mode.get()
                         && track == Focus.track
                         && pattern == Focus.pattern
                         && (tool == Tool.NONE || tool == Tool.MOVE || tool == Tool.COPY);
@@ -333,7 +339,7 @@ public final class ScoreView extends View {
                 coords[1] = y;
                 mInverse.mapPoints(coords);
 
-                if (edit_mode && Score.getNbOfTracks() > 0) {
+                if (user.edit_mode.get() && Score.getNbOfTracks() > 0) {
                     Focus.save();
                     insertion_track = closestY(coords[1]);
                     Score.setTrackSelected(insertion_track);
@@ -423,10 +429,10 @@ public final class ScoreView extends View {
                                 fragment.setArguments(bundle);
                                 fragmentManager.beginTransaction().replace(R.id.mainFrame,
                                         fragment,
-                                        "PATTERN").commit();
+                                        "Pattern").commit();
                                 String format = getResources().getString(R.string.pattern_title);
                                 MainActivity.toolbar.setTitle(String.format(format, Score.getIdTrackSelected(), Track.getIdPatternSelected()));
-                                MainActivity.currentFragment = MainActivity.State.PATTERN;
+                                MainActivity.currentFragment = MainActivity.State.Pattern;
                             }
                         }
                     } else {
@@ -487,7 +493,7 @@ public final class ScoreView extends View {
                     final float dx = x - mLastTouchX;
                     final float dy = y - mLastTouchY;
 
-                    if (!edit_mode) {
+                    if (!user.edit_mode.get()) {
                         mPosX += dx / mScaleFactorX;
                         mPosY += dy / mScaleFactorY;
                     } else {

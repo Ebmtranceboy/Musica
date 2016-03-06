@@ -1,9 +1,9 @@
 package joel.duet.musica;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 //import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +17,8 @@ import com.csounds.CsoundObj;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import joel.duet.musica.databinding.ScoreFragmentBinding;
 
 /**
  *
@@ -42,27 +44,20 @@ public final class ScoreFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
-        final View view = inflater.inflate(R.layout.score_fragment, container, false);
-        final ToggleButton mode_button = (ToggleButton)view.findViewById(R.id.mode);
+        ScoreFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.score_fragment, container, false);
+        final ToggleButton mode_button = binding.mode;
 
+        binding.setUser(ScoreView.user);
         mode_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ScoreView.edit_mode = !ScoreView.edit_mode;
+                ScoreView.user.edit_mode.set(!ScoreView.user.edit_mode.get());
                 ScoreView.tool = ScoreView.Tool.NONE;
                 edition_spinner.setSelection(0);
-                if (ScoreView.edit_mode) {
-                    edition_spinner.setVisibility(View.VISIBLE);
-                    mode_button.setTextColor(ContextCompat.getColor(getContext(),R.color.colorAccent));
-                } else{
-                    edition_spinner.setVisibility(View.INVISIBLE);
-                    mode_button.setTextColor(Default.grays[192]);
-                }
-                scoreview.invalidate();
             }
         });
 
-        edition_spinner = (Spinner) view.findViewById(R.id.edition);
+        edition_spinner = binding.edition;
         SimpleImageArrayAdapter edition_adapter = new SimpleImageArrayAdapter(getContext(), Default.edition_icons);
         edition_spinner.setAdapter(edition_adapter);
 
@@ -78,7 +73,7 @@ public final class ScoreFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.new_track).setOnClickListener(new View.OnClickListener() {
+        binding.newTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final int p_id = Track.getIdPatternSelected();
@@ -95,7 +90,7 @@ public final class ScoreFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.extend_score).setOnClickListener(new View.OnClickListener() {
+        binding.extendScore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ScoreView.number_patches++;
@@ -106,7 +101,7 @@ public final class ScoreFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.trim_score).setOnClickListener(new View.OnClickListener() {
+        binding.trimScore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final List<Track> uselessTracks = new LinkedList<>();
@@ -143,17 +138,19 @@ public final class ScoreFragment extends Fragment {
             }
         });
 
-        final Spinner resolution_spinner = (Spinner) view.findViewById(R.id.resolution);
-        SimpleImageArrayAdapter adapter = new SimpleImageArrayAdapter(getContext(), Default.resolution_icons);
+        final Spinner resolution_spinner = binding.resolution;
+        SimpleImageArrayAdapter adapter =
+                new SimpleImageArrayAdapter(getContext(), Default.resolution_icons);
         resolution_spinner.setAdapter(adapter);
         resolution_spinner.setSelection(Score.resolution_index);
 
-        final Spinner bars_spinner = (Spinner) view.findViewById(R.id.bars_spinner);
+        final Spinner bars_spinner = binding.barsSpinner;
 
         resolution_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(Score.resolution_index <i) Score.bar_start *= Score.getResolution() / Default.resolutions[i];
+                if(Score.resolution_index <i)
+                    Score.bar_start *= Score.getResolution() / Default.resolutions[i];
                 else Score.bar_start /= Default.resolutions[i] / Score.getResolution();
 
                 while(ScoreView.number_patches * 16 <  Score.bar_start) ScoreView.number_patches++;
@@ -195,30 +192,29 @@ public final class ScoreFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.play).setOnClickListener(new View.OnClickListener() {
+        binding.play.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                String csd = Score.sendPatterns(Score.allPatterns(), false,
+                                                        bars_spinner.getSelectedItemPosition() * Score.getResolution());
+                                                //Log.i(TAG, csd);
+                                                csoundObj.stop();
+                                                csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
+                                            }
+                                        }
+        );
+
+        binding.stop.setOnClickListener(new View.OnClickListener() {
                                                             @Override
                                                             public void onClick(View view) {
-                                                                String csd = Score.sendPatterns(Score.allPatterns(),false,
-                                                                        bars_spinner.getSelectedItemPosition() * Score.getResolution());
-                                                                //Log.i(TAG, csd);
                                                                 csoundObj.stop();
-                                                                csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
                                                             }
                                                         }
         );
 
-        view.findViewById(R.id.stop).setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View view) {
-                                                                csoundObj.stop();
-                                                            }
-                                                        }
-        );
+        scoreview = binding.scoreView;
 
-        scoreview = (ScoreView) view.findViewById(R.id.score_view);
-
-        ScoreView.edit_mode = false;
-        edition_spinner.setVisibility(View.INVISIBLE);
-        return view;
+        ScoreView.user.edit_mode.set(false);
+        return binding.getRoot();
     }
 }

@@ -1,6 +1,8 @@
 package joel.duet.musica;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 //import android.util.Log;
@@ -23,6 +25,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import joel.duet.musica.databinding.LiveFragmentBinding;
+
 /**
  *
  * Created by joel on 12/01/16 at 23:16 at 11:00 at 12:39 at 13:22.
@@ -36,9 +40,6 @@ public final class LiveFragment extends Fragment {
     private final int[] touchIds = new int[10];
     private final float[] touchX = new float[10];
     private final float[] touchY = new float[10];
-    static private boolean loudness_mode;
-    static private boolean polyphonic_mode;
-    static private boolean solo_mode;
     private static SeekBar ktrlx, ktrly;
     private static String lastPch = "3.00";
 
@@ -57,64 +58,70 @@ public final class LiveFragment extends Fragment {
         csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
     }
 
+    public static class User{
+        public final ObservableBoolean loudness_mode = new ObservableBoolean();
+        public final ObservableBoolean polyphonic_mode = new ObservableBoolean();
+        public final ObservableBoolean solo_mode = new ObservableBoolean();
+    }
+
+    static User user = new User();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
 
-        View view = inflater.inflate(R.layout.live_fragment, container, false);
+        LiveFragmentBinding binding =
+                DataBindingUtil.inflate(inflater, R.layout.live_fragment, container, false);
         for (int i = 0; i < touchIds.length; i++) {
             touchIds[i] = -1;
             touchX[i] = -1;
             touchY[i] = -1;
         }
+
+        binding.setUser(user);
+
         // populate oct spinner
-        final Spinner select_oct = (Spinner) view.findViewById(R.id.select_oct);
+        final Spinner select_oct = binding.selectOct;
         ArrayAdapter<CharSequence> oct_adapter = ArrayAdapter.createFromResource(activity, R.array.oct_array, android.R.layout.simple_spinner_item);
         oct_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         select_oct.setAdapter(oct_adapter);
         select_oct.setSelection(7);
 
         // populate instr spinner
-        final Spinner select_instr = (Spinner) view.findViewById(R.id.select_instr);
+        final Spinner select_instr = binding.selectInstr;
         ArrayAdapter<CharSequence> instr_adapter = new ArrayAdapter<>(activity.getBaseContext(), android.R.layout.simple_spinner_item, CSD.mapInstr.keySet().toArray(new CharSequence[CSD.getNbInstruments()]));
         select_instr.setAdapter(instr_adapter);
 
-        final ToggleButton loudnessButton = (ToggleButton) view.findViewById(R.id.loudness);
+        final ToggleButton loudnessButton = binding.loudness;
         loudnessButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                loudness_mode = isChecked;
-                if (isChecked)
-                    loudnessButton.setBackgroundResource(R.drawable.ic_loudness_on);
-                else loudnessButton.setBackgroundResource(R.drawable.ic_loudness_off);
+                user.loudness_mode.set(isChecked);
             }
         });
 
-        final ToggleButton phonicModeButton = (ToggleButton) view.findViewById(R.id.phonic_mode);
+        final ToggleButton phonicModeButton = binding.phonicMode;
         phonicModeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                polyphonic_mode = isChecked;
-                if (isChecked)
-                    phonicModeButton.setBackgroundResource(R.drawable.ic_polyphonic);
-                else phonicModeButton.setBackgroundResource(R.drawable.ic_monophonic);
+                user.polyphonic_mode.set(isChecked);
             }
         });
 
-        final ToggleButton soloModeButton = (ToggleButton) view.findViewById(R.id.solo);
+        final ToggleButton soloModeButton = binding.solo;
         soloModeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                solo_mode = isChecked;
+                user.solo_mode.set(isChecked);
                 if (isChecked)
                     soloModeButton.setBackgroundResource(R.drawable.ic_read_partition);
                 else soloModeButton.setBackgroundResource(R.drawable.ic_play_in_context);
             }
         });
 
-        ktrlx = (SeekBar) view.findViewById(R.id.ktrlx);
-        ktrly = (SeekBar) view.findViewById(R.id.ktrly);
+        ktrlx = binding.ktrlx;
+        ktrly = binding.ktrly;
         ktrlBindings();
 
-        final ImageButton recordButton = (ImageButton) view.findViewById(R.id.live_record);
-        ImageButton playButton = (ImageButton) view.findViewById(R.id.live_play);
-        ImageButton patternizeButton = (ImageButton) view.findViewById(R.id.patternize);
+        final ImageButton recordButton = binding.liveRecord;
+        ImageButton playButton = binding.livePlay;
+        ImageButton patternizeButton = binding.patternize;
 
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,8 +130,10 @@ public final class LiveFragment extends Fragment {
 
                 csoundObj.stop();
                 ktrlBindings();
-                String csd = solo_mode ? CSD.recordPart((String) select_instr.getSelectedItem()) :
-                        Score.sendPatternsForRecord((String) select_instr.getSelectedItem(), Score.allPatterns());
+                String csd =
+                        user.solo_mode.get() ? CSD.recordPart((String) select_instr.getSelectedItem()) :
+                        Score.sendPatternsForRecord((String) select_instr.getSelectedItem(),
+                                Score.allPatterns());
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
             }
         });
@@ -134,12 +143,17 @@ public final class LiveFragment extends Fragment {
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_menu_live);
 
-
                 csoundObj.stop();
                 ktrlBindings();
-                String csd = solo_mode ? CSD.part() : Score.sendPatterns(Score.allPatterns(), false, 0);
+                String csd =
+                        user.solo_mode.get() ? CSD.part() :
+                                Score.sendPatterns(Score.allPatterns(), false, 0);
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
-                csoundObj.sendScore(activity.csoundUtil.getExternalFileAsString(Default.score_events_absoluteFilePath).replaceAll("i +\\w+ +", "i\"" + select_instr.getSelectedItem() + "\" "));
+                csoundObj.sendScore(
+                        activity.csoundUtil.getExternalFileAsString(
+                                Default.score_events_absoluteFilePath).
+                                replaceAll("i +\\w+ +",
+                                        "i\"" + select_instr.getSelectedItem() + "\" "));
             }
         });
 
@@ -148,11 +162,12 @@ public final class LiveFragment extends Fragment {
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_menu_live);
 
-                activity.csoundUtil.patternize((String) select_instr.getSelectedItem(), solo_mode);
+                activity.csoundUtil.patternize((String) select_instr.getSelectedItem(),
+                        user.solo_mode.get());
             }
         });
 
-        view.findViewById(R.id.stop).setOnClickListener(new View.OnClickListener() {
+        binding.stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 recordButton.setImageResource(R.drawable.ic_menu_live);
@@ -175,7 +190,7 @@ public final class LiveFragment extends Fragment {
         });
         // define keyboard
 
-        keyboard = (KeyboardView) view.findViewById(R.id.Keyboard);
+        keyboard = binding.Keyboard;
         keyboard.draw(-1, -1, false);
         keyboard.show();
 
@@ -202,12 +217,17 @@ public final class LiveFragment extends Fragment {
                                     key = keyboard.draw(touchX[id], touchY[id], true);
                                     //Log.i(TAG, "key=" + key);
 
-                                    if (!polyphonic_mode)csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id + 1));
-                                    String pch = select_oct.getSelectedItem() + "." + (key < 10 ? "0" : "") + key;
+                                    if (!user.polyphonic_mode.get())
+                                        csoundObj.sendScore("i\"Silencer\" 0 0 \""
+                                                + select_instr.getSelectedItem() + "\" " + (id + 1));
+                                    String pch =
+                                            select_oct.getSelectedItem() + "."
+                                                    + (key < 10 ? "0" : "") + key;
                                     csoundObj.sendScore("i\"Voicer\" 0 0 \""
                                             + select_instr.getSelectedItem() + "\" " + (id + 1) + " "
                                             + pch + " "
-                                            + (loudness_mode ? CSD.pressure2dB(event.getPressure()) : CSD.defaultLoudness2dB()) + " "
+                                            + (user.loudness_mode.get() ? CSD.pressure2dB(event.getPressure()) :
+                                                CSD.defaultLoudness2dB()) + " "
                                             + lastPch);
                                     lastPch = pch;
                                 }
@@ -226,8 +246,9 @@ public final class LiveFragment extends Fragment {
                         if (id != -1) {
                             touchIds[id] = -1;
 
-                            if (polyphonic_mode)
-                                csoundObj.sendScore("i\"Silencer\" 0 0 \"" + select_instr.getSelectedItem() + "\" " + (id + 1));
+                            if (user.polyphonic_mode.get())
+                                csoundObj.sendScore("i\"Silencer\" 0 0 \""
+                                        + select_instr.getSelectedItem() + "\" " + (id + 1));
 
                             keyboard.draw(touchX[id], touchY[id], false);
                             keyboard.show();
@@ -239,11 +260,11 @@ public final class LiveFragment extends Fragment {
             }
         });
 
-        loudness_mode = false;
-        polyphonic_mode = true;
-        solo_mode = true;
+        user.loudness_mode.set(false);
+        user.polyphonic_mode.set(true);
+        user.solo_mode.set(true);
 
-        return view;
+        return binding.getRoot();
     }
 
     private int getTouchIdAssignment() {

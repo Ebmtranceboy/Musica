@@ -1,9 +1,9 @@
 package joel.duet.musica;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +12,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
 import com.csounds.CsoundObj;
 
 import java.util.LinkedList;
+
+import joel.duet.musica.databinding.PatternFragmentBinding;
 
 /**
  *
@@ -41,32 +42,23 @@ public final class PatternFragment extends FragmentPlus {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
-        final View view = inflater.inflate(R.layout.pattern_fragment, container, false);
-        final ImageButton arpeggio_button = (ImageButton) view.findViewById(R.id.arpeggio);
-        final ToggleButton mode_button = (ToggleButton)view.findViewById(R.id.mode);
+        PatternFragmentBinding binding =
+                DataBindingUtil.inflate(inflater, R.layout.pattern_fragment, container, false);
+        final ImageButton arpeggio_button = binding.arpeggio;
+        final ToggleButton mode_button = binding.mode;
 
+        binding.setUser(PatternView.user);
         mode_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PatternView.edit_mode = !PatternView.edit_mode;
-                if (PatternView.edit_mode) {
-                    arpeggio_button.setVisibility(View.VISIBLE);
-                    mode_button.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-
-                } else {
-                    arpeggio_button.setVisibility(View.INVISIBLE);
-                     mode_button.setTextColor(Default.grays[192]);
-                }
-
+                PatternView.user.edit_mode.set(!PatternView.user.edit_mode.get());
             }
         });
 
-        final ToggleButton loudnessButton = (ToggleButton) view.findViewById(R.id.loudness);
+        final ToggleButton loudnessButton = binding.loudness;
                 loudnessButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        PatternView.loudness_mode = isChecked;
-                        if (isChecked) loudnessButton.setBackgroundResource(R.drawable.ic_loudness_on);
-                        else loudnessButton.setBackgroundResource(R.drawable.ic_loudness_off);
+                        PatternView.user.loudness_mode.set(isChecked);
                     }
                 });
 
@@ -76,13 +68,14 @@ public final class PatternFragment extends FragmentPlus {
                 new ArrayAdapter<>(getContext(),
                         android.R.layout.simple_spinner_item,
                         instrumentIds);
-        final Spinner instrument_spinner = (Spinner)view.findViewById(R.id.instrument);
+        final Spinner instrument_spinner = binding.instrument;
         instrument_spinner.setAdapter(instruments_adapter);
         instrument_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        patternview.pattern.setInstr(CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()])[i]);
+                        patternview.pattern.setInstr(CSD.mapInstr.keySet().toArray(
+                                new String[CSD.getNbInstruments()])[i]);
                     }
 
                     @Override
@@ -102,7 +95,7 @@ public final class PatternFragment extends FragmentPlus {
             }
         });
 
-        view.findViewById(R.id.recenter).setOnClickListener(new View.OnClickListener() {
+        binding.recenter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 patternview.pattern.mPosX = 0;
@@ -111,8 +104,9 @@ public final class PatternFragment extends FragmentPlus {
             }
         });
 
-        final Spinner resolution_spinner = (Spinner) view.findViewById(R.id.resolution);
-        SimpleImageArrayAdapter adapter = new SimpleImageArrayAdapter(getContext(),Default.resolution_icons);
+        final Spinner resolution_spinner = binding.resolution;
+        SimpleImageArrayAdapter adapter =
+                new SimpleImageArrayAdapter(getContext(),Default.resolution_icons);
         resolution_spinner.setAdapter(adapter);
 
         resolution_spinner.setSelection(getArguments().getInt("resolution_index"));
@@ -130,7 +124,7 @@ public final class PatternFragment extends FragmentPlus {
             }
         });
 
-        view.findViewById(R.id.preview).setOnClickListener(new View.OnClickListener() {
+        binding.preview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String csd = Score.sendPatterns(patternview.pattern.singleton(), false,
@@ -142,7 +136,7 @@ public final class PatternFragment extends FragmentPlus {
             }
         });
 
-        view.findViewById(R.id.in_context).setOnClickListener(new View.OnClickListener() {
+        binding.inContext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String csd = Score.sendPatterns(Score.allPatterns(), false,
@@ -153,17 +147,17 @@ public final class PatternFragment extends FragmentPlus {
             }
         });
 
-        view.findViewById(R.id.stop).setOnClickListener(new View.OnClickListener() {
+        binding.stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 csoundObj.stop();
             }
         });
 
-        patternview = (PatternView) view.findViewById(R.id.pattern_view);
-        PatternView.note_loudness = (ImageView) view.findViewById(R.id.note_loudness);
+        patternview = binding.patternView;
+        PatternView.note_loudness = binding.noteLoudness;
 
-        PatternView.edit_mode = mode_button.isChecked();
+        PatternView.user.edit_mode.set(mode_button.isChecked());
 
         int instr_selected = 0;
         String names[] = CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()]);
@@ -172,7 +166,7 @@ public final class PatternFragment extends FragmentPlus {
             instr_selected ++;
         instrument_spinner.setSelection(instr_selected);
 
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -188,8 +182,13 @@ public final class PatternFragment extends FragmentPlus {
             while(roomLeft){
                 for(int i=0; i<n; i++) {
                     Pattern.Note note = patternview.pattern.getNote(i);
-                    if (mark + note.onset + note.duration < patternview.pattern.finish - patternview.pattern.start)
-                        patternview.pattern.createNote(mark + note.onset, note.duration, note.pitch, note.loudness);
+                    if (mark + note.onset + note.duration <
+                            patternview.pattern.finish - patternview.pattern.start)
+                        patternview.pattern.createNote(
+                                mark + note.onset,
+                                note.duration,
+                                note.pitch,
+                                note.loudness);
                     else roomLeft = false;
                 }
                 if(roomLeft) mark += period;
