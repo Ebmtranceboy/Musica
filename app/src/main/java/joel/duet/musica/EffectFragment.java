@@ -42,7 +42,7 @@ public final class EffectFragment extends Fragment {
 
         binding.effectName.setText(String.format(getResources().getString(R.string.effect_title),
                 effectName));
-        binding.effectCode.setText(CSD.mapFX.get(effectName).code);
+        binding.effectCode.setText(CSD.effects.get(effectName).code);
 
         binding.deleteEffect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +54,7 @@ public final class EffectFragment extends Fragment {
                     @Override
                     public void run() {
                         Matrix.getInstance().spy();
-                        CSD.mapFX.remove(effectName);
+                        CSD.effects.remove(effectName);
                         Matrix.getInstance().update();
 
                         fragmentManager.beginTransaction().replace(R.id.mainFrame,
@@ -88,7 +88,7 @@ public final class EffectFragment extends Fragment {
                                 effect_file = new File(chosenDir);
                                 activity.csoundUtil.saveStringAsExternalFile(
                                         "opcode " + effectName + ", aa, aa\n"
-                                                + CSD.mapFX.get(effectName).code
+                                                + CSD.effects.get(effectName).code
                                                 + "endop", effect_file.getAbsolutePath());
                             }
                         }
@@ -107,9 +107,9 @@ public final class EffectFragment extends Fragment {
     }
 
     private void updateModel(){
-        CSD.Content content = CSD.mapFX.get(effectName);
+        CSD.Content content = CSD.effects.get(effectName);
         if(content != null && binding != null)
-            CSD.mapFX.put(effectName,
+            CSD.effects.put(effectName,
                     new CSD.Content(binding.effectCode.getText().toString(),
                             content.gainL,
                             content.gainR));

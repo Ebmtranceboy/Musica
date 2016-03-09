@@ -50,7 +50,7 @@ public final class FXFragment extends FragmentPlus {
 
         final ListView listEffectView = binding.listEffect;
         listEffect = new ArrayList<>();
-        listEffect.addAll(CSD.mapFX.keySet());
+        listEffect.addAll(CSD.effects.getSet());
         effect_adapter = new ArrayAdapter<>(activity.getBaseContext(), android.R.layout.simple_spinner_item, listEffect);
         listEffectView.setAdapter(effect_adapter);
 
@@ -148,7 +148,7 @@ public final class FXFragment extends FragmentPlus {
         effectName = effect.name;
         if(effectName != null) {
             Matrix.getInstance().spy();
-            CSD.mapFX.put(effectName, new CSD.Content(effect.body, 1.0, 1.0));
+            CSD.effects.put(effectName, new CSD.Content(effect.body, 1.0, 1.0));
             Matrix.getInstance().update();
             listEffect.add(effectName);
             effect_adapter.notifyDataSetChanged();
@@ -160,7 +160,7 @@ public final class FXFragment extends FragmentPlus {
     public void onFinishEditDialog(String inputText) {
         effectName = inputText;
         Matrix.getInstance().spy();
-        CSD.mapFX.put(effectName, new CSD.Content("ain1, ain2 xin\n"
+        CSD.effects.put(effectName, new CSD.Content("ain1, ain2 xin\n"
                 + "\nxout ain1, ain2\n",1.0,1.0));
         Matrix.getInstance().update();
         listEffect.add(effectName);

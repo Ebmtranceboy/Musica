@@ -42,7 +42,7 @@ public final class InstrumentFragment extends Fragment {
 
         binding.instrumentName.setText(String.format(getResources().getString(R.string.instr_title)
             , instrumentName));
-        binding.instrumentCode.setText(CSD.mapInstr.get(instrumentName).code);
+        binding.instrumentCode.setText(CSD.instruments.get(instrumentName).code);
 
         binding.deleteInstr.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +54,7 @@ public final class InstrumentFragment extends Fragment {
                     @Override
                     public void run() {
                         Matrix.getInstance().spy();
-                        CSD.mapInstr.remove(instrumentName);
+                        CSD.instruments.remove(instrumentName);
                         Matrix.getInstance().update();
 
                         fragmentManager.beginTransaction().replace(R.id.mainFrame,
@@ -88,7 +88,7 @@ public final class InstrumentFragment extends Fragment {
                                 instr_file = new File(chosenDir);
                                 activity.csoundUtil.saveStringAsExternalFile(
                                         "instr " + instrumentName + "\n"
-                                                + CSD.mapInstr.get(instrumentName).code
+                                                + CSD.instruments.get(instrumentName).code
                                                 + "endin",
                                         instr_file.getAbsolutePath());
                             }
@@ -108,9 +108,9 @@ public final class InstrumentFragment extends Fragment {
     }
 
     private void updateModel() {
-        CSD.Content content = CSD.mapInstr.get(instrumentName);
+        CSD.Content content = CSD.instruments.get(instrumentName);
         if (content != null && binding != null)
-            CSD.mapInstr.put(instrumentName,
+            CSD.instruments.put(instrumentName,
                     new CSD.Content(binding.instrumentCode.getText().toString(),
                             content.gainL,
                             content.gainR));

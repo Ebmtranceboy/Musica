@@ -519,13 +519,13 @@ public final class ScoreView extends View {
                     final int finish = (bar_end + 1) * Score.getResolution();
 
                     if (nonOverlapping(track, start, finish)) {
-                        if (CSD.getNbInstruments() > 0) {
+                        if (CSD.instruments.size() > 0) {
                             track.createPattern();
                             Track.setPatternSelected(track.getNbOfPatterns());
                             final Pattern pattern = Track.getPatternSelected();
                             pattern.start = start;
                             pattern.finish = finish;
-                            pattern.setInstr(CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()])[0]);
+                            pattern.setInstr(CSD.instruments.getArray()[0]);
                             pattern.mPosY = Default.initial_pattern_height;
                         } else {
                             final Toast toast = Toast.makeText(context,

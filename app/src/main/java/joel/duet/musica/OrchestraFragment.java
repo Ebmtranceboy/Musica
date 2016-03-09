@@ -48,7 +48,7 @@ public final class OrchestraFragment extends FragmentPlus {
 
         final ListView listInstrView = binding.listInstrView;
         listInstr = new ArrayList<>();
-        listInstr.addAll(CSD.mapInstr.keySet());
+        listInstr.addAll(CSD.instruments.getSet());
         instr_adapter = new ArrayAdapter<>(activity.getBaseContext(),
                 android.R.layout.simple_spinner_item, listInstr);
         listInstrView.setAdapter(instr_adapter);
@@ -144,7 +144,7 @@ public final class OrchestraFragment extends FragmentPlus {
         instrName = instr.name;
         if (instrName != null) {
             Matrix.getInstance().spy();
-            CSD.mapInstr.put(instrName, new CSD.Content(instr.body, 1.0, 1.0));
+            CSD.instruments.put(instrName, new CSD.Content(instr.body, 1.0, 1.0));
             Matrix.getInstance().update();
             listInstr.add(instrName);
             instr_adapter.notifyDataSetChanged();
@@ -156,7 +156,7 @@ public final class OrchestraFragment extends FragmentPlus {
     public void onFinishEditDialog(String inputText) {
         instrName = inputText;
         Matrix.getInstance().spy();
-        CSD.mapInstr.put(instrName,
+        CSD.instruments.put(instrName,
                 new CSD.Content("\nga_" + instrName + "_L += 0"
                         + "\nga_" + instrName + "_R += 0\n", 1.0, 1.0));
         Matrix.getInstance().update();

@@ -200,7 +200,7 @@ public final class MainActivity extends AppCompatActivity
             newFragment(State.Master, new MasterFragment());
 
         } else if (id == R.id.nav_live) {
-            if (CSD.getNbInstruments() > 0) {
+            if (CSD.instruments.size() > 0) {
                 csoundObj.stop();
                 newFragment(State.Live, new LiveFragment());
             } else {

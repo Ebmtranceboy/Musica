@@ -88,7 +88,8 @@ public final class LiveFragment extends Fragment {
 
         // populate instr spinner
         final Spinner select_instr = binding.selectInstr;
-        ArrayAdapter<CharSequence> instr_adapter = new ArrayAdapter<>(activity.getBaseContext(), android.R.layout.simple_spinner_item, CSD.mapInstr.keySet().toArray(new CharSequence[CSD.getNbInstruments()]));
+        ArrayAdapter<String> instr_adapter =
+                new ArrayAdapter<>(activity.getBaseContext(), android.R.layout.simple_spinner_item, CSD.instruments.getArray());
         select_instr.setAdapter(instr_adapter);
 
         final ToggleButton loudnessButton = binding.loudness;

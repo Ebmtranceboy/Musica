@@ -37,8 +37,8 @@ public final class Matrix {
     }
 
     public void spy(){
-        String instruments[] = CSD.mapInstr.keySet().toArray(new String[ninstr]);
-        String effects[] =  CSD.mapFX.keySet().toArray(new String[nfx]);
+        String instruments[] = CSD.instruments.getArray();
+        String effects[] =  CSD.effects.getArray();
         for(int i=0; i< ninstr+nfx; i++)
             for(int j=1; j<=nfx+1; j++)
                 if(get(i,j))
@@ -63,8 +63,8 @@ public final class Matrix {
 
     public void update(){
         reset();
-        String instruments[] = CSD.mapInstr.keySet().toArray(new String[ninstr]);
-        String effects[] =  CSD.mapFX.keySet().toArray(new String[nfx]);
+        String instruments[] = CSD.instruments.getArray();
+        String effects[] = CSD.effects.getArray();
         for(int i=0; i< ninstr; i++) {
             for (int j = 1; j <= nfx; j++)
                 if (edges.containsKey(instruments[i]) && edges.get(instruments[i]).contains(effects[j-1]))
@@ -81,8 +81,8 @@ public final class Matrix {
     }
 
     private void reset() {
-        ninstr = CSD.getNbInstruments();
-        nfx = CSD.getNbEffects();
+        ninstr = CSD.instruments.size();
+        nfx = CSD.effects.size();
         mLinks = new boolean[(ninstr + nfx + 1) * (nfx + 2)];
         cells = new String[(ninstr + nfx + 1) * (nfx + 2)];
 
@@ -103,8 +103,8 @@ public final class Matrix {
     }
 
     private void show(int i, int j) {
-        String instruments[] = CSD.mapInstr.keySet().toArray(new String[ninstr]);
-        String effects[] =  CSD.mapFX.keySet().toArray(new String[nfx]);
+        String instruments[] = CSD.instruments.getArray();
+        String effects[] =  CSD.effects.getArray();
         if (i == ninstr + nfx && j == 0) {
             cells[i * (nfx + 2) + j] = "";
             return;

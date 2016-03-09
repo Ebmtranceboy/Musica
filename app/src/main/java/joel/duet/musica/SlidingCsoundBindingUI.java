@@ -57,8 +57,8 @@ final class SlidingCsoundBindingUI extends CsoundSliderBinding {
 
                     if (isInstr) {
                         if (formatId == R.string.master_line_L_format)
-                            CSD.mapInstr.get(componentName).gainL = val;
-                        else CSD.mapInstr.get(componentName).gainR = val;
+                            CSD.instruments.get(componentName).gainL = val;
+                        else CSD.instruments.get(componentName).gainR = val;
                     } else {
                         if (componentName.equals("Master")) {
                             if (formatId == R.string.master_line_L_format)
@@ -66,8 +66,8 @@ final class SlidingCsoundBindingUI extends CsoundSliderBinding {
                             else CSD.master_gain_R = val;
                         } else {
                             if (formatId == R.string.master_line_L_format)
-                                CSD.mapFX.get(componentName).gainL = val;
-                            else CSD.mapFX.get(componentName).gainR = val;
+                                CSD.effects.get(componentName).gainL = val;
+                            else CSD.effects.get(componentName).gainR = val;
                         }
                     }
 				}

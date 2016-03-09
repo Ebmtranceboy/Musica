@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -50,18 +51,49 @@ final class CSD {
         Content(String c, double gl, double gr) {code = c; gainL = gl; gainR = gr;}
     }
 
-    static final Map<String, Content> mapFX = new LinkedHashMap<>(); //new HashMap<>();
+    static class Corpus{
+        private final Map<String, Content> map = new LinkedHashMap<>(); //new HashMap<>();
+        private boolean dirty = true;
+        private String[] array;
 
-    static int getNbEffects() {
-        return mapFX.keySet().size();
+        public Set<String> getSet(){return map.keySet();}
+        public String[] getArray() {
+            if(dirty) {
+                array = map.keySet().toArray(new String[map.size()]);
+                dirty = false;
+            }
+            return array;
+        }
+        public void put(String name, Content content){
+            map.put(name,content);
+            dirty = true;
+        }
+        public Content get(String name){
+            return map.get(name);
+        }
+        public void clear(){
+            map.clear();
+            dirty = true;
+        }
+        public void remove(String name){
+            map.remove(name);
+            dirty = true;
+        }
+        public int size(){
+            return map.size();
+        }
     }
 
+    public static final Corpus effects = new Corpus();
+    public static final Corpus instruments = new Corpus();
+
+    /*
     static final Map<String, Content> mapInstr = new LinkedHashMap<>();//new HashMap<>();
 
     static int getNbInstruments() {
         return mapInstr.keySet().size();
     }
-
+*/
     private static class Snippet {
         final String name;
         int narg;
@@ -69,8 +101,8 @@ final class CSD {
         final String last;
 
         private Snippet(int i, int j, boolean flattenControls) {
-            if (j <= getNbEffects()) {
-                name = mapFX.keySet().toArray(new String[getNbInstruments()])[j - 1];
+            if (j <= effects.size()) {
+                name = effects.getArray()[j - 1];
                 last = "a_" + name + "_L, a_" + name + "_R " + name
                         + " ain_" + name + "_L, ain_" + name + "_R";
             } else {
@@ -86,12 +118,12 @@ final class CSD {
             accL = "ain_" + name + "_L sum ";
             accR = "ain_" + name + "_R sum ";
             String in;
-            if (i < getNbInstruments()) {
-                in = mapInstr.keySet().toArray(new String[getNbInstruments()])[i];
+            if (i < instruments.size()) {
+                in = instruments.getArray()[i];
                 accL += "k_" + in + "_L * ga_" + in + "_L";
                 accR += "k_" + in + "_R * ga_" + in + "_R";
             } else {
-                in = mapFX.keySet().toArray(new String[getNbEffects()])[i - getNbInstruments()];
+                in = effects.getArray()[i - instruments.size()];
                 accL += "k_" + in + "_L * a_" + in + "_L";
                 accR += "k_" + in + "_R * a_" + in + "_R";
             }
@@ -101,12 +133,12 @@ final class CSD {
     private static void update(int i, int j, boolean flattenControls) {
         if (snippets[j] != null) {
             String in;
-            if (i < getNbInstruments()) {
-                in = mapInstr.keySet().toArray(new String[getNbInstruments()])[i];
+            if (i < instruments.size()) {
+                in = instruments.getArray()[i];
                 snippets[j].accL += ", k_" + in + "_L * ga_" + in + "_L";
                 snippets[j].accR += ", k_" + in + "_R * ga_" + in + "_R";
             } else {
-                in = mapFX.keySet().toArray(new String[getNbEffects()])[i - getNbInstruments()];
+                in = effects.getArray()[i - instruments.size()];
                 snippets[j].accL += ", k_" + in + "_L * a_" + in + "_L";
                 snippets[j].accR += ", k_" + in + "_R * a_" + in + "_R";
             }
@@ -122,17 +154,17 @@ final class CSD {
         String master = "";
         String ktrl_L = "", ktrl_R = "";
         String in;
-        snippets = new Snippet[getNbEffects() + 2];
-        for(int i=0; i<getNbInstruments()+getNbEffects();i++) {
-            if(i<getNbInstruments()) {
-                in = mapInstr.keySet().toArray(new String[getNbInstruments()])[i];
-                ktrl_L += "\nk_" + in + "_L init " + mapInstr.get(in).gainL;
-                ktrl_R += "\nk_" + in + "_R init " + mapInstr.get(in).gainR;
+        snippets = new Snippet[effects.size() + 2];
+        for(int i=0; i<instruments.size()+effects.size();i++) {
+            if(i<instruments.size()) {
+                in = instruments.getArray()[i];
+                ktrl_L += "\nk_" + in + "_L init " + instruments.get(in).gainL;
+                ktrl_R += "\nk_" + in + "_R init " + instruments.get(in).gainR;
             }
             else{
-                in = mapFX.keySet().toArray(new String[getNbEffects()])[i - getNbInstruments()];
-                ktrl_L += "\nk_" + in + "_L init " + mapFX.get(in).gainL;
-                ktrl_R += "\nk_" + in + "_R init " + mapFX.get(in).gainR;
+                in =effects.getArray()[i - instruments.size()];
+                ktrl_L += "\nk_" + in + "_L init " + effects.get(in).gainL;
+                ktrl_R += "\nk_" + in + "_R init " + effects.get(in).gainR;
             }
 
             if(!flattenControls) {
@@ -140,7 +172,7 @@ final class CSD {
                 ktrl_R += "\nk_" + in + "_R chnget \"ktrl_" + in + "_R\"";
             }
 
-            for (int j = 1; j <= getNbEffects() + 1; j++) {
+            for (int j = 1; j <= effects.size() + 1; j++) {
                 if (Matrix.get(i, j)) {
                     update(i, j, flattenControls);
                     if (snippets[j].narg == 0) {
@@ -242,41 +274,41 @@ final class CSD {
     static String part() {
         String inits = "";
         String udos = "";
-        for(String udo : mapFX.keySet()){
-            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo).code + "\nendop";
+        for(String udo : effects.getSet()){
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + effects.get(udo).code + "\nendop";
         }
 
         resets = "";
-        String instruments = "";
-        for (String instr : mapInstr.keySet()) {
+        String orchestra = "";
+        for (String instr : instruments.getSet()) {
             inits += "\nga_" + instr + "_L init 0";
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-            instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr).code + "\nendin";
+            orchestra += "\n\ninstr " + instr + "\n" + instruments.get(instr).code + "\nendin";
         }
         //Log.i(TAG, "in :" + instruments);
-        return header + globals + inits + udos + instruments + Master(false) + Voicer + Silencer
+        return header + globals + inits + udos + orchestra + Master(false) + Voicer + Silencer
                 + initScore + endScore;
     }
 
     static String song(List<Pattern> score, int dur,boolean flattenControls) {
         String udos = "";
         String inits = "";
-        for(String udo : mapFX.keySet()){
-            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo).code + "\nendop";
+        for(String udo : effects.getSet()){
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + effects.get(udo).code + "\nendop";
         }
 
         resets = "";
-        String instruments = "";
-        for (String instr : mapInstr.keySet()) {
+        String orchestra = "";
+        for (String instr : instruments.getSet()) {
             inits += "\nga_" + instr + "_L init 0";
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-            instruments += "\n\ninstr " + instr + "\n" + mapInstr.get(instr).code + "\nendin";
+            orchestra += "\n\ninstr " + instr + "\n" + instruments.get(instr).code + "\nendin";
         }
-        return header + globals + inits + udos + instruments + Master(flattenControls) + Voicer
+        return header + globals + inits + udos + orchestra + Master(flattenControls) + Voicer
                 + Metro() + InstrLoops(score,dur) + Silencer
                 + initScore + ScoreMetro + ScoreLoops(score) + endScore;
     }
@@ -284,45 +316,45 @@ final class CSD {
     static String recordPart(String instrName) {
         String udos="";
         String inits = "";
-        for(String udo : mapFX.keySet()){
-            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo).code + "\nendop";
+        for(String udo : effects.getSet()){
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + effects.get(udo).code + "\nendop";
         }
 
         resets = "";
-        String instruments = "";
-        for (String instr : mapInstr.keySet()) {
+        String orchestra = "";
+        for (String instr : instruments.getSet()) {
             inits += "\nga_" + instr + "_L init 0";
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-           instruments += "\n\ninstr " + instr
+            orchestra += "\n\ninstr " + instr
                    + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "")
-                   + "\n" + mapInstr.get(instr).code + "\nendin";
+                   + "\n" + instruments.get(instr).code + "\nendin";
         }
         return header + globals + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0"
-                + inits + udos + instruments + Master(false) + Voicer + Silencer + initScore + endScore;
+                + inits + udos + orchestra + Master(false) + Voicer + Silencer + initScore + endScore;
     }
 
      static String recordSong(String instrName,List<Pattern> score, int dur) {
         String udos = "";
         String inits = "";
-        for(String udo : mapFX.keySet()){
-            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + mapFX.get(udo).code + "\nendop";
+        for(String udo : effects.getSet()){
+            udos += "\n\nopcode " + udo + ", aa, aa" + "\n" + effects.get(udo).code + "\nendop";
         }
 
         resets = "";
-        String instruments = "";
-        for (String instr : mapInstr.keySet()) {
+        String orchestra = "";
+        for (String instr : instruments.getSet()) {
             inits += "\nga_" + instr + "_L init 0";
             inits += "\nga_" + instr + "_R init 0";
             resets += "\nga_" + instr + "_L = 0";
             resets += "\nga_" + instr + "_R = 0";
-            instruments += "\n\ninstr " + instr
+            orchestra += "\n\ninstr " + instr
                     + (instr.contentEquals(instrName) ? "\nfoutir gihand,0, 1, p4, p5, p6" : "")
-                    +"\n" + mapInstr.get(instr).code + "\nendin";
+                    +"\n" + instruments.get(instr).code + "\nendin";
         }
         return header + globals + "\ngihand fiopen \"" + Default.score_events_absoluteFilePath + "\", 0"
-                + inits + udos + instruments + Master(false) + Voicer
+                + inits + udos + orchestra + Master(false) + Voicer
                 + Metro() + InstrLoops(score,dur) + Silencer
                 + initScore + ScoreMetro + ScoreLoops(score) + endScore;
     }

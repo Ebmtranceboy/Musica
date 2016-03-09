@@ -62,7 +62,7 @@ public final class PatternFragment extends FragmentPlus {
                     }
                 });
 
-        for(String instr:CSD.mapInstr.keySet()) instrumentIds.add(instr);
+        for(String instr:CSD.instruments.getSet()) instrumentIds.add(instr);
 
         final ArrayAdapter<String> instruments_adapter =
                 new ArrayAdapter<>(getContext(),
@@ -74,8 +74,7 @@ public final class PatternFragment extends FragmentPlus {
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        patternview.pattern.setInstr(CSD.mapInstr.keySet().toArray(
-                                new String[CSD.getNbInstruments()])[i]);
+                        patternview.pattern.setInstr(CSD.instruments.getArray()[i]);
                     }
 
                     @Override
@@ -160,9 +159,9 @@ public final class PatternFragment extends FragmentPlus {
         PatternView.user.edit_mode.set(mode_button.isChecked());
 
         int instr_selected = 0;
-        String names[] = CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()]);
+        String names[] = CSD.instruments.getArray();
         String name = getArguments().getString("instr_name");
-        while(instr_selected<CSD.getNbInstruments() && !names[instr_selected].equals(name))
+        while(instr_selected<CSD.instruments.size() && !names[instr_selected].equals(name))
             instr_selected ++;
         instrument_spinner.setSelection(instr_selected);
 

@@ -28,23 +28,23 @@ public final class PatchBayFragment extends Fragment {
                 DataBindingUtil.inflate(inflater, R.layout.patchbay_fragment, container, false);
         grid = binding.gridView;
 
-        grid.setNumColumns(CSD.getNbEffects() + 2);
+        grid.setNumColumns(CSD.effects.size() + 2);
         grid.setAdapter(new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_list_item_1, Matrix.cells) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 final View view = super.getView(position, convertView, parent);
 
-                int n = CSD.getNbEffects() + 2;
+                int n = CSD.effects.size() + 2;
                 int j = position % n;
                 int i = (position - j) / n;
 
                 int color = 0x00FFFFFF; // Transparent
                 if (j == 0) {
-                    if (i < CSD.getNbInstruments()) color = Default.instrument_color;
-                    else if (i < CSD.getNbInstruments() + CSD.getNbEffects()) color = Default.effect_color;
-                } else if (i == CSD.getNbInstruments() + CSD.getNbEffects() && j > 0) {
-                    if (j <= CSD.getNbEffects()) color = Default.effect_color;
+                    if (i < CSD.instruments.size()) color = Default.instrument_color;
+                    else if (i < CSD.instruments.size() + CSD.effects.size()) color = Default.effect_color;
+                } else if (i == CSD.instruments.size() + CSD.effects.size() && j > 0) {
+                    if (j <= CSD.effects.size()) color = Default.effect_color;
                     else color = Default.master_color;
                 }
 
@@ -58,7 +58,7 @@ public final class PatchBayFragment extends Fragment {
 
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                int n = CSD.getNbEffects() + 2;
+                int n = CSD.effects.size() + 2;
                 int j = position % n;
                 int i = (position - j) / n;
                 if (Matrix.get(i, j)) Matrix.getInstance().unset(i, j);

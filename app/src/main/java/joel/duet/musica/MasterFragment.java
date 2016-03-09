@@ -52,8 +52,8 @@ public final class MasterFragment extends Fragment{
         if (isInstr) {
             color = Default.instrument_color;
             if (formatId == R.string.master_line_L_format)
-                val = CSD.mapInstr.get(componentName).gainL;
-            else val = CSD.mapInstr.get(componentName).gainR;
+                val = CSD.instruments.get(componentName).gainL;
+            else val = CSD.instruments.get(componentName).gainR;
         } else {
             if (componentName.equals("Master")) {
                 color = Default.master_color;
@@ -63,8 +63,8 @@ public final class MasterFragment extends Fragment{
             } else {
                 color = Default.effect_color;
                 if (formatId == R.string.master_line_L_format)
-                    val = CSD.mapFX.get(componentName).gainL;
-                else val = CSD.mapFX.get(componentName).gainR;
+                    val = CSD.effects.get(componentName).gainL;
+                else val = CSD.effects.get(componentName).gainR;
             }
         }
         seekBar.setProgress((int) Math.round(val* seekBar.getMax()));
@@ -85,14 +85,14 @@ public final class MasterFragment extends Fragment{
 
         LinearLayout verticalLayout = binding.master;
 
-        String[] instrNames = CSD.mapInstr.keySet().toArray(new String[CSD.getNbInstruments()]);
-        for (int i = 0; i < CSD.getNbInstruments(); i++) {
+        String[] instrNames = CSD.instruments.getArray();
+        for (int i = 0; i < CSD.instruments.size(); i++) {
             registerLine(inflater, container, instrNames[i], verticalLayout, R.string.master_line_L_format, true);
             registerLine(inflater, container, instrNames[i], verticalLayout, R.string.master_line_R_format, true);
         }
 
-        String[] effectNames = CSD.mapFX.keySet().toArray(new String[CSD.getNbEffects()]);
-        for (int i = 0; i < CSD.getNbEffects(); i++) {
+        String[] effectNames = CSD.effects.getArray();
+        for (int i = 0; i < CSD.effects.size(); i++) {
             registerLine(inflater, container, effectNames[i], verticalLayout, R.string.master_line_L_format, false);
             registerLine(inflater, container, effectNames[i], verticalLayout, R.string.master_line_R_format, false);
         }
