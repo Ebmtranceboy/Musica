@@ -29,6 +29,13 @@ public final class PatchBayFragment extends Fragment {
         grid = binding.gridView;
 
         grid.setNumColumns(CSD.effects.size() + 2);
+
+        /*
+        ViewGroup.LayoutParams layoutParams = grid.getLayoutParams();
+        layoutParams.width = (int)((grid.getNumColumns() * 20.0f)*(float)getResources().getDisplayMetrics().densityDpi/ DisplayMetrics.DENSITY_DEFAULT);
+        grid.setLayoutParams(layoutParams);
+        */
+
         grid.setAdapter(new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_list_item_1, Matrix.cells) {
             @Override
@@ -49,14 +56,14 @@ public final class PatchBayFragment extends Fragment {
                 }
 
                 view.setBackgroundColor(color);
-                ((TextView) view).setTextSize(20.0f);
+                ((TextView) view).setTextSize(grid.getColumnWidth() / 4.5f);
                 ((TextView) view).setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 
                 return view;
             }
         });
 
-        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 int n = CSD.effects.size() + 2;
                 int j = position % n;

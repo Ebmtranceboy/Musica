@@ -72,6 +72,7 @@ public final class KeyboardView extends View {
     }
 
     private int key(float x, float y) {
+        //if(whitewidth<=0) init();
         int pos = (int) (x % whitewidth);
         boolean top = false;
         if (pos > whitewidth / 2) {

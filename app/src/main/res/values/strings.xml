@@ -64,6 +64,8 @@
     <string name="default_directory">/storage/scard0/</string>
     <string name="lab_label">lab_label</string>
     <string name="render_project_label">CSD</string>
+    <string name="tonal_mode_label">Tonal mode</string>
+    <string name="minor_tonal_label">minor</string>
     <string-array name="oct_array">
         <item>1</item>
         <item>2</item>

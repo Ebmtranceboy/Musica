@@ -29,7 +29,7 @@ import joel.duet.musica.databinding.LiveFragmentBinding;
 
 /**
  *
- * Created by joel on 12/01/16 at 23:16 at 11:00 at 12:39 at 13:22.
+ * Created by joel on 12/01/16 at 23:16 at 11:00 at 12:39 at 13:22 at 09:13 at 10:52 at 15:48.
  */
 public final class LiveFragment extends Fragment {
     //private static final String TAG = "Live";
@@ -37,11 +37,13 @@ public final class LiveFragment extends Fragment {
     static private MainActivity activity;
     static private CsoundObj csoundObj;
     private KeyboardView keyboard;
+    private ChordsView chordsView;
     private final int[] touchIds = new int[10];
     private final float[] touchX = new float[10];
     private final float[] touchY = new float[10];
     private static SeekBar ktrlx, ktrly;
     private static String lastPch = "3.00";
+    //public static boolean isMajor = true;
 
     private void ktrlBindings() {
         csoundObj.addBinding(new CsoundSliderBinding(ktrlx, "ktrlx", 0, 1));
@@ -58,7 +60,8 @@ public final class LiveFragment extends Fragment {
         csoundObj.startCsound(activity.csoundUtil.createTempFile(CSD.part()));
     }
 
-    public static class User{
+    public static class User {
+        public final ObservableBoolean piano_mode = new ObservableBoolean();
         public final ObservableBoolean loudness_mode = new ObservableBoolean();
         public final ObservableBoolean polyphonic_mode = new ObservableBoolean();
         public final ObservableBoolean solo_mode = new ObservableBoolean();
@@ -88,9 +91,16 @@ public final class LiveFragment extends Fragment {
 
         // populate instr spinner
         final Spinner select_instr = binding.selectInstr;
-        ArrayAdapter<String> instr_adapter =
+        final ArrayAdapter<String> instr_adapter =
                 new ArrayAdapter<>(activity.getBaseContext(), android.R.layout.simple_spinner_item, CSD.instruments.getArray());
         select_instr.setAdapter(instr_adapter);
+
+        final ToggleButton keyboadButton = binding.pianoMode;
+        keyboadButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                user.piano_mode.set(isChecked);
+            }
+        });
 
         final ToggleButton loudnessButton = binding.loudness;
         loudnessButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -133,8 +143,8 @@ public final class LiveFragment extends Fragment {
                 ktrlBindings();
                 String csd =
                         user.solo_mode.get() ? CSD.recordPart((String) select_instr.getSelectedItem()) :
-                        Score.sendPatternsForRecord((String) select_instr.getSelectedItem(),
-                                Score.allPatterns());
+                                Score.sendPatternsForRecord((String) select_instr.getSelectedItem(),
+                                        Score.allPatterns());
                 csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
             }
         });
@@ -261,6 +271,75 @@ public final class LiveFragment extends Fragment {
             }
         });
 
+        chordsView = binding.ChordsView;
+        chordsView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                final int action = event.getActionMasked();
+                final int indexChord = chordsView.whatis(event.getX(), event.getY());
+
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (indexChord >= 0 && indexChord < Default.flavors.length - (OptionsFragment.isMajor ? 0 : Default.Flavor.nbMajor)) {
+
+                            int index;
+
+                            for (Integer key : Default.flavors[OptionsFragment.isMajor?indexChord:Default.Flavor.nbMajor+indexChord].intervals) {
+                                String pch =
+                                        select_oct.getSelectedItem() + "."
+                                                + (key < 10 ? "0" : "") + key;
+                                index = indexChord + key;
+                                csoundObj.sendScore("i\"Voicer\" 0 0 \""
+                                        + select_instr.getSelectedItem() + "\" " + index + " "
+                                        + pch + " "
+                                        + Default.default_loudness + " "
+                                        + lastPch);
+
+                                lastPch = pch;
+
+                            }
+
+                            chordsView.show(indexChord);
+
+                            /*
+                            List<Pattern.Note> notes = new ArrayList<>();
+                            int offset = 0;
+                            for(Integer key : Default.flavors[indexChord].intervals) {
+                                notes.add(new Pattern.Note(offset, 16, 69 + key, Default.default_loudness));
+                                offset += 32;
+                            }
+                            Pattern pattern = new Pattern(notes,(String)select_instr.getSelectedItem());
+                            pattern.start = 0;
+                            pattern.finish = offset;
+
+                            String csd = Score.sendPatterns(pattern.singleton(), false,pattern.start,pattern.finish);
+                            csoundObj.stop();
+                            csoundObj.startCsound(activity.csoundUtil.createTempFile(csd));
+                            */
+
+                        }
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        if (indexChord >= 0 && indexChord < Default.flavors.length - (OptionsFragment.isMajor ? 0 : Default.Flavor.nbMajor)) {
+                            int index;
+
+                            for (Integer key : Default.flavors[OptionsFragment.isMajor?indexChord:Default.Flavor.nbMajor+indexChord].intervals) {
+                                index = indexChord + key;
+                                csoundObj.sendScore("i\"Silencer\" 0 0 \""
+                                        + select_instr.getSelectedItem() + "\" " + index);
+                            }
+                        }
+                        chordsView.show(-1);
+
+                        break;
+                }
+                chordsView.invalidate();
+                return true;
+            }
+        });
+
+        user.piano_mode.set(true);
         user.loudness_mode.set(false);
         user.polyphonic_mode.set(true);
         user.solo_mode.set(true);

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <TableLayout
+   <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -41,6 +40,29 @@
                 android:layout_height="wrap_content"
                 android:inputType="text"
                 android:text="@string/default_directory" />
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/tonal_mode_label"
+                android:id="@+id/tonal_mode_label"
+                android:layout_column="0" />
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/minor_tonal_label"
+                android:textOn="major"
+                android:textOff="minor"
+                android:id="@+id/tonal_mode"
+                android:layout_column="1" />
         </TableRow>
     </TableLayout>
 </layout>

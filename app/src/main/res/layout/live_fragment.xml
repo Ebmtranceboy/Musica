@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
-<data>
-    <variable
-        name="user"
-        type="joel.duet.musica.LiveFragment.User"/>
-</data>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="user"
+            type="joel.duet.musica.LiveFragment.User" />
+    </data>
+
     <LinearLayout
         android:id="@+id/live_layout"
         android:layout_width="match_parent"
@@ -40,6 +45,15 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2" />
+
+            <ToggleButton
+                android:id="@+id/piano_mode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@{user.piano_mode ? @drawable/ic_keyboard : @drawable/ic_hive}"
+                android:textOff=""
+                android:textOn="" />
 
             <ToggleButton
                 android:id="@+id/loudness"
@@ -126,10 +140,23 @@
 
         </TableRow>
 
-        <joel.duet.musica.KeyboardView
-            android:id="@+id/Keyboard"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1">
+
+            <joel.duet.musica.KeyboardView
+                android:id="@+id/Keyboard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{user.piano_mode ? View.VISIBLE : View.INVISIBLE}" />
+
+            <joel.duet.musica.ChordsView
+                android:id="@+id/ChordsView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{user.piano_mode ? View.INVISIBLE : View.VISIBLE}" />
+
+        </FrameLayout>
     </LinearLayout>
 </layout>

@@ -191,14 +191,14 @@ final class CSD {
             + "\nSinstr = p4"
             + "\ninb nstrnum Sinstr"
             + "\nifrac = p5"
-            + "\nevent_i \"i\", inb + ifrac/20, 0, -1, p6, p7, p8"
+            + "\nevent_i \"i\", inb + ifrac/200, 0, -1, p6, p7, p8"
             + "\nendin";
 
     private static final String Silencer = "\n\ninstr Silencer"
             + "\nSinstr = p4"
             + "\ninb nstrnum Sinstr"
             + "\nifrac = p5"
-            + "\nevent_i \"i\", -(inb + ifrac/20), 0, 0"
+            + "\nevent_i \"i\", -(inb + ifrac/200), 0, 0"
             + "\nendin";
 
     private static String Metro() { return "\ngkmetro init 0"

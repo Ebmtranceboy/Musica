@@ -17,6 +17,9 @@ import joel.duet.musica.databinding.OptionsFragmentBinding;
  * Created by joel on 16/02/16 at 15:46 at 16:06 at 23:28.
  */
 public final class OptionsFragment extends Fragment {
+
+    public static boolean isMajor;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancesState) {
 
@@ -46,8 +49,17 @@ public final class OptionsFragment extends Fragment {
             }
         });
 
+        binding.tonalMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isMajor=!isMajor;
+            }
+        });
+
         String format = getResources().getString(R.string.floating_point_format);
         options_tempo.setText(String.format(format,CSD.tempo_ratio * 60));
+        isMajor=false;
+
 
         return binding.getRoot();
     }

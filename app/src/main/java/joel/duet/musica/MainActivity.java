@@ -72,7 +72,7 @@ public final class MainActivity extends AppCompatActivity
         PreferenceManager.getInstance().initialize(this);
         Matrix.getInstance().initialize();
 
-        csoundObj.setMessageLoggingEnabled(true);
+        //csoundObj.setMessageLoggingEnabled(true);
         toolbar = act_binding.bar.toolbar;
         mDrawer = act_binding.drawerLayout;
 
@@ -86,7 +86,6 @@ public final class MainActivity extends AppCompatActivity
 
         drawerToggle.syncState();
 
-        /*bar_binding.fab*/
         act_binding.bar.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -145,7 +145,7 @@ public final class PreferenceManager {
     }
 
     public static void loadProject(JSONObject project) throws JSONException {
-        Log.i(TAG, project.toString());
+        Log.d(TAG, project.toString());
         loadJSONOrchestra(project.getJSONArray(ORCHESTRA_KEY));
         loadJSONFX(project.getJSONArray(FX_KEY));
         loadJSONTracks(project.getJSONObject(TRACKS_KEY));
