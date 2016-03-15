@@ -277,18 +277,30 @@ public final class LiveFragment extends Fragment {
             public boolean onTouch(View view, MotionEvent event) {
                 final int action = event.getActionMasked();
                 final int indexChord = chordsView.whatis(event.getX(), event.getY());
+                final int minIndex = OptionsFragment.isMajor ? 0 : Default.Flavor.nbMajor;
+                final int supIndex = OptionsFragment.isMajor ? Default.Flavor.nbMajor : Default.flavors.length - Default.Flavor.nbMajor;
+                int index, normalizedKey, oct;
+                String pch;
+
 
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
-                        if (indexChord >= 0 && indexChord < Default.flavors.length - (OptionsFragment.isMajor ? 0 : Default.Flavor.nbMajor)) {
+                        if (indexChord >= 0 && indexChord < supIndex) {
 
-                            int index;
 
-                            for (Integer key : Default.flavors[OptionsFragment.isMajor?indexChord:Default.Flavor.nbMajor+indexChord].intervals) {
-                                String pch =
-                                        select_oct.getSelectedItem() + "."
-                                                + (key < 10 ? "0" : "") + key;
-                                index = indexChord + key;
+                            for (Integer key : Default.flavors[indexChord + minIndex].intervals) {
+                                if(key>=0) {
+                                    pch = select_oct.getSelectedItem() + "."
+                                                    + (key < 10 ? "0" : "") + key;
+                                    normalizedKey = key;
+                                } else {
+                                    normalizedKey = key + 12;
+                                    oct = Integer.parseInt((String)select_oct.getSelectedItem());
+                                    pch = "" + (oct-1)+ "."
+                                                    + (normalizedKey < 10 ? "0" : "") + normalizedKey;
+
+                                }
+                                index = indexChord + normalizedKey;
                                 csoundObj.sendScore("i\"Voicer\" 0 0 \""
                                         + select_instr.getSelectedItem() + "\" " + index + " "
                                         + pch + " "
@@ -321,11 +333,12 @@ public final class LiveFragment extends Fragment {
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        if (indexChord >= 0 && indexChord < Default.flavors.length - (OptionsFragment.isMajor ? 0 : Default.Flavor.nbMajor)) {
-                            int index;
+                        if (indexChord >= 0 && indexChord < supIndex) {
 
-                            for (Integer key : Default.flavors[OptionsFragment.isMajor?indexChord:Default.Flavor.nbMajor+indexChord].intervals) {
-                                index = indexChord + key;
+                            for (Integer key : Default.flavors[indexChord + minIndex].intervals) {
+                                normalizedKey = key;
+                                if(key<0) normalizedKey = key+12;
+                                index = indexChord + normalizedKey;
                                 csoundObj.sendScore("i\"Silencer\" 0 0 \""
                                         + select_instr.getSelectedItem() + "\" " + index);
                             }

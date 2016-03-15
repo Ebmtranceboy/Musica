@@ -81,7 +81,10 @@ public final class KeyboardView extends View {
         }
         int nth = (int) (x - pos) / whitewidth;
         int k;
-        if (pos > -blackwidth2 && pos < blackwidth2 && y < blackheight && nth % 7 != 3 && nth % 7 != 0)
+        if (pos > -blackwidth2
+                && pos < blackwidth2
+                && y < blackheight
+                && nth % 7 != 3 && nth % 7 != 0)
             k = (nth % 7 < 4 ? 2 * nth % 7 - 1 : 2 * (nth % 7 - 1));
         else if (top) k = whiteKeys[(nth + 6) % 7];
         else k = whiteKeys[nth % 7];
@@ -112,14 +115,18 @@ public final class KeyboardView extends View {
             if (!listBlackKeys.contains(b % 12)) {
                 if (pressed[b]) {
                     mPainterFill.setColor(Color.LTGRAY);
-                    canvas.drawRect(w * whitewidth, 0, (w + 1) * whitewidth, keyboard_height - 1, mPainterFill);
+                    canvas.drawRect(w * whitewidth, 0,
+                            (w + 1) * whitewidth, keyboard_height - 1, mPainterFill);
                     mPainterStroke.setColor(Color.LTGRAY);
-                    canvas.drawRect(w * whitewidth, 0, (w + 1) * whitewidth, keyboard_height - 1, mPainterStroke);
+                    canvas.drawRect(w * whitewidth, 0,
+                            (w + 1) * whitewidth, keyboard_height - 1, mPainterStroke);
                 } else {
                     mPainterFill.setColor(Color.WHITE);
-                    canvas.drawRect(w * whitewidth, 0, (w + 1) * whitewidth, keyboard_height - 1, mPainterFill);
+                    canvas.drawRect(w * whitewidth, 0,
+                            (w + 1) * whitewidth, keyboard_height - 1, mPainterFill);
                     mPainterStroke.setColor(Color.BLACK);
-                    canvas.drawRect(w * whitewidth, 0, (w + 1) * whitewidth, keyboard_height - 1, mPainterStroke);
+                    canvas.drawRect(w * whitewidth, 0,
+                            (w + 1) * whitewidth, keyboard_height - 1, mPainterStroke);
                 }
                 w++;
             }
@@ -134,14 +141,18 @@ public final class KeyboardView extends View {
                 if (listBlackKeys.contains((b + 1) % 12))
                     if (pressed[b + 1]) {
                         mPainterFill.setColor(Color.LTGRAY);
-                        canvas.drawRect(w * whitewidth - blackwidth2, 0, w * whitewidth + blackwidth2, blackheight, mPainterFill);
+                        canvas.drawRect(w * whitewidth - blackwidth2, 0,
+                                w * whitewidth + blackwidth2, blackheight, mPainterFill);
                         mPainterStroke.setColor(Color.LTGRAY);
-                        canvas.drawRect(w * whitewidth - blackwidth2, 0, w * whitewidth + blackwidth2, blackheight, mPainterStroke);
+                        canvas.drawRect(w * whitewidth - blackwidth2, 0,
+                                w * whitewidth + blackwidth2, blackheight, mPainterStroke);
                     } else {
                         mPainterFill.setColor(Color.BLACK);
-                        canvas.drawRect(w * whitewidth - blackwidth2, 0, w * whitewidth + blackwidth2, blackheight, mPainterFill);
+                        canvas.drawRect(w * whitewidth - blackwidth2, 0,
+                                w * whitewidth + blackwidth2, blackheight, mPainterFill);
                         mPainterStroke.setColor(Color.BLACK);
-                        canvas.drawRect(w * whitewidth - blackwidth2, 0, w * whitewidth + blackwidth2, blackheight, mPainterStroke);
+                        canvas.drawRect(w * whitewidth - blackwidth2, 0,
+                                w * whitewidth + blackwidth2, blackheight, mPainterStroke);
                     }
             }
             b++;

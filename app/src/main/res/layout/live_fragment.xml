@@ -51,7 +51,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@{user.piano_mode ? @drawable/ic_keyboard : @drawable/ic_hive}"
+                android:background="@{user.piano_mode ? @drawable/ic_hive : @drawable/ic_keyboard}"
                 android:textOff=""
                 android:textOn="" />
 
@@ -153,6 +153,8 @@
 
             <joel.duet.musica.ChordsView
                 android:id="@+id/ChordsView"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="@{user.piano_mode ? View.INVISIBLE : View.VISIBLE}" />

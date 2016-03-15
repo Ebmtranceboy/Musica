@@ -21,6 +21,8 @@ public class ChordsView extends View {
 
     private static float radius; // hexagon radius in pixels
     private static float rs32;
+    private static int width_count,height_count;
+    private static int m0,n0,x0,y0,z0;
     private final static float scale = 16.0f; // font size
 
     public ChordsView(Context context) {
@@ -42,8 +44,21 @@ public class ChordsView extends View {
         post(new Runnable() {
             @Override
             public void run() {
-                radius = Math.min(getWidth(),getHeight()*2/3)/11;
+
+                int nchords = OptionsFragment.isMajor ? Default.Flavor.nbMajor :
+                        Default.flavors.length - Default.Flavor.nbMajor;
+                float width = getWidth() * 0.9f;
+                width_count = (int) Math.ceil(Math.sqrt(1+nchords*width/getHeight()));
+                height_count = (int) Math.ceil(Math.sqrt(1+nchords*getHeight()/width));
+                //Log.i(TAG,""+width+" "+height);
+                radius = Math.min(width/width_count/(float)Math.sqrt(3.0)*2,getHeight()/(1+3*height_count/2));
                 rs32 = radius * (float) Math.sqrt(3.0) / 2.0f;
+                m0=0;
+                n0=height_count;            // center in cartesian coordinates
+                if(n0%2==1) n0--;
+                x0=-(m0+3*n0)/2; // upper left corner in center coordinates
+                y0=(m0+n0)/2;
+                z0=n0;
             }
         });
     }
@@ -53,60 +68,33 @@ public class ChordsView extends View {
 	}
 
     private static int hexIndex(int m, int n){
-        if(m==9 && n==3) return 0;
-        int x=(m+3*n)/2-9, y=6-(m+n)/2,z=3-n; // m=9-3y-x, n=3-z
-        int segment, corol,position;
-        if(x>0){
-            if(y>z){
-                segment = 3;
-                corol = -z;
-                position = 2*corol - x;
-            } else {
-                segment = 2;
-                corol = -y;
-                position = x;
-            }
-        } else {
-            if(y>z){
-                segment = 4;
-                corol = y;
-                position = -x;
-            } else {
-                segment = 1;
-                corol = z;
-                position = 2*corol + x;
-            }
-        }
+
+        if(m==m0 && n==n0) return 0;
+        int x = (m+3*n)/2+x0, z = z0-n; // y = y0-(m+n)/2, so that m=x0-x+3(y0-y), n=z0-z
+        int rest = x + (z%2==0?3*z/2:3*(z-1)/2+1);
 
         //Log.i(TAG,"("+m+","+n+"):"+"["+x+","+y+","+z+"]");
-        //Log.i(TAG,"("+m+","+n+"):"+"{"+segment+","+corol+","+position+"}");
-        //Log.i(TAG,"("+m+","+n+")->"+((2*corol-1)*(2*corol-1)+2*(segment-1)*corol+position));
-        return (2*corol-1)*(2*corol-1)+2*(segment-1)*corol+position;
+        //Log.i(TAG,"("+m+","+n+"):"+(z*width+rest));
+        return z*width_count + rest;
     }
 
     private static Pair<Float,Float> indexToHex(int index){
-        int corol = (int)Math.floor((Math.sqrt(index)+1)/2);
-        if (corol==0) return new Pair<>((9)*rs32+rs32/1.5f,(3)*1.5f * radius+radius/1.5f);
-        int segment = 1+(int)Math.floor((index-(2*corol-1)*(2*corol-1))/(2*corol));
-        int position = index-(2*corol-1)*(2*corol-1)-2*corol*(segment-1);
-        int x,y,z;
-        switch (segment){
-            case 1:z=corol;x=position-2*z;y=-x-z;break;
-            case 2:x=position;y=-corol;z=-x-y;break;
-            case 3:z=-corol;x=-position-2*z;y=-x-z;break;
-            case 4:
-                default:x=-position;y=corol;z=-x-y;break;
-        }
+        int rest = index % width_count;
+        int z = (index-rest) / width_count;
+        int x = rest - (z%2==0?3*z/2:3*(z-1)/2+1);
+        int y = -z - x;
 
-        //Log.i(TAG,""+index+":{"+segment+","+corol+","+position+"}");
         //Log.i(TAG,""+index+":["+x+","+y+","+z+"]");
-        //Log.i(TAG,""+index+":("+(z-y+6)+","+(6-x)+")");
-        return new Pair<>((9-3*y-x)*rs32+rs32/1.5f,(3-z)*1.5f * radius+radius/1.5f);
+        int m=x0-x+3*(y0-y), n=(z0-z);
+
+        return new Pair<>(m*rs32+rs32/3.5f,n*1.5f * radius+radius/3.5f);
     }
 
     public int whatis(float x, float y) {
         float m = (x - rs32/1.5f) / rs32;
+        if (m < 0) m = 0;
         float n = (y - radius / 1.5f) / (1.5f * radius);
+        if (n < 0) n = 0;
         int m0 = (int) m;
         int m1 = m0 + 1;
         int n0 = (int) n;
@@ -142,35 +130,28 @@ public class ChordsView extends View {
     protected void onDraw(Canvas canvas) {
         canvas.save();
         mPainter.setColor(Color.BLACK);
-        for (int i = 0; i < 11; i++) {
-            for (int j = 0; j < 9; j++)
-                fork((2 * i + j % 2) * rs32, radius * j * 1.5f, canvas);
+        for (int i = 0; i < width_count + 1; i++) {
+            for (int j = 0; j < height_count + 2; j++)
+                fork((2 * i + j % 2) * rs32 - rs32/3.5f, radius * j * 1.5f - radius/3.5f, canvas);
         }
 
         Pair<Float,Float> p;
-        boolean startMinorReached = false;
-        int j=0;
-        for(int i=0;i<Default.flavors.length;i++) {
+        mPainter.setTextSize(scale);
+        for(int i=0; i<Default.flavors.length; i++) {
             if(OptionsFragment.isMajor){
                 if(Default.flavors[i].isMajor){
                     p = indexToHex(i);
                     if(i == indexColor)
                         mPainter.setColor(ContextCompat.getColor(getContext(),R.color.colorAccent));
                     else mPainter.setColor(Color.LTGRAY);
-                    mPainter.setTextSize(scale);
                     canvas.drawText(Default.flavors[i].notation, p.first, p.second, mPainter);
                 }
             } else {
                 if (!Default.flavors[i].isMajor) {
-                    if(!startMinorReached){
-                        startMinorReached = true;
-                        j=i;
-                    }
-                    p = indexToHex(i-j);
-                    if (i-j == indexColor)
+                    p = indexToHex(i-Default.Flavor.nbMajor);
+                    if (i-Default.Flavor.nbMajor == indexColor)
                         mPainter.setColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
                     else mPainter.setColor(Color.LTGRAY);
-                    mPainter.setTextSize(scale);
                     canvas.drawText(Default.flavors[i].notation, p.first, p.second, mPainter);
                 }
             }
