@@ -304,7 +304,8 @@ public final class LiveFragment extends Fragment {
                                 csoundObj.sendScore("i\"Voicer\" 0 0 \""
                                         + select_instr.getSelectedItem() + "\" " + index + " "
                                         + pch + " "
-                                        + Default.default_loudness + " "
+                                        + (user.loudness_mode.get() ? CSD.pressure2dB(event.getPressure()) :
+                                            CSD.defaultLoudness2dB()) + " "
                                         + lastPch);
 
                                 lastPch = pch;

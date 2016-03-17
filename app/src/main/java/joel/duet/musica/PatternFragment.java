@@ -88,7 +88,7 @@ public final class PatternFragment extends FragmentPlus {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 InputTextDialogFragment commandLabDialog = new InputTextDialogFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString("state", "PATTERN");
+                bundle.putString("state", "Pattern");
                 commandLabDialog.setArguments(bundle);
                 commandLabDialog.show(fragmentManager, "fragment_command_lab");
             }

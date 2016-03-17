@@ -75,7 +75,6 @@ final class Default {
             new Flavor(true, "iii", 4, 7, 11),
             new Flavor(true, "IV", 5, 9, 12),
             new Flavor(true, "V", -5, -1, 2),
-            new Flavor(true, "V7", -5, -1, 2, 5),
             new Flavor(true, "vi", -3, 0, 4),
             new Flavor(true, "vii°", -1, 2, 5),
             // other chords
@@ -86,7 +85,6 @@ final class Default {
             // borrowred chords
             new Flavor(true, "bII", 2, 5, 8),
             new Flavor(true, "iih7", 2, 5, 8, 12),
-            new Flavor(true, "sii°7", 3, 6, 9, 12),
             new Flavor(true, "III", 4, 8, 11),
             new Flavor(true, "bIII", 3, 7, 10),
             new Flavor(true, "biii", 3, 6, 10),
@@ -94,13 +92,12 @@ final class Default {
             new Flavor(true, "ivb7", 5, 8, 12, 15),
             new Flavor(true, "IVb7", 5, 9, 12, 15),
             new Flavor(true, "IVM7", 5, 9, 12, 16),
+            new Flavor(true, "V7", -5, -1, 2, 5),
             new Flavor(true, "Vb9", -5, -1, 2, 5, 8),
             new Flavor(true, "VI", -3, 1, 4),
             new Flavor(true, "vi7", -3, 0, 4, 7),
             new Flavor(true, "bVI", -4, 0, 3),
             new Flavor(true, "bvi", -4, -1, 3),
-            new Flavor(true, "svi°7", -2, 1, 4, 7),
-            new Flavor(true, "vii°7", -1, 2, 5, 8),
             new Flavor(true, "bVII", -2, 2, 5),
             // secondary dominants
             new Flavor(true, "V7/ii", -3, 1, 4, 7),

@@ -156,7 +156,7 @@ final class CsoundUtil {
                 int oct = (pitch - key) / 100 - 3;
 
                 int loudness = CSD.dB2Loudness(Float.parseFloat(matcher.group(4)));
-                pattern.createNote(onset - pattern.start, duration, oct * 12 + key,loudness);
+                pattern.createNote(onset - pattern.start, duration, oct * 12 + key, loudness);
             }
         }
         if(solo_mode) pattern.start = 0;
