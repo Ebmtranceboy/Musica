@@ -24,6 +24,9 @@ public class ChordsView extends View {
     private static int width_count,height_count;
     private static int m0,n0,x0,y0,z0;
     private final static float scale = 16.0f; // font size
+    private static Pair<Float, Float> offsetText;
+    private static Pair<Float, Float> offsetTouch;
+    private static Pair<Float, Float> offsetGrid;
 
     public ChordsView(Context context) {
         super(context);
@@ -47,12 +50,15 @@ public class ChordsView extends View {
 
                 int nchords = OptionsFragment.isMajor ? Default.Flavor.nbMajor :
                         Default.flavors.length - Default.Flavor.nbMajor;
-                float width = getWidth() * 0.9f;
+                float width = getWidth() * 0.95f;
                 width_count = (int) Math.ceil(Math.sqrt(1+nchords*width/getHeight()));
                 height_count = (int) Math.ceil(Math.sqrt(1+nchords*getHeight()/width));
                 //Log.i(TAG,""+width+" "+height);
                 radius = Math.min(width/width_count/(float)Math.sqrt(3.0)*2,getHeight()/(1+3*height_count/2));
                 rs32 = radius * (float) Math.sqrt(3.0) / 2.0f;
+                offsetGrid = new Pair<>( -rs32 * 1.5f, -radius/1.4f);
+                offsetText = new Pair<>( rs32/3.5f, radius * 1.5f);
+                offsetTouch = new Pair<>( -rs32/1.5f, -radius * 1.5f);
                 m0=0;
                 n0=height_count;            // center in cartesian coordinates
                 if(n0%2==1) n0--;
@@ -87,13 +93,13 @@ public class ChordsView extends View {
         //Log.i(TAG,""+index+":["+x+","+y+","+z+"]");
         int m=x0-x+3*(y0-y), n=(z0-z);
 
-        return new Pair<>(m*rs32+rs32/3.5f,n*1.5f * radius+radius/3.5f);
+        return new Pair<>(m * rs32 + offsetText.first, n * 1.5f * radius + offsetText.second);
     }
 
     public int whatis(float x, float y) {
-        float m = (x - rs32/1.5f) / rs32;
+        float m = (x + offsetTouch.first) / rs32;
         if (m < 0) m = 0;
-        float n = (y - radius / 1.5f) / (1.5f * radius);
+        float n = (y + offsetTouch.second) / (1.5f * radius);
         if (n < 0) n = 0;
         int m0 = (int) m;
         int m1 = m0 + 1;
@@ -132,7 +138,8 @@ public class ChordsView extends View {
         mPainter.setColor(Color.BLACK);
         for (int i = 0; i < width_count + 1; i++) {
             for (int j = 0; j < height_count + 2; j++)
-                fork((2 * i + j % 2) * rs32 - rs32/3.5f, radius * j * 1.5f - radius/3.5f, canvas);
+                fork((2 * i + j % 2) * rs32 + offsetGrid.first,
+                        j * radius * 1.5f + offsetGrid.second, canvas);
         }
 
         Pair<Float,Float> p;

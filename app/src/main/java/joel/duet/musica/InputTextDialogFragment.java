@@ -4,7 +4,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
+//import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +18,7 @@ import joel.duet.musica.databinding.InputTextDialogBinding;
 
 public final class InputTextDialogFragment extends DialogFragment implements
 		OnEditorActionListener {
-    private static final String TAG = "InputTextDialogFragment";
+    //private static final String TAG = "InputTextDialogFragment";
 
 	public interface EditNameDialogListener {
 		void onFinishEditDialog(String inputText);
@@ -43,7 +43,7 @@ public final class InputTextDialogFragment extends DialogFragment implements
 		mEditText.setOnEditorActionListener(this);
 
         state = getArguments().getString("state");
-		Log.i(TAG, state);
+		//Log.i(TAG, state);
 		binding.doneButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // When button is clicked, call up to owning activity.

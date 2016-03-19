@@ -67,16 +67,20 @@ public final class Matrix {
         String effects[] = CSD.effects.getArray();
         for(int i=0; i< ninstr; i++) {
             for (int j = 1; j <= nfx; j++)
-                if (edges.containsKey(instruments[i]) && edges.get(instruments[i]).contains(effects[j-1]))
+                if (edges.containsKey(instruments[i])
+                        && edges.get(instruments[i]).contains(effects[j-1]))
                     set(i, j);
-            if(edges.containsKey(instruments[i]) && edges.get(instruments[i]).contains("Master")) set(i,nfx+1);
+            if(edges.containsKey(instruments[i])
+                    && edges.get(instruments[i]).contains("Master")) set(i,nfx+1);
         }
 
         for(int i=ninstr; i< ninstr+nfx; i++) {
             for (int j = 1; j <= nfx; j++)
-                if (edges.containsKey(effects[i-ninstr]) && edges.get(effects[i-ninstr]).contains(effects[j-1]))
+                if (edges.containsKey(effects[i-ninstr])
+                        && edges.get(effects[i-ninstr]).contains(effects[j-1]))
                     set(i, j);
-            if(edges.containsKey(effects[i-ninstr]) && edges.get(effects[i-ninstr]).contains("Master")) set(i,nfx+1);
+            if(edges.containsKey(effects[i-ninstr])
+                    && edges.get(effects[i-ninstr]).contains("Master")) set(i,nfx+1);
         }
     }
 
