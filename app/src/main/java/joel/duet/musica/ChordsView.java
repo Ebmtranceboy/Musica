@@ -6,7 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-//import android.util.Log;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 
@@ -17,7 +17,7 @@ import android.view.View;
 public class ChordsView extends View {
     private final Paint mPainter = new Paint();
     private int indexColor;
-    //private static final String TAG = "ChordsView";
+    private static final String TAG = "ChordsView";
 
     private static float radius; // hexagon radius in pixels
     private static float rs32;
@@ -51,9 +51,10 @@ public class ChordsView extends View {
                 int nchords = OptionsFragment.isMajor ? Default.Flavor.nbMajor :
                         Default.flavors.length - Default.Flavor.nbMajor;
                 float width = getWidth() * 0.95f;
-                width_count = (int) Math.ceil(Math.sqrt(1+nchords*width/getHeight()));
-                height_count = (int) Math.ceil(Math.sqrt(1+nchords*getHeight()/width));
-                //Log.i(TAG,""+width+" "+height);
+                width_count = (int) Math.floor(Math.sqrt(nchords*width/getHeight()));
+                height_count = (int) Math.ceil(Math.sqrt(nchords * getHeight() / width));
+                if(width_count*height_count<nchords) width_count++;
+                Log.i(TAG,"W:"+width+" H:"+getHeight()+"Wc:"+width_count+" Hc:"+height_count+" N:"+nchords);
                 radius = Math.min(width/width_count/(float)Math.sqrt(3.0)*2,getHeight()/(1+3*height_count/2));
                 rs32 = radius * (float) Math.sqrt(3.0) / 2.0f;
                 offsetGrid = new Pair<>( -rs32 * 1.5f, -radius/1.4f);
